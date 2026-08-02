@@ -97,8 +97,13 @@
         
         <!-- ADMIN MODE PORTAL BUTTON -->
         <button onclick="openAdminModal()" class="w-full py-2 bg-amber-900/40 border border-amber-700 text-amber-300 font-semibold rounded-lg hover:bg-amber-900/60 transition flex items-center justify-center gap-2">
-          🔑 Admin GitHub Portal
+          🔑 Admin GitHub Token Setup
         </button>
+
+        <!-- LINK TO SEPARATE ADMIN PAGE -->
+        <a href="admin.html" class="w-full py-2 bg-indigo-900/50 border border-indigo-700 text-indigo-300 font-semibold rounded-lg hover:bg-indigo-900/70 transition flex items-center justify-center gap-2">
+          🔐 Go to Admin Uploader Page
+        </a>
 
         <button id="wrong-only-btn" onclick="filterWrongAnswers()" class="hidden w-full py-2 bg-rose-900/40 border border-rose-700 text-rose-300 font-semibold rounded-lg hover:bg-rose-900/60 transition">
           ⚠️ Practice Incorrect (0)
@@ -136,9 +141,10 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <button id="new-pdf-header-btn" onclick="confirmUploadNewPDF()" class="hidden px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold rounded-lg hover:bg-emerald-100 transition flex items-center gap-1.5 text-xs md:text-sm border border-emerald-200 dark:border-emerald-800">
-            📄 <span>Upload New PDF</span>
-          </button>
+          <!-- Quick link to Admin Page -->
+          <a href="admin.html" class="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 font-semibold rounded-lg border border-indigo-500/30 transition text-xs md:text-sm">
+            🔐 Admin Page
+          </a>
 
           <button onclick="toggleSidebar()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold rounded-lg hover:bg-indigo-100 transition flex items-center gap-2 text-sm border border-indigo-200 dark:border-indigo-800">
             <span class="hidden sm:inline">Menu</span> <span>☰</span>
@@ -259,29 +265,21 @@
 
   </div>
 
-  <!-- ADMIN GITHUB CONFIGURATION MODAL -->
+  <!-- ADMIN GITHUB CONFIGURATION MODAL (PAT ONLY) -->
   <div id="admin-modal" class="hidden fixed inset-0 bg-slate-900/60 flex justify-center items-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-md rounded-xl p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
         <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          🔑 GitHub Admin Setup
+          🔑 GitHub PAT Token Setup
         </h3>
         <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
       </div>
 
       <p class="text-xs text-slate-500 dark:text-slate-400">
-        Enter your GitHub details once. They are stored safely in your browser so you can publish quizzes directly to your GitHub repository!
+        Enter your GitHub Personal Access Token (PAT) below. It is stored securely in your browser so you can publish quizzes directly to your repository!
       </p>
 
       <div class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">GitHub Username:</label>
-          <input type="text" id="admin-gh-user" placeholder="e.g. mshahryar" class="w-full p-2 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-slate-800 dark:text-slate-100 outline-none">
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Repository Name:</label>
-          <input type="text" id="admin-gh-repo" placeholder="e.g. exam-quiz-master" class="w-full p-2 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-slate-800 dark:text-slate-100 outline-none">
-        </div>
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Personal Access Token (PAT):</label>
           <input type="password" id="admin-gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full p-2 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-slate-800 dark:text-slate-100 outline-none">
@@ -293,7 +291,7 @@
           Cancel
         </button>
         <button onclick="saveAdminSettings()" class="px-5 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg hover:bg-indigo-700 shadow">
-          Save Settings
+          Save Token
         </button>
       </div>
     </div>
@@ -451,10 +449,12 @@
     let editingQuestionIndex = -1;
     let lastScrollTop = 0;
 
-    // --- ADMIN & GITHUB AUTO-PUBLISHER API ---
+    // --- HARDCODED ADMIN CREDENTIALS ---
+    const REPO_OWNER = "Shahryar777";
+    const REPO_NAME = "QuizezPrep";
+
+    // --- ADMIN & GITHUB AUTO-PUBLISHER API (PAT ONLY) ---
     function openAdminModal() {
-      document.getElementById('admin-gh-user').value = localStorage.getItem('gh_username') || '';
-      document.getElementById('admin-gh-repo').value = localStorage.getItem('gh_repo') || '';
       document.getElementById('admin-gh-token').value = localStorage.getItem('gh_token') || '';
       document.getElementById('admin-modal').classList.remove('hidden');
     }
@@ -464,30 +464,23 @@
     }
 
     function saveAdminSettings() {
-      const user = document.getElementById('admin-gh-user').value.trim();
-      const repo = document.getElementById('admin-gh-repo').value.trim();
       const token = document.getElementById('admin-gh-token').value.trim();
 
-      if (!user || !repo || !token) {
-        alert("Please fill in all 3 GitHub Admin fields.");
+      if (!token) {
+        alert("Please enter your GitHub Personal Access Token (PAT).");
         return;
       }
 
-      localStorage.setItem('gh_username', user);
-      localStorage.setItem('gh_repo', repo);
       localStorage.setItem('gh_token', token);
-
-      alert("🎉 GitHub Admin credentials saved locally!");
+      alert("🎉 GitHub PAT Token saved securely!");
       closeAdminModal();
     }
 
     async function publishQuizToGitHub() {
-      const user = localStorage.getItem('gh_username');
-      const repo = localStorage.getItem('gh_repo');
       const token = localStorage.getItem('gh_token');
 
-      if (!user || !repo || !token) {
-        alert("Admin setup required! Please click '🔑 Admin GitHub Portal' in the sidebar to configure your GitHub token first.");
+      if (!token) {
+        alert("Admin setup required! Please set your GitHub PAT token first using the sidebar setup button.");
         openAdminModal();
         return;
       }
@@ -518,9 +511,8 @@
       statusEl.classList.remove('hidden');
 
       try {
-        // Check if file exists to get SHA for update
         let sha = null;
-        const getUrl = `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
+        const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
         const checkRes = await fetch(getUrl, {
           headers: { "Authorization": `token ${token}` }
         });
@@ -529,7 +521,6 @@
           sha = checkData.sha;
         }
 
-        // Commit/Push file via GitHub REST API
         const putRes = await fetch(getUrl, {
           method: "PUT",
           headers: {
@@ -560,12 +551,9 @@
 
     // FETCH OFFICIAL QUIZZES FROM GITHUB REPOSITORY AUTOMATICALLY
     async function fetchGitHubRepositoryQuizzes() {
-      const user = localStorage.getItem('gh_username') || "mshahryar";
-      const repo = localStorage.getItem('gh_repo') || "exam-quiz-master";
-
       ['icma', 'ca', 'acca'].forEach(async (cat) => {
         try {
-          const url = `https://api.github.com/repos/${user}/${repo}/contents/quizzes/${cat}`;
+          const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/quizzes/${cat}`;
           const res = await fetch(url);
           if (res.ok) {
             const files = await res.json();
@@ -574,7 +562,6 @@
             files.forEach(file => {
               if (file.name.endsWith('.json')) {
                 const optName = file.name.replace('.json', '');
-                // Prevent duplicates
                 let exists = false;
                 for (let i = 0; i < select.options.length; i++) {
                   if (select.options[i].value === optName) exists = true;
@@ -793,7 +780,6 @@
 
     function hideUploadSection() {
       document.getElementById("upload-section").classList.add("hidden");
-      document.getElementById("new-pdf-header-btn").classList.remove("hidden");
     }
 
     function showSetupCard(title, count) {
