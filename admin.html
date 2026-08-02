@@ -69,10 +69,7 @@
                 
                 <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
                     <button onclick="downloadQuizJSON()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5">
-                        📥 Download Quiz JSON
-                    </button>
-                    <button onclick="publishToGitHub()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-1.5">
-                        🚀 Push via API
+                        📥 Download Quiz JSON (Recommended)
                     </button>
                 </div>
             </div>
@@ -172,48 +169,6 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
-        }
-
-        async function publishToGitHub() {
-            const token = localStorage.getItem("github_pat");
-            if (!token) {
-                alert("Please set your GitHub PAT token first.");
-                openTokenModal();
-                return;
-            }
-
-            const category = document.getElementById("categorySelect").value;
-            const cleanName = parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            const fileName = `${cleanName}_quiz.json`;
-            const filePath = `quizzes/${category}/${fileName}`;
-            const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(parsedQuizData, null, 2))));
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
-
-            try {
-                // Direct PUT request without triggering a 404 lookup check
-                const response = await fetch(url, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `token ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: `Admin upload: Add ${fileName}`,
-                        content: contentEncoded,
-                        branch: "main"
-                    })
-                });
-
-                if (response.ok) {
-                    alert("🚀 Quiz successfully published to GitHub!");
-                } else {
-                    const errJson = await response.json();
-                    alert(`Failed to publish: ${errJson.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error(error);
-                alert("Network error occurred during publishing.");
-            }
         }
     </script>
 </body>
