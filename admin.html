@@ -21,11 +21,11 @@
             </svg>
         </div>
         <h1 class="text-2xl font-bold tracking-tight text-white">🔐 Admin Quiz Publisher Portal</h1>
-        <p class="text-slate-400 text-sm mt-1">Convert study PDFs into interactive quizzes and publish directly to GitHub</p>
+        <p class="text-slate-400 text-sm mt-1">Convert study PDFs into interactive quizzes instantly</p>
         
         <div class="flex gap-3 mt-4">
             <button onclick="openTokenModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-indigo-400 text-sm font-medium rounded-lg border border-slate-700 transition">
-                ⚙️ Update GitHub PAT Token
+                ⚙️ Update GitHub Token
             </button>
             <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-lg border border-slate-700 transition flex items-center">
                 ← Back to App
@@ -52,32 +52,38 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <h3 class="text-lg font-semibold text-white mb-1">Upload Study PDF</h3>
-            <p class="text-xs text-slate-400 mb-4">Select any MCQ PDF format to parse and publish</p>
+            <p class="text-xs text-slate-400 mb-4">Select any MCQ PDF format to parse and convert</p>
             <label class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl cursor-pointer transition shadow-lg shadow-indigo-600/30">
                 Choose PDF File
                 <input type="file" id="pdfFile" accept=".pdf" class="hidden" onchange="handleFileUpload(event)">
             </label>
         </div>
 
-        <!-- Status / Preview Area -->
+        <!-- Status / Action Buttons Area -->
         <div id="statusArea" class="hidden flex flex-col gap-4">
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col gap-3">
                 <div>
                     <span id="fileNameDisplay" class="text-sm font-medium text-white block">file.pdf</span>
                     <span id="mcqCountDisplay" class="text-xs text-indigo-400">0 MCQs Extracted</span>
                 </div>
-                <button onclick="publishToGitHub()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl transition shadow-lg shadow-emerald-600/30 flex items-center gap-2">
-                    🚀 Publish to GitHub
-                </button>
+                
+                <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
+                    <button onclick="downloadQuizJSON()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5">
+                        📥 Download Quiz JSON
+                    </button>
+                    <button onclick="publishToGitHub()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-1.5">
+                        🚀 Push via API
+                    </button>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Token Settings Modal (PAT Only) -->
+    <!-- Token Settings Modal -->
     <div id="tokenModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h2 class="text-lg font-bold text-white mb-2">🔑 GitHub Admin Access</h2>
-            <p class="text-xs text-slate-400 mb-4">Enter your Personal Access Token (PAT) below. It is stored securely in your browser.</p>
+            <p class="text-xs text-slate-400 mb-4">Enter your Personal Access Token (PAT) below.</p>
             
             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Personal Access Token (PAT):</label>
             <input type="password" id="patInput" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500 mb-6">
@@ -153,45 +159,49 @@
             }
         }
 
+        function downloadQuizJSON() {
+            if (!parsedQuizData) return;
+            const category = document.getElementById("categorySelect").value;
+            const cleanName = parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            const fileName = `${cleanName}_quiz.json`;
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(parsedQuizData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", fileName);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
         async function publishToGitHub() {
             const token = localStorage.getItem("github_pat");
             if (!token) {
-                alert("Please set your GitHub PAT token first using the settings button above.");
+                alert("Please set your GitHub PAT token first.");
                 openTokenModal();
                 return;
             }
 
             const category = document.getElementById("categorySelect").value;
-            const fileName = `${parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}_quiz.json`;
+            const cleanName = parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            const fileName = `${cleanName}_quiz.json`;
             const filePath = `quizzes/${category}/${fileName}`;
             const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(parsedQuizData, null, 2))));
-
             const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
 
             try {
-                let sha = null;
-                const checkRes = await fetch(url, {
-                    headers: { "Authorization": `token ${token}` }
-                });
-                if (checkRes.ok) {
-                    const fileData = await checkRes.json();
-                    sha = fileData.sha;
-                }
-
-                const bodyData = {
-                    message: `Admin upload: Add ${fileName}`,
-                    content: contentEncoded,
-                    branch: "main"
-                };
-                if (sha) bodyData.sha = sha;
-
+                // Direct PUT request without triggering a 404 lookup check
                 const response = await fetch(url, {
                     method: "PUT",
                     headers: {
                         "Authorization": `token ${token}`,
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(bodyData)
+                    body: JSON.stringify({
+                        message: `Admin upload: Add ${fileName}`,
+                        content: contentEncoded,
+                        branch: "main"
+                    })
                 });
 
                 if (response.ok) {
