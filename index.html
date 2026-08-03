@@ -95,10 +95,15 @@
           <span id="dark-mode-icon">🌙</span> <span id="dark-mode-text">Dark Mode</span>
         </button>
         
-        <!-- LINK TO ADMIN LOGIN MODAL -->
-        <button onclick="openAdminLoginModal()" class="w-full py-2 bg-indigo-900/50 border border-indigo-700 text-indigo-300 font-semibold rounded-lg hover:bg-indigo-900/70 transition flex items-center justify-center gap-2">
-          🔐 Go to Admin Uploader Page
+        <!-- ADMIN MODE PORTAL BUTTON -->
+        <button onclick="openAdminModal()" class="w-full py-2 bg-amber-900/40 border border-amber-700 text-amber-300 font-semibold rounded-lg hover:bg-amber-900/60 transition flex items-center justify-center gap-2">
+          🔑 Admin GitHub Token Setup
         </button>
+
+        <!-- LINK TO SEPARATE ADMIN PAGE -->
+        <a href="admin.html" class="w-full py-2 bg-indigo-900/50 border border-indigo-700 text-indigo-300 font-semibold rounded-lg hover:bg-indigo-900/70 transition flex items-center justify-center gap-2">
+          🔐 Go to Admin Uploader Page
+        </a>
 
         <button id="wrong-only-btn" onclick="filterWrongAnswers()" class="hidden w-full py-2 bg-rose-900/40 border border-rose-700 text-rose-300 font-semibold rounded-lg hover:bg-rose-900/60 transition">
           ⚠️ Practice Incorrect (0)
@@ -123,7 +128,7 @@
   <!-- MAIN CONTENT AREA -->
   <div class="flex-1 flex flex-col min-h-screen p-4 md:p-8 pt-20">
     
-    <!-- Top Bar Header -->
+    <!-- Top Bar Header (Admin Button Removed as requested) -->
     <div id="top-header" class="fixed top-0 left-0 right-0 z-30 transition-transform duration-300 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-3 shadow-sm">
       <div class="max-w-3xl mx-auto flex justify-between items-center">
         <div class="flex items-center gap-2">
@@ -136,7 +141,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- Quick link to Admin Login Modal -->
           <button onclick="toggleSidebar()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold rounded-lg hover:bg-indigo-100 transition flex items-center gap-2 text-sm border border-indigo-200 dark:border-indigo-800">
             <span class="hidden sm:inline">Menu</span> <span>☰</span>
           </button>
@@ -147,19 +151,26 @@
     <!-- App Container -->
     <div class="w-full max-w-3xl mx-auto bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-6 md:p-8 flex-1 flex flex-col transition-colors duration-200">
 
-      <!-- Step 1: PDF Uploader Section -->
+      <!-- Step 1: PDF Uploader Section with Bounce Animation Restored -->
       <section id="upload-section" class="mb-6 p-6 border-2 border-dashed border-indigo-300 dark:border-indigo-800 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/30 text-center flex flex-col items-center">
         <!-- Bounce Animated Icon -->
         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600 dark:text-indigo-400 mb-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
-        <h3 class="font-bold text-indigo-950 dark:text-indigo-200 mb-1 text-sm md:text-base">Upload Study PDF</h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Upload any MCQ PDF format to convert it instantly into an interactive quiz</p>
+        <h3 class="font-bold text-indigo-950 dark:text-indigo-200 mb-1 text-sm md:text-base">Upload Study PDF or Quiz JSON</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Upload any MCQ PDF format (answers embedded or at the end) or load a JSON file</p>
         
         <input type="file" id="pdf-input" accept="application/pdf" class="hidden" onchange="handlePDFUpload(event)">
-        <button onclick="document.getElementById('pdf-input').click()" class="px-6 py-2.5 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-lg hover:bg-indigo-700 shadow-md transition">
-          Choose PDF File
-        </button>
+        <input type="file" id="json-input" accept=".json" class="hidden" onchange="loadQuizJSON(event)">
+
+        <div class="flex flex-wrap justify-center gap-3">
+          <button onclick="document.getElementById('pdf-input').click()" class="px-6 py-2.5 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-lg hover:bg-indigo-700 shadow-md transition">
+            Choose PDF File
+          </button>
+          <button onclick="document.getElementById('json-input').click()" class="px-5 py-2.5 bg-slate-800 text-indigo-300 font-semibold text-xs md:text-sm rounded-lg hover:bg-slate-700 border border-slate-700 transition">
+            📂 Load Quiz JSON
+          </button>
+        </div>
         <div id="extraction-status" class="hidden mt-3 text-xs font-semibold text-indigo-700 dark:text-indigo-400"></div>
       </section>
 
@@ -208,6 +219,9 @@
 
         <!-- ACTION BUTTONS -->
         <div class="pt-2 flex flex-wrap justify-center gap-3 border-t border-slate-200 dark:border-slate-700">
+          <button onclick="publishQuizToGitHub()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-1.5">
+            <span>🚀 Publish Directly to GitHub</span>
+          </button>
           <button onclick="confirmUploadNewPDF()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-lg hover:bg-slate-300 transition">
             📄 Upload Different PDF
           </button>
@@ -257,33 +271,33 @@
 
   </div>
 
-  <!-- ADMIN LOGIN MODAL -->
-  <div id="admin-login-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex justify-center items-center p-4 z-50">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-sm rounded-xl p-6 shadow-2xl space-y-4">
+  <!-- ADMIN GITHUB CONFIGURATION MODAL (PAT ONLY) -->
+  <div id="admin-modal" class="hidden fixed inset-0 bg-slate-900/60 flex justify-center items-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-md rounded-xl p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
         <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          🔐 Admin Authentication
+          🔑 GitHub PAT Token Setup
         </h3>
-        <button onclick="closeAdminLoginModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+        <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
       </div>
+
+      <p class="text-xs text-slate-500 dark:text-slate-400">
+        Enter your GitHub Personal Access Token (PAT) below. It is stored securely in your browser so you can publish quizzes directly to your repository!
+      </p>
 
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Username:</label>
-          <input type="text" id="admin-user-input" placeholder="Enter username" class="w-full p-2.5 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-slate-800 dark:text-slate-100 outline-none">
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Password:</label>
-          <input type="password" id="admin-pass-input" placeholder="Enter password" class="w-full p-2.5 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-slate-800 dark:text-slate-100 outline-none">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Personal Access Token (PAT):</label>
+          <input type="password" id="admin-gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full p-2 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-slate-800 dark:text-slate-100 outline-none">
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-        <button onclick="closeAdminLoginModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg">
+        <button onclick="closeAdminModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg">
           Cancel
         </button>
-        <button onclick="verifyAdminLogin()" class="px-5 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg hover:bg-indigo-700 shadow">
-          Login
+        <button onclick="saveAdminSettings()" class="px-5 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg hover:bg-indigo-700 shadow">
+          Save Token
         </button>
       </div>
     </div>
@@ -441,31 +455,103 @@
     let editingQuestionIndex = -1;
     let lastScrollTop = 0;
 
-    // --- HARDCODED REPO CREDENTIALS ---
+    // --- HARDCODED ADMIN CREDENTIALS ---
     const REPO_OWNER = "Shahryar777";
     const REPO_NAME = "QuizezPrep";
 
-    // --- ADMIN LOGIN MODAL CONTROLS ---
-    function openAdminLoginModal() {
-      document.getElementById('admin-user-input').value = '';
-      document.getElementById('admin-pass-input').value = '';
-      document.getElementById('admin-login-modal').classList.remove('hidden');
+    // --- ADMIN & GITHUB AUTO-PUBLISHER API (PAT ONLY) ---
+    function openAdminModal() {
+      document.getElementById('admin-gh-token').value = localStorage.getItem('gh_token') || '';
+      document.getElementById('admin-modal').classList.remove('hidden');
     }
 
-    function closeAdminLoginModal() {
-      document.getElementById('admin-login-modal').classList.add('hidden');
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.add('hidden');
     }
 
-    function verifyAdminLogin() {
-      const user = document.getElementById('admin-user-input').value.trim();
-      const pass = document.getElementById('admin-pass-input').value.trim();
+    function saveAdminSettings() {
+      const token = document.getElementById('admin-gh-token').value.trim();
 
-      if (user === "Shahryar" && pass === "Sherry777") {
-        localStorage.setItem("admin_logged_in", "true");
-        closeAdminLoginModal();
-        window.location.href = "admin.html";
-      } else {
-        alert("❌ Incorrect username or password.");
+      if (!token) {
+        alert("Please enter your GitHub Personal Access Token (PAT).");
+        return;
+      }
+
+      localStorage.setItem('gh_token', token);
+      alert("🎉 GitHub PAT Token saved securely!");
+      closeAdminModal();
+    }
+
+    async function publishQuizToGitHub() {
+      const token = localStorage.getItem('gh_token');
+
+      if (!token) {
+        alert("Admin setup required! Please set your GitHub PAT token first using the sidebar setup button.");
+        openAdminModal();
+        return;
+      }
+
+      if (!originalQuizData || originalQuizData.length === 0) {
+        alert("No MCQ data loaded to publish!");
+        return;
+      }
+
+      const categorySelect = document.getElementById("setup-category-select");
+      const selectedCat = categorySelect ? categorySelect.value : activeCategory;
+
+      const cleanFileName = activeQuizKey.replace(/[^a-z0-9_\.]/gi, '_').toLowerCase().replace('.pdf', '') + '.json';
+      const path = `quizzes/${selectedCat}/${cleanFileName}`;
+
+      const exportObject = {
+        subjectId: cleanFileName.replace('.json', ''),
+        qualification: selectedCat,
+        fileName: activeQuizKey,
+        totalQuestions: originalQuizData.length,
+        questions: originalQuizData
+      };
+
+      const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(exportObject, null, 2))));
+
+      const statusEl = document.getElementById('extraction-status');
+      statusEl.innerText = "⏳ Publishing quiz directly to GitHub repository...";
+      statusEl.classList.remove('hidden');
+
+      try {
+        let sha = null;
+        const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+        const checkRes = await fetch(getUrl, {
+          headers: { "Authorization": `token ${token}` }
+        });
+        if (checkRes.ok) {
+          const checkData = await checkRes.json();
+          sha = checkData.sha;
+        }
+
+        const putRes = await fetch(getUrl, {
+          method: "PUT",
+          headers: {
+            "Authorization": `token ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: `Auto-published ${activeQuizKey} to ${selectedCat.toUpperCase()}`,
+            content: contentEncoded,
+            sha: sha || undefined
+          })
+        });
+
+        if (putRes.ok) {
+          statusEl.innerText = `🎉 Successfully published "${cleanFileName}" to GitHub!`;
+          alert(`🎉 Success! Published "${cleanFileName}" to GitHub under ${selectedCat.toUpperCase()}!`);
+          fetchGitHubRepositoryQuizzes();
+        } else {
+          const errData = await putRes.json();
+          throw new Error(errData.message || "Failed to commit to GitHub.");
+        }
+      } catch (err) {
+        console.error("GitHub API Error:", err);
+        statusEl.innerText = `❌ Error publishing: ${err.message}`;
+        alert(`Failed to publish to GitHub: ${err.message}`);
       }
     }
 
@@ -499,6 +585,56 @@
           console.log(`No remote quizzes found for ${cat}`);
         }
       });
+    }
+
+    // --- LOCAL JSON QUIZ LOADER ---
+    function loadQuizJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById('extraction-status');
+      statusEl.innerText = "Loading JSON quiz file...";
+      statusEl.classList.remove('hidden');
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          let parsed = [];
+
+          if (data.questions) {
+            parsed = data.questions;
+          } else if (Array.isArray(data)) {
+            parsed = data;
+          } else {
+            throw new Error("Invalid JSON structure.");
+          }
+
+          parsed.forEach((q, i) => {
+            q.masterIdx = i;
+            if (q.correctAnswer === undefined && q.answer !== undefined) {
+              q.correctAnswer = q.answer;
+            }
+          });
+
+          activeQuizKey = file.name.replace('.json', '');
+          originalQuizData = [...parsed];
+          quizData = [...parsed];
+          selectedAnswers = {};
+          score = 0;
+          currentPage = 1;
+          isPracticingWrong = false;
+
+          statusEl.innerText = `🎉 Loaded ${quizData.length} MCQs from JSON!`;
+          document.getElementById("reset-quiz-btn").classList.add("hidden");
+          showSetupCard(activeQuizKey, quizData.length);
+        } catch (err) {
+          console.error("JSON Parse Error:", err);
+          statusEl.innerText = "❌ Error reading JSON quiz file.";
+          alert("Failed to parse JSON file format.");
+        }
+      };
+      reader.readAsText(file);
     }
 
     // --- DARK MODE TOGGLE ---
@@ -788,65 +924,62 @@
       }
     }
 
+    // --- UPGRADED FLEXIBLE PARSER (Handles interleaved answers, explanations, or end keys) ---
     function parseMCQsLocally(text, fileName = "Uploaded Quiz") {
       const statusEl = document.getElementById('extraction-status');
       const parsedQuiz = [];
 
-      const globalAnswerKey = {};
-      const keyMatches = text.matchAll(/(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\:\s\|]+\s*([A-D])\b/gi);
-      for (const match of keyMatches) {
-        const qNum = parseInt(match[1]);
-        const ans = match[2].toUpperCase();
-        const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
-        globalAnswerKey[qNum] = optionMap[ans];
+      // 1. Split raw text by question pattern (e.g., "1.", "Q1.", "1)", etc.)
+      const rawQuestions = text.split(/(?=\b(?:Q\.?\s*|\b)(\d{1,3})\s*[\.\)]\s+[A-Z])/i);
+      
+      let candidateBlocks = [];
+      for (let i = 1; i < rawQuestions.length; i += 2) {
+        const qNum = parseInt(rawQuestions[i]);
+        const blockContent = rawQuestions[i+1];
+        candidateBlocks.push({ num: qNum, block: blockContent });
       }
 
-      const rawQuestions = text.split(/(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]\s+[A-Z])/gi);
+      candidateBlocks.forEach((item, origIdx) => {
+        const block = item.block;
+        const qNum = item.num;
 
-      rawQuestions.forEach((qBlock, origIdx) => {
-        const qMatch = qBlock.match(/^(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\)]\s+([\s\S]+?)(?=\s+[A][\.\)]\s)/i);
-        if (!qMatch) return;
+        // Extract Question Title / Text before options A, B, C, D
+        const qTextMatch = block.match(/^([\s\S]+?)(?=\b[A-D][\.\)]\s)/i);
+        if (!qTextMatch) return;
+        const qText = cleanTextSpaces(qTextMatch[1]).replace(/\[Original:\s*Q?\d+\]/gi, '').trim();
 
-        const qNum = parseInt(qMatch[1]);
-        let qText = cleanTextSpaces(qMatch[2]).replace(/\[Original:\s*Q?\d+\]/gi, '').trim();
-
-        const optA = qBlock.match(/[A][\.\)]\s+([\s\S]+?)(?=\s+[B][\.\)]\s)/i);
-        const optB = qBlock.match(/[B][\.\)]\s+([\s\S]+?)(?=\s+[C][\.\)]\s)/i);
-        const optC = qBlock.match(/[C][\.\)]\s+([\s\S]+?)(?=\s+[D][\.\)]\s)/i);
-        const optD = qBlock.match(/[D][\.\)]\s+([\s\S]+?)(?=\s*(?:Correct\s*Answer|Answer|Explanation|SECTION\s+[A-Z]|CHAPTER|={2,}|-{2,}|\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]|$))/i);
-
-        const inlineAnsMatch = qBlock.match(/(?:Correct\s*Answer|Answer)\s*:\s*([A-D])/i);
-        const inlineExpMatch = qBlock.match(/Explanation\s*:\s*([\s\S]+?)(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]|$)/i);
+        // Extract Options A, B, C, D
+        const optA = block.match(/\bA[\.\)]\s+([\s\S]+?)(?=\s+\bB[\.\)]\s)/i);
+        const optB = block.match(/\bB[\.\)]\s+([\s\S]+?)(?=\s+\bC[\.\)]\s)/i);
+        const optC = block.match(/\bC[\.\)]\s+([\s\S]+?)(?=\s+\bD[\.\)]\s)/i);
+        const optD = block.match(/\bD[\.\)]\s+([\s\S]+?)(?=\s*(?:Correct\s*Answer|Answer|Explanation|SECTION|[A-Z]\.|\d+\s*Page|$))/i);
 
         if (optA && optB && optC && optD) {
-          const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
-          
-          let correctIdx = 0;
-          if (inlineAnsMatch) {
-            correctIdx = optionMap[inlineAnsMatch[1].toUpperCase()];
-          } else if (globalAnswerKey[qNum] !== undefined) {
-            correctIdx = globalAnswerKey[qNum];
-          }
-
-          let expText = inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][correctIdx]}`;
-
           const rawOptions = [
             cleanTextSpaces(optA[1]),
             cleanTextSpaces(optB[1]),
             cleanTextSpaces(optC[1]),
             cleanTextSpaces(optD[1])
           ];
-          const correctText = rawOptions[correctIdx];
 
-          const shuffledOptions = [...rawOptions].sort(() => Math.random() - 0.5);
-          const newCorrectIdx = shuffledOptions.indexOf(correctText);
+          // Extract Answer inline or nearby in the block (e.g., "Correct Answer: B" or "Answer:\nB")
+          let correctIdx = 0; // Default fallback to A
+          const ansMatch = block.match(/(?:Correct\s*Answer|Answer)\s*[:\s]*([A-D])\b/i);
+          if (ansMatch) {
+            const letter = ansMatch[1].toUpperCase();
+            correctIdx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }[letter] ?? 0;
+          }
+
+          // Extract Explanation if present
+          const expMatch = block.match(/Explanation\s*[:\s]*([\s\S]+?)(?=\b(?:Q\.?\s*\d+|\b\d+\s*[\.\)]\s+[A-Z])|$)/i);
+          let expText = expMatch ? cleanTextSpaces(expMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][correctIdx]}`;
 
           parsedQuiz.push({
             masterIdx: origIdx,
             questionNumber: qNum,
             question: `Q${qNum}. ${qText}`,
-            options: shuffledOptions,
-            correctAnswer: newCorrectIdx,
+            options: rawOptions,
+            correctAnswer: correctIdx,
             explanation: expText
           });
         }
@@ -1003,7 +1136,6 @@
       updateScore();
       saveQuizStateToLocalStorage();
       renderPage();
-      alert("Questions shuffled successfully!");
     }
 
     function filterWrongAnswers() {
@@ -1058,7 +1190,7 @@
       const container = document.getElementById("quiz-container");
       container.innerHTML = "";
 
-      currentQuestions.forEach((qData, pageOffset) => {
+      currentQuestions.forEach((qData) => {
         const masterIdx = qData.masterIdx;
         const qCard = document.createElement("div");
         qCard.className = "p-5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4 shadow-sm transition-colors duration-150";
@@ -1223,7 +1355,6 @@
         });
       }
 
-      document.getElementById("summary-modal").classList.add("hidden"); // fixed modal visibility bug from prior versions
       document.getElementById("summary-modal").classList.remove("hidden");
     }
 
