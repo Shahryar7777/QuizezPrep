@@ -95,11 +95,6 @@
           <span id="dark-mode-icon">🌙</span> <span id="dark-mode-text">Dark Mode</span>
         </button>
         
-        <!-- ADMIN MODE PORTAL BUTTON -->
-        <button onclick="openAdminModal()" class="w-full py-2 bg-amber-900/40 border border-amber-700 text-amber-300 font-semibold rounded-lg hover:bg-amber-900/60 transition flex items-center justify-center gap-2">
-          🔑 Admin GitHub Token Setup
-        </button>
-
         <!-- LINK TO SEPARATE ADMIN PAGE -->
         <a href="admin.html" class="w-full py-2 bg-indigo-900/50 border border-indigo-700 text-indigo-300 font-semibold rounded-lg hover:bg-indigo-900/70 transition flex items-center justify-center gap-2">
           🔐 Go to Admin Uploader Page
@@ -141,6 +136,11 @@
         </div>
 
         <div class="flex items-center gap-2">
+          <!-- Quick link to Admin Page -->
+          <a href="admin.html" class="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 font-semibold rounded-lg border border-indigo-500/30 transition text-xs md:text-sm">
+            🔐 Admin Page
+          </a>
+
           <button onclick="toggleSidebar()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold rounded-lg hover:bg-indigo-100 transition flex items-center gap-2 text-sm border border-indigo-200 dark:border-indigo-800">
             <span class="hidden sm:inline">Menu</span> <span>☰</span>
           </button>
@@ -151,7 +151,7 @@
     <!-- App Container -->
     <div class="w-full max-w-3xl mx-auto bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-6 md:p-8 flex-1 flex flex-col transition-colors duration-200">
 
-      <!-- Step 1: PDF Uploader Section with Bounce Animation Restored -->
+      <!-- Step 1: PDF Uploader Section -->
       <section id="upload-section" class="mb-6 p-6 border-2 border-dashed border-indigo-300 dark:border-indigo-800 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/30 text-center flex flex-col items-center">
         <!-- Bounce Animated Icon -->
         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600 dark:text-indigo-400 mb-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -212,9 +212,6 @@
 
         <!-- ACTION BUTTONS -->
         <div class="pt-2 flex flex-wrap justify-center gap-3 border-t border-slate-200 dark:border-slate-700">
-          <button onclick="publishQuizToGitHub()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-1.5">
-            <span>🚀 Publish Directly to GitHub</span>
-          </button>
           <button onclick="confirmUploadNewPDF()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-lg hover:bg-slate-300 transition">
             📄 Upload Different PDF
           </button>
@@ -262,38 +259,6 @@
 
     </div>
 
-  </div>
-
-  <!-- ADMIN GITHUB CONFIGURATION MODAL (PAT ONLY) -->
-  <div id="admin-modal" class="hidden fixed inset-0 bg-slate-900/60 flex justify-center items-center p-4 z-50">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-md rounded-xl p-6 shadow-2xl space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-        <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          🔑 GitHub PAT Token Setup
-        </h3>
-        <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-      </div>
-
-      <p class="text-xs text-slate-500 dark:text-slate-400">
-        Enter your GitHub Personal Access Token (PAT) below. It is stored securely in your browser so you can publish quizzes directly to your repository!
-      </p>
-
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Personal Access Token (PAT):</label>
-          <input type="password" id="admin-gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full p-2 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-slate-800 dark:text-slate-100 outline-none">
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-        <button onclick="closeAdminModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg">
-          Cancel
-        </button>
-        <button onclick="saveAdminSettings()" class="px-5 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg hover:bg-indigo-700 shadow">
-          Save Token
-        </button>
-      </div>
-    </div>
   </div>
 
   <!-- MODE SELECTION MODAL -->
@@ -451,102 +416,6 @@
     // --- HARDCODED ADMIN CREDENTIALS ---
     const REPO_OWNER = "Shahryar777";
     const REPO_NAME = "QuizezPrep";
-
-    // --- ADMIN & GITHUB AUTO-PUBLISHER API (PAT ONLY) ---
-    function openAdminModal() {
-      document.getElementById('admin-gh-token').value = localStorage.getItem('gh_token') || '';
-      document.getElementById('admin-modal').classList.remove('hidden');
-    }
-
-    function closeAdminModal() {
-      document.getElementById('admin-modal').classList.add('hidden');
-    }
-
-    function saveAdminSettings() {
-      const token = document.getElementById('admin-gh-token').value.trim();
-
-      if (!token) {
-        alert("Please enter your GitHub Personal Access Token (PAT).");
-        return;
-      }
-
-      localStorage.setItem('gh_token', token);
-      alert("🎉 GitHub PAT Token saved securely!");
-      closeAdminModal();
-    }
-
-    async function publishQuizToGitHub() {
-      const token = localStorage.getItem('gh_token');
-
-      if (!token) {
-        alert("Admin setup required! Please set your GitHub PAT token first using the sidebar setup button.");
-        openAdminModal();
-        return;
-      }
-
-      if (!originalQuizData || originalQuizData.length === 0) {
-        alert("No MCQ data loaded to publish!");
-        return;
-      }
-
-      const categorySelect = document.getElementById("setup-category-select");
-      const selectedCat = categorySelect ? categorySelect.value : activeCategory;
-
-      const cleanFileName = activeQuizKey.replace(/[^a-z0-9_\.]/gi, '_').toLowerCase().replace('.pdf', '') + '.json';
-      const path = `quizzes/${selectedCat}/${cleanFileName}`;
-
-      const exportObject = {
-        subjectId: cleanFileName.replace('.json', ''),
-        qualification: selectedCat,
-        fileName: activeQuizKey,
-        totalQuestions: originalQuizData.length,
-        questions: originalQuizData
-      };
-
-      const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(exportObject, null, 2))));
-
-      const statusEl = document.getElementById('extraction-status');
-      statusEl.innerText = "⏳ Publishing quiz directly to GitHub repository...";
-      statusEl.classList.remove('hidden');
-
-      try {
-        let sha = null;
-        const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-        const checkRes = await fetch(getUrl, {
-          headers: { "Authorization": `token ${token}` }
-        });
-        if (checkRes.ok) {
-          const checkData = await checkRes.json();
-          sha = checkData.sha;
-        }
-
-        const putRes = await fetch(getUrl, {
-          method: "PUT",
-          headers: {
-            "Authorization": `token ${token}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: `Auto-published ${activeQuizKey} to ${selectedCat.toUpperCase()}`,
-            content: contentEncoded,
-            sha: sha || undefined
-          })
-        });
-
-        if (putRes.ok) {
-          statusEl.innerText = `🎉 Successfully published "${cleanFileName}" to GitHub!`;
-          alert(`🎉 Success! Published "${cleanFileName}" to GitHub under ${selectedCat.toUpperCase()}!`);
-          fetchGitHubRepositoryQuizzes();
-        } else {
-          const errData = await putRes.json();
-          throw new Error(errData.message || "Failed to commit to GitHub.");
-        }
-      } catch (err) {
-        console.error("GitHub API Error:", err);
-        statusEl.innerText = `❌ Error publishing: ${err.message}`;
-        alert(`Failed to publish to GitHub: ${err.message}`);
-      }
-    }
 
     // FETCH OFFICIAL QUIZZES FROM GITHUB REPOSITORY AUTOMATICALLY
     async function fetchGitHubRepositoryQuizzes() {
@@ -990,20 +859,20 @@
       fetchGitHubRepositoryQuizzes();
     }
 
-    function loadSavedQuizFromCategory(cat, keyToLoad = null, showSetup = false) {
+    async function loadSavedQuizFromCategory(cat, keyToLoad = null, showSetup = false) {
       const select = document.getElementById(`${cat}-quizzes`);
       const selectedKey = keyToLoad || select.value;
       if (!selectedKey) return;
 
       activeCategory = cat;
+      activeQuizKey = selectedKey;
+
+      // First check local storage cache
       let storageKey = `savedQuizzes_${cat}`;
       let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
       
-      if (saved[selectedKey]) {
-        activeQuizKey = selectedKey;
-        select.value = activeQuizKey;
+      if (saved[selectedKey] && !showSetup) {
         const quizObj = saved[selectedKey];
-
         originalQuizData = [...quizObj.originalQuizData];
         selectedAnswers = quizObj.selectedAnswers || {};
         activeMode = quizObj.activeMode || 'practice';
@@ -1025,19 +894,49 @@
           currentPage = quizObj.currentPage || 1;
         }
 
-        if (showSetup) {
-          showSetupCard(selectedKey, originalQuizData.length);
-        } else {
-          hideUploadSection();
-          hideSetupCard();
-          updateScore();
-          renderPage();
+        hideUploadSection();
+        hideSetupCard();
+        updateScore();
+        renderPage();
 
-          if (activeMode === 'timer') {
-            const secToRun = (quizObj.secondsRemaining !== undefined && quizObj.secondsRemaining > 0) ? quizObj.secondsRemaining : (timerDurationMinutes * 60);
-            startTimer(secToRun);
-          }
+        if (activeMode === 'timer') {
+          const secToRun = (quizObj.secondsRemaining !== undefined && quizObj.secondsRemaining > 0) ? quizObj.secondsRemaining : (timerDurationMinutes * 60);
+          startTimer(secToRun);
         }
+        toggleSidebar();
+        return;
+      }
+
+      // Fallback: Fetch directly from GitHub repo raw json URL
+      try {
+        const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/quizzes/${cat}/${selectedKey}.json`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Could not fetch file from GitHub");
+        const data = await res.json();
+
+        let parsed = data.questions || (Array.isArray(data) ? data : []);
+        parsed.forEach((q, i) => {
+          q.masterIdx = i;
+          if (q.correctAnswer === undefined && q.answer !== undefined) {
+            q.correctAnswer = q.answer;
+          }
+        });
+
+        originalQuizData = [...parsed];
+        quizData = [...parsed];
+        selectedAnswers = {};
+        score = 0;
+        currentPage = 1;
+        isPracticingWrong = false;
+
+        hideUploadSection();
+        hideSetupCard();
+        updateScore();
+        renderPage();
+        toggleSidebar();
+      } catch (err) {
+        console.error(err);
+        alert("Error loading quiz file from repository.");
       }
     }
 
@@ -1082,6 +981,7 @@
       updateScore();
       saveQuizStateToLocalStorage();
       renderPage();
+      alert("Questions shuffled successfully!");
     }
 
     function filterWrongAnswers() {
