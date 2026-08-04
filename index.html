@@ -136,7 +136,10 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- Quick link to Admin Login Modal -->
+          <!-- Dynamic Header Upload Button -->
+          <button id="header-upload-btn" onclick="headerResetAndUpload()" class="hidden px-3 py-1.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition text-xs shadow flex items-center gap-1.5">
+            📁 Choose / Upload
+          </button>
           <button onclick="toggleSidebar()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold rounded-lg hover:bg-indigo-100 transition flex items-center gap-2 text-sm border border-indigo-200 dark:border-indigo-800">
             <span class="hidden sm:inline">Menu</span> <span>☰</span>
           </button>
@@ -668,11 +671,26 @@
       );
     }
 
-    function prepareForNewPDFUpload() {
-      if (activeQuizKey && originalQuizData.length > 0) {
-        saveQuizStateToLocalStorage();
-      }
+    // --- HEADER UPLOAD BUTTON RESET LOGIC ---
+    function headerResetAndUpload() {
+      showConfirmationBox(
+        "Upload New Quiz / Reset?",
+        "This will clear your active quiz session and progress, allowing you to choose/upload a new file.",
+        function () {
+          // Clear localStorage progress for active session if desired or reset cleanly
+          if (activeQuizKey) {
+            let storageKey = `savedQuizzes_${activeCategory}`;
+            let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+            delete saved[activeQuizKey];
+            localStorage.setItem(storageKey, JSON.stringify(saved));
+            localStorage.removeItem('lastActiveQuizKey');
+          }
+          prepareForNewPDFUpload();
+        }
+      );
+    }
 
+    function prepareForNewPDFUpload() {
       activeQuizKey = "";
       quizData = [];
       originalQuizData = [];
@@ -694,12 +712,17 @@
       document.getElementById("quiz-setup-card").classList.add("hidden");
       document.getElementById("upload-section").classList.remove("hidden");
       
+      // Hide header upload button when returning to upload screen
+      document.getElementById("header-upload-btn").classList.add("hidden");
+      
       document.getElementById("pdf-input").value = "";
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function hideUploadSection() {
       document.getElementById("upload-section").classList.add("hidden");
+      // Show upload button in header when quiz/setup starts
+      document.getElementById("header-upload-btn").classList.remove("hidden");
     }
 
     function showSetupCard(title, count) {
@@ -828,8 +851,6 @@
             correctIdx = globalAnswerKey[qNum];
           }
 
-          let expText = inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][correctIdx]}`;
-
           const rawOptions = [
             cleanTextSpaces(optA[1]),
             cleanTextSpaces(optB[1]),
@@ -840,6 +861,9 @@
 
           const shuffledOptions = [...rawOptions].sort(() => Math.random() - 0.5);
           const newCorrectIdx = shuffledOptions.indexOf(correctText);
+
+          // Fixed explanation text synchronization so it references the new correct option letter accurately
+          let expText = inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`;
 
           parsedQuiz.push({
             masterIdx: origIdx,
@@ -1223,7 +1247,7 @@
         });
       }
 
-      document.getElementById("summary-modal").classList.add("hidden"); // fixed modal visibility bug from prior versions
+      document.getElementById("summary-modal").classList.add("hidden");
       document.getElementById("summary-modal").classList.remove("hidden");
     }
 
