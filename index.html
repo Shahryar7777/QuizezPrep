@@ -137,7 +137,7 @@
 
         <div class="flex items-center gap-2">
           <!-- Dynamic Header Upload Button -->
-          <button id="header-upload-btn" onclick="headerResetAndUpload()" class="hidden px-3 py-1.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition text-xs shadow flex items-center gap-1.5">
+          <button id="header-upload-btn" onclick="headerResetAndUpload()" class="hidden px-3.5 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition text-xs shadow flex items-center gap-1.5">
             📁 Choose / Upload
           </button>
           <button onclick="toggleSidebar()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold rounded-lg hover:bg-indigo-100 transition flex items-center gap-2 text-sm border border-indigo-200 dark:border-indigo-800">
@@ -229,11 +229,14 @@
         <textarea id="raw-pdf-text" class="w-full h-20 p-3 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono text-slate-800 dark:text-slate-200" readonly></textarea>
       </section>
 
-      <!-- Page Banner -->
+      <!-- Page Banner with Page Jump Dropdown -->
       <div id="page-banner" class="flex justify-between items-center mb-6 pb-2 border-b border-slate-200 dark:border-slate-800">
-        <span id="page-number-text" class="text-xs md:text-sm font-bold text-indigo-900 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded-md border border-indigo-100 dark:border-indigo-800">
-          Page 0 of 0
-        </span>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-600 dark:text-slate-400">Page:</span>
+          <select id="page-jump-select" onchange="jumpToPage(this.value)" class="text-xs md:text-sm font-bold text-indigo-900 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-3 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800 outline-none cursor-pointer">
+            <option value="1">Page 1 of 1</option>
+          </select>
+        </div>
         <span id="total-mcqs-text" class="text-xs font-semibold text-slate-500 dark:text-slate-400">
           No PDF Loaded
         </span>
@@ -247,12 +250,12 @@
       </main>
 
       <!-- Page Navigation Footer -->
-      <footer id="quiz-footer" class="flex justify-between items-center pt-6 mt-8 border-t border-slate-200 dark:border-slate-800">
-        <button id="prev-page-btn" onclick="prevPage()" class="px-5 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-          ← Previous 10 Questions
+      <footer id="quiz-footer" class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-6 mt-8 border-t border-slate-200 dark:border-slate-800">
+        <button id="prev-page-btn" onclick="prevPage()" class="w-full sm:w-auto px-5 py-3 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs md:text-sm rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm" disabled>
+          <span>←</span> <span>Previous Questions</span>
         </button>
-        <button id="next-page-btn" onclick="nextPage()" class="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-          Next 10 Questions →
+        <button id="next-page-btn" onclick="nextPage()" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-xl hover:bg-indigo-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md" disabled>
+          <span>Next Questions</span> <span>→</span>
         </button>
       </footer>
 
@@ -671,26 +674,12 @@
       );
     }
 
-    // --- HEADER UPLOAD BUTTON RESET LOGIC ---
+    // --- HEADER UPLOAD BUTTON: SAVES PROGRESS & HIPS HOME VIEW ---
     function headerResetAndUpload() {
-      showConfirmationBox(
-        "Upload New Quiz / Reset?",
-        "This will clear your active quiz session and progress, allowing you to choose/upload a new file.",
-        function () {
-          // Clear localStorage progress for active session if desired or reset cleanly
-          if (activeQuizKey) {
-            let storageKey = `savedQuizzes_${activeCategory}`;
-            let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-            delete saved[activeQuizKey];
-            localStorage.setItem(storageKey, JSON.stringify(saved));
-            localStorage.removeItem('lastActiveQuizKey');
-          }
-          prepareForNewPDFUpload();
-        }
-      );
-    }
+      if (activeQuizKey && originalQuizData.length > 0) {
+        saveQuizStateToLocalStorage(); // Safely preserve progress in localStorage
+      }
 
-    function prepareForNewPDFUpload() {
       activeQuizKey = "";
       quizData = [];
       originalQuizData = [];
@@ -703,25 +692,30 @@
         <div class="text-center py-12 text-slate-400 dark:text-slate-500">
           Upload a PDF or select a saved quiz from the sidebar menu to start!
         </div>`;
-      document.getElementById("page-number-text").innerText = `Page 0 of 0`;
+      
+      const jumpSelect = document.getElementById("page-jump-select");
+      jumpSelect.innerHTML = `<option value="1">Page 1 of 1</option>`;
+      
       document.getElementById("total-mcqs-text").innerText = `No PDF Loaded`;
       document.getElementById("score-badge").innerText = `Score: 0 / 0`;
 
       document.getElementById("sidebar-mode-section").classList.add("hidden");
       document.getElementById("text-preview-section").classList.add("hidden");
       document.getElementById("quiz-setup-card").classList.add("hidden");
-      document.getElementById("upload-section").classList.remove("hidden");
+      document.getElementById("upload-section").classList.remove("hidden"); // Bring back upload section to home page
       
-      // Hide header upload button when returning to upload screen
       document.getElementById("header-upload-btn").classList.add("hidden");
-      
       document.getElementById("pdf-input").value = "";
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      updateSavedQuizzesDropdowns();
+    }
+
+    function prepareForNewPDFUpload() {
+      headerResetAndUpload();
     }
 
     function hideUploadSection() {
       document.getElementById("upload-section").classList.add("hidden");
-      // Show upload button in header when quiz/setup starts
       document.getElementById("header-upload-btn").classList.remove("hidden");
     }
 
@@ -816,7 +810,9 @@
       const parsedQuiz = [];
 
       const globalAnswerKey = {};
-      const keyMatches = text.matchAll(/(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\:\s\|]+\s*([A-D])\b/gi);
+      const globalExplanations = {};
+      
+      const keyMatches = text.matchAll(/Q(\d{1,3})\s*[:\-\—\.]\s*([A-D])\b/gi);
       for (const match of keyMatches) {
         const qNum = parseInt(match[1]);
         const ans = match[2].toUpperCase();
@@ -824,46 +820,52 @@
         globalAnswerKey[qNum] = optionMap[ans];
       }
 
-      const rawQuestions = text.split(/(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]\s+[A-Z])/gi);
+      const expMatches = text.matchAll(/Q(\d{1,3})\s*[:\-\—\.]\s*[A-D]\s*[:\-\—\.]\s*([\s\S]+?)(?=\s*Q\d{1,3}\s*[:\-\—\.]|\s*$)/gi);
+      for (const match of expMatches) {
+        const qNum = parseInt(match[1]);
+        globalExplanations[qNum] = cleanTextSpaces(match[2]);
+      }
+
+      const rawQuestions = text.split(/(?=\bQ\d{1,3}[\.\s]+)/gi);
 
       rawQuestions.forEach((qBlock, origIdx) => {
-        const qMatch = qBlock.match(/^(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\)]\s+([\s\S]+?)(?=\s+[A][\.\)]\s)/i);
+        const qMatch = qBlock.match(/^Q(\d{1,3})[\.\s]+([\s\S]+?)(?=\s+[A-D][\)\.]\s)/i);
         if (!qMatch) return;
 
         const qNum = parseInt(qMatch[1]);
-        let qText = cleanTextSpaces(qMatch[2]).replace(/\[Original:\s*Q?\d+\]/gi, '').trim();
+        let qText = cleanTextSpaces(qMatch[2]).trim();
 
-        const optA = qBlock.match(/[A][\.\)]\s+([\s\S]+?)(?=\s+[B][\.\)]\s)/i);
-        const optB = qBlock.match(/[B][\.\)]\s+([\s\S]+?)(?=\s+[C][\.\)]\s)/i);
-        const optC = qBlock.match(/[C][\.\)]\s+([\s\S]+?)(?=\s+[D][\.\)]\s)/i);
-        const optD = qBlock.match(/[D][\.\)]\s+([\s\S]+?)(?=\s*(?:Correct\s*Answer|Answer|Explanation|SECTION\s+[A-Z]|CHAPTER|={2,}|-{2,}|\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]|$))/i);
+        const optA = qBlock.match(/[A][\)\.]\s+([\s\S]+?)(?=\s+[B][\)\.]\s)/i);
+        const optB = qBlock.match(/[B][\)\.]\s+([\s\S]+?)(?=\s+[C][\)\.]\s)/i);
+        const optC = qBlock.match(/[C][\)\.]\s+([\s\S]+?)(?=\s+[D][\)\.]\s)/i);
+        const optD = qBlock.match(/[D][\)\.]\s+([\s\S]+?)(?=\s*(?:ANSWER\s*KEY|Q\d{1,3}[\.\s]+|\n\s*\n|$))/i);
 
-        const inlineAnsMatch = qBlock.match(/(?:Correct\s*Answer|Answer)\s*:\s*([A-D])/i);
-        const inlineExpMatch = qBlock.match(/Explanation\s*:\s*([\s\S]+?)(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]|$)/i);
+        const inlineAnsMatch = qBlock.match(/(?:Correct\s*Answer|Answer)\s*[:\-]\s*([A-D])/i);
+        const inlineExpMatch = qBlock.match(/Explanation\s*[:\-]\s*([\s\S]+?)(?=\bQ\d{1,3}[\.\s]+|$)/i);
 
         if (optA && optB && optC && optD) {
-          const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
-          
-          let correctIdx = 0;
-          if (inlineAnsMatch) {
-            correctIdx = optionMap[inlineAnsMatch[1].toUpperCase()];
-          } else if (globalAnswerKey[qNum] !== undefined) {
-            correctIdx = globalAnswerKey[qNum];
-          }
-
           const rawOptions = [
             cleanTextSpaces(optA[1]),
             cleanTextSpaces(optB[1]),
             cleanTextSpaces(optC[1]),
             cleanTextSpaces(optD[1])
           ];
+
+          const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+          let correctIdx = 0;
+
+          if (globalAnswerKey[qNum] !== undefined) {
+            correctIdx = globalAnswerKey[qNum];
+          } else if (inlineAnsMatch) {
+            correctIdx = optionMap[inlineAnsMatch[1].toUpperCase()];
+          }
+
           const correctText = rawOptions[correctIdx];
 
           const shuffledOptions = [...rawOptions].sort(() => Math.random() - 0.5);
           const newCorrectIdx = shuffledOptions.indexOf(correctText);
 
-          // Fixed explanation text synchronization so it references the new correct option letter accurately
-          let expText = inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`;
+          let expText = globalExplanations[qNum] || (inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`);
 
           parsedQuiz.push({
             masterIdx: origIdx,
@@ -1009,6 +1011,13 @@
       delete saved[selectedKey];
       localStorage.setItem(storageKey, JSON.stringify(saved));
       
+      const select = document.getElementById(`${cat}-quizzes`);
+      select.value = "";
+
+      if (activeQuizKey === selectedKey && activeCategory === cat) {
+        prepareForNewPDFUpload();
+      }
+
       updateSavedQuizzesDropdowns();
     }
 
@@ -1066,23 +1075,37 @@
           <div class="text-center py-12 text-slate-400 dark:text-slate-500">
             No MCQs to display. Select or upload a quiz to start!
           </div>`;
-        document.getElementById("page-number-text").innerText = `Page 0 of 0`;
+          
+        const jumpSelect = document.getElementById("page-jump-select");
+        jumpSelect.innerHTML = `<option value="1">Page 1 of 1</option>`;
         document.getElementById("total-mcqs-text").innerText = `No PDF Loaded`;
         return;
       }
 
       const totalPages = Math.ceil(quizData.length / questionsPerPage);
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
       const startIdx = (currentPage - 1) * questionsPerPage;
       const endIdx = Math.min(startIdx + questionsPerPage, quizData.length);
       const currentQuestions = quizData.slice(startIdx, endIdx);
 
-      document.getElementById("page-number-text").innerText = `Page ${currentPage} of ${totalPages}`;
+      const jumpSelect = document.getElementById("page-jump-select");
+      jumpSelect.innerHTML = "";
+      for (let p = 1; p <= totalPages; p++) {
+        const opt = document.createElement("option");
+        opt.value = p;
+        opt.innerText = `Page ${p} of ${totalPages}`;
+        if (p === currentPage) opt.selected = true;
+        jumpSelect.appendChild(opt);
+      }
+
       document.getElementById("total-mcqs-text").innerText = `Showing MCQs ${startIdx + 1} - ${endIdx} of ${quizData.length}`;
 
       const container = document.getElementById("quiz-container");
       container.innerHTML = "";
 
-      currentQuestions.forEach((qData, pageOffset) => {
+      currentQuestions.forEach((qData) => {
         const masterIdx = qData.masterIdx;
         const qCard = document.createElement("div");
         qCard.className = "p-5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4 shadow-sm transition-colors duration-150";
@@ -1142,11 +1165,18 @@
       document.getElementById("prev-page-btn").disabled = currentPage === 1;
       const nextBtn = document.getElementById("next-page-btn");
       if (currentPage === totalPages) {
-        nextBtn.innerText = "Finish & Review";
+        nextBtn.innerHTML = `<span>Finish & Review</span> <span>✓</span>`;
       } else {
-        nextBtn.innerText = "Next 10 Questions →";
+        nextBtn.innerHTML = `<span>Next Questions</span> <span>→</span>`;
       }
       nextBtn.disabled = false;
+    }
+
+    function jumpToPage(targetPage) {
+      currentPage = parseInt(targetPage);
+      saveQuizStateToLocalStorage();
+      renderPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function selectOption(masterIdx, optionIdx) {
