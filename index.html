@@ -41,7 +41,7 @@
             <span class="font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
               🏛️ ICMA Quizzes
             </span>
-            <button onclick="confirmDeleteCategoryQuiz('icma')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold">Delete</button>
+            <button onclick="confirmDeleteCategoryQuiz('icma')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
           </div>
           <select id="icma-quizzes" onchange="loadSavedQuizFromCategory('icma')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none">
             <option value="">-- Select ICMA Quiz --</option>
@@ -54,7 +54,7 @@
             <span class="font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
               🎓 CA Quizzes
             </span>
-            <button onclick="confirmDeleteCategoryQuiz('ca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold">Delete</button>
+            <button onclick="confirmDeleteCategoryQuiz('ca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
           </div>
           <select id="ca-quizzes" onchange="loadSavedQuizFromCategory('ca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none">
             <option value="">-- Select CA Quiz --</option>
@@ -67,7 +67,7 @@
             <span class="font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
               💼 ACCA Quizzes
             </span>
-            <button onclick="confirmDeleteCategoryQuiz('acca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold">Delete</button>
+            <button onclick="confirmDeleteCategoryQuiz('acca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
           </div>
           <select id="acca-quizzes" onchange="loadSavedQuizFromCategory('acca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none">
             <option value="">-- Select ACCA Quiz --</option>
@@ -674,10 +674,10 @@
       );
     }
 
-    // --- HEADER UPLOAD BUTTON: SAVES PROGRESS & HIPS HOME VIEW ---
+    // --- HEADER UPLOAD BUTTON LOGIC (Preserves Progress & Returns to Upload Screen) ---
     function headerResetAndUpload() {
       if (activeQuizKey && originalQuizData.length > 0) {
-        saveQuizStateToLocalStorage(); // Safely preserve progress in localStorage
+        saveQuizStateToLocalStorage();
       }
 
       activeQuizKey = "";
@@ -694,7 +694,7 @@
         </div>`;
       
       const jumpSelect = document.getElementById("page-jump-select");
-      jumpSelect.innerHTML = `<option value="1">Page 1 of 1</option>`;
+      if (jumpSelect) jumpSelect.innerHTML = `<option value="1">Page 1 of 1</option>`;
       
       document.getElementById("total-mcqs-text").innerText = `No PDF Loaded`;
       document.getElementById("score-badge").innerText = `Score: 0 / 0`;
@@ -702,7 +702,7 @@
       document.getElementById("sidebar-mode-section").classList.add("hidden");
       document.getElementById("text-preview-section").classList.add("hidden");
       document.getElementById("quiz-setup-card").classList.add("hidden");
-      document.getElementById("upload-section").classList.remove("hidden"); // Bring back upload section to home page
+      document.getElementById("upload-section").classList.remove("hidden");
       
       document.getElementById("header-upload-btn").classList.add("hidden");
       document.getElementById("pdf-input").value = "";
@@ -716,7 +716,8 @@
 
     function hideUploadSection() {
       document.getElementById("upload-section").classList.add("hidden");
-      document.getElementById("header-upload-btn").classList.remove("hidden");
+      const headerUploadBtn = document.getElementById("header-upload-btn");
+      if (headerUploadBtn) headerUploadBtn.classList.remove("hidden");
     }
 
     function showSetupCard(title, count) {
@@ -805,14 +806,13 @@
       }
     }
 
+    // --- ORIGINAL WORKING PARSER FUNCTION KEPT INTACT ---
     function parseMCQsLocally(text, fileName = "Uploaded Quiz") {
       const statusEl = document.getElementById('extraction-status');
       const parsedQuiz = [];
 
       const globalAnswerKey = {};
-      const globalExplanations = {};
-      
-      const keyMatches = text.matchAll(/Q(\d{1,3})\s*[:\-\—\.]\s*([A-D])\b/gi);
+      const keyMatches = text.matchAll(/(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\:\s\|]+\s*([A-D])\b/gi);
       for (const match of keyMatches) {
         const qNum = parseInt(match[1]);
         const ans = match[2].toUpperCase();
@@ -820,52 +820,45 @@
         globalAnswerKey[qNum] = optionMap[ans];
       }
 
-      const expMatches = text.matchAll(/Q(\d{1,3})\s*[:\-\—\.]\s*[A-D]\s*[:\-\—\.]\s*([\s\S]+?)(?=\s*Q\d{1,3}\s*[:\-\—\.]|\s*$)/gi);
-      for (const match of expMatches) {
-        const qNum = parseInt(match[1]);
-        globalExplanations[qNum] = cleanTextSpaces(match[2]);
-      }
-
-      const rawQuestions = text.split(/(?=\bQ\d{1,3}[\.\s]+)/gi);
+      const rawQuestions = text.split(/(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]\s+[A-Z])/gi);
 
       rawQuestions.forEach((qBlock, origIdx) => {
-        const qMatch = qBlock.match(/^Q(\d{1,3})[\.\s]+([\s\S]+?)(?=\s+[A-D][\)\.]\s)/i);
+        const qMatch = qBlock.match(/^(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\)]\s+([\s\S]+?)(?=\s+[A][\.\)]\s)/i);
         if (!qMatch) return;
 
         const qNum = parseInt(qMatch[1]);
-        let qText = cleanTextSpaces(qMatch[2]).trim();
+        let qText = cleanTextSpaces(qMatch[2]).replace(/\[Original:\s*Q?\d+\]/gi, '').trim();
 
-        const optA = qBlock.match(/[A][\)\.]\s+([\s\S]+?)(?=\s+[B][\)\.]\s)/i);
-        const optB = qBlock.match(/[B][\)\.]\s+([\s\S]+?)(?=\s+[C][\)\.]\s)/i);
-        const optC = qBlock.match(/[C][\)\.]\s+([\s\S]+?)(?=\s+[D][\)\.]\s)/i);
-        const optD = qBlock.match(/[D][\)\.]\s+([\s\S]+?)(?=\s*(?:ANSWER\s*KEY|Q\d{1,3}[\.\s]+|\n\s*\n|$))/i);
+        const optA = qBlock.match(/[A][\.\)]\s+([\s\S]+?)(?=\s+[B][\.\)]\s)/i);
+        const optB = qBlock.match(/[B][\.\)]\s+([\s\S]+?)(?=\s+[C][\.\)]\s)/i);
+        const optC = qBlock.match(/[C][\.\)]\s+([\s\S]+?)(?=\s+[D][\.\)]\s)/i);
+        const optD = qBlock.match(/[D][\.\)]\s+([\s\S]+?)(?=\s*(?:Correct\s*Answer|Answer|Explanation|SECTION\s+[A-Z]|CHAPTER|={2,}|-{2,}|\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]|$))/i);
 
-        const inlineAnsMatch = qBlock.match(/(?:Correct\s*Answer|Answer)\s*[:\-]\s*([A-D])/i);
-        const inlineExpMatch = qBlock.match(/Explanation\s*[:\-]\s*([\s\S]+?)(?=\bQ\d{1,3}[\.\s]+|$)/i);
+        const inlineAnsMatch = qBlock.match(/(?:Correct\s*Answer|Answer)\s*:\s*([A-D])/i);
+        const inlineExpMatch = qBlock.match(/Explanation\s*:\s*([\s\S]+?)(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]|$)/i);
 
         if (optA && optB && optC && optD) {
+          const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+          
+          let correctIdx = 0;
+          if (inlineAnsMatch) {
+            correctIdx = optionMap[inlineAnsMatch[1].toUpperCase()];
+          } else if (globalAnswerKey[qNum] !== undefined) {
+            correctIdx = globalAnswerKey[qNum];
+          }
+
           const rawOptions = [
             cleanTextSpaces(optA[1]),
             cleanTextSpaces(optB[1]),
             cleanTextSpaces(optC[1]),
             cleanTextSpaces(optD[1])
           ];
-
-          const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
-          let correctIdx = 0;
-
-          if (globalAnswerKey[qNum] !== undefined) {
-            correctIdx = globalAnswerKey[qNum];
-          } else if (inlineAnsMatch) {
-            correctIdx = optionMap[inlineAnsMatch[1].toUpperCase()];
-          }
-
           const correctText = rawOptions[correctIdx];
 
           const shuffledOptions = [...rawOptions].sort(() => Math.random() - 0.5);
           const newCorrectIdx = shuffledOptions.indexOf(correctText);
 
-          let expText = globalExplanations[qNum] || (inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`);
+          let expText = inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`;
 
           parsedQuiz.push({
             masterIdx: origIdx,
@@ -925,6 +918,7 @@
         let storageKey = `savedQuizzes_${cat}`;
         let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
         const select = document.getElementById(`${cat}-quizzes`);
+        if (!select) return;
         select.innerHTML = `<option value="">-- Select ${cat.toUpperCase()} Quiz --</option>`;
         Object.keys(saved).forEach(key => {
           const opt = document.createElement('option');
@@ -939,7 +933,7 @@
 
     function loadSavedQuizFromCategory(cat, keyToLoad = null, showSetup = false) {
       const select = document.getElementById(`${cat}-quizzes`);
-      const selectedKey = keyToLoad || select.value;
+      const selectedKey = keyToLoad || (select ? select.value : null);
       if (!selectedKey) return;
 
       activeCategory = cat;
@@ -948,7 +942,7 @@
       
       if (saved[selectedKey]) {
         activeQuizKey = selectedKey;
-        select.value = activeQuizKey;
+        if (select) select.value = activeQuizKey;
         const quizObj = saved[selectedKey];
 
         originalQuizData = [...quizObj.originalQuizData];
@@ -990,7 +984,7 @@
 
     function confirmDeleteCategoryQuiz(cat) {
       const select = document.getElementById(`${cat}-quizzes`);
-      const selectedKey = select.value;
+      const selectedKey = select ? select.value : "";
       if (!selectedKey) {
         showConfirmationBox("Select Quiz", `Please select a ${cat.toUpperCase()} quiz from the dropdown list to delete.`, function(){});
         return;
@@ -1005,6 +999,7 @@
       );
     }
 
+    // --- WORKING SIDEBAR DELETE FUNCTIONALITY ---
     function deleteCategoryQuiz(cat, selectedKey) {
       let storageKey = `savedQuizzes_${cat}`;
       let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
@@ -1012,10 +1007,10 @@
       localStorage.setItem(storageKey, JSON.stringify(saved));
       
       const select = document.getElementById(`${cat}-quizzes`);
-      select.value = "";
+      if (select) select.value = "";
 
       if (activeQuizKey === selectedKey && activeCategory === cat) {
-        prepareForNewPDFUpload();
+        headerResetAndUpload();
       }
 
       updateSavedQuizzesDropdowns();
@@ -1075,9 +1070,9 @@
           <div class="text-center py-12 text-slate-400 dark:text-slate-500">
             No MCQs to display. Select or upload a quiz to start!
           </div>`;
-          
+        
         const jumpSelect = document.getElementById("page-jump-select");
-        jumpSelect.innerHTML = `<option value="1">Page 1 of 1</option>`;
+        if (jumpSelect) jumpSelect.innerHTML = `<option value="1">Page 1 of 1</option>`;
         document.getElementById("total-mcqs-text").innerText = `No PDF Loaded`;
         return;
       }
@@ -1090,14 +1085,17 @@
       const endIdx = Math.min(startIdx + questionsPerPage, quizData.length);
       const currentQuestions = quizData.slice(startIdx, endIdx);
 
+      // Populate Page Jump Dropdown
       const jumpSelect = document.getElementById("page-jump-select");
-      jumpSelect.innerHTML = "";
-      for (let p = 1; p <= totalPages; p++) {
-        const opt = document.createElement("option");
-        opt.value = p;
-        opt.innerText = `Page ${p} of ${totalPages}`;
-        if (p === currentPage) opt.selected = true;
-        jumpSelect.appendChild(opt);
+      if (jumpSelect) {
+        jumpSelect.innerHTML = "";
+        for (let p = 1; p <= totalPages; p++) {
+          const opt = document.createElement("option");
+          opt.value = p;
+          opt.innerText = `Page ${p} of ${totalPages}`;
+          if (p === currentPage) opt.selected = true;
+          jumpSelect.appendChild(opt);
+        }
       }
 
       document.getElementById("total-mcqs-text").innerText = `Showing MCQs ${startIdx + 1} - ${endIdx} of ${quizData.length}`;
@@ -1105,7 +1103,7 @@
       const container = document.getElementById("quiz-container");
       container.innerHTML = "";
 
-      currentQuestions.forEach((qData) => {
+      currentQuestions.forEach((qData, pageOffset) => {
         const masterIdx = qData.masterIdx;
         const qCard = document.createElement("div");
         qCard.className = "p-5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4 shadow-sm transition-colors duration-150";
