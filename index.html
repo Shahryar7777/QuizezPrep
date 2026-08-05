@@ -18,35 +18,38 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 min-h-screen text-slate-800 dark:text-slate-100 flex flex-col md:flex-row overflow-x-hidden transition-colors duration-200">
 
-  <!-- COLLAPSIBLE SIDEBAR -->
+  <!-- COLLAPSIBLE SIDEBAR (REORDERED DESIGN) -->
   <aside id="sidebar" class="bg-slate-900 dark:bg-slate-900 text-white w-80 p-6 flex flex-col justify-between flex-shrink-0 transition-all duration-300 transform -translate-x-full fixed inset-y-0 left-0 z-50 shadow-2xl overflow-y-auto max-h-screen border-r border-slate-800">
-    <div>
+    <div class="space-y-6">
       <!-- Sidebar Header -->
-      <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-4">
         <div>
           <h1 class="text-xl font-bold tracking-tight text-white">Exam Quiz Master</h1>
           <p class="text-xs text-indigo-400 font-semibold">Created by Shahryar Sheikh</p>
         </div>
-        <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-xl">
+        <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-xl cursor-pointer">
           ✕
         </button>
       </div>
 
-      <!-- Category Columns in Sidebar -->
-      <div class="space-y-5 text-xs mb-6">
-        
-        <!-- ICMA COLUMN -->
-        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80 space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-              🏛️ ICMA Quizzes
-            </span>
-            <button onclick="confirmDeleteCategoryQuiz('icma')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
-          </div>
-          <select id="icma-quizzes" onchange="loadSavedQuizFromCategory('icma')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none">
-            <option value="">-- Select ICMA Quiz --</option>
-          </select>
+      <!-- 1. Active Quiz Mode & Shuffle Questions on Top -->
+      <div class="space-y-3">
+        <div id="sidebar-mode-section" class="hidden text-xs bg-indigo-950/60 p-3 rounded-xl border border-indigo-800/60">
+          <label class="block font-bold text-indigo-300 uppercase tracking-wider mb-2">Active Quiz Mode</label>
+          <button id="sidebar-active-mode-btn" onclick="openModeSelectionModal()" class="w-full py-2 px-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-500 transition shadow text-left flex justify-between items-center cursor-pointer">
+            <span id="active-mode-label">📘 Practice Mode</span>
+            <span class="text-xs">⚙️ Change</span>
+          </button>
         </div>
+
+        <button onclick="shuffleCurrentQuiz()" class="w-full py-2.5 bg-slate-800 border border-slate-700 text-slate-200 font-semibold text-xs rounded-lg hover:bg-slate-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+          🔀 Shuffle Questions
+        </button>
+      </div>
+
+      <!-- 2. Three Qualification Categories (CA, ACCA, ICMA) -->
+      <div class="space-y-4 text-xs">
+        <p class="font-bold text-slate-400 uppercase tracking-wider text-[11px]">Quiz Libraries</p>
 
         <!-- CA COLUMN -->
         <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80 space-y-2">
@@ -56,7 +59,7 @@
             </span>
             <button onclick="confirmDeleteCategoryQuiz('ca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
           </div>
-          <select id="ca-quizzes" onchange="loadSavedQuizFromCategory('ca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none">
+          <select id="ca-quizzes" onchange="loadSavedQuizFromCategory('ca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
             <option value="">-- Select CA Quiz --</option>
           </select>
         </div>
@@ -69,34 +72,32 @@
             </span>
             <button onclick="confirmDeleteCategoryQuiz('acca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
           </div>
-          <select id="acca-quizzes" onchange="loadSavedQuizFromCategory('acca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none">
+          <select id="acca-quizzes" onchange="loadSavedQuizFromCategory('acca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
             <option value="">-- Select ACCA Quiz --</option>
           </select>
         </div>
 
+        <!-- ICMA COLUMN -->
+        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+              🏛️ ICMA Quizzes
+            </span>
+            <button onclick="confirmDeleteCategoryQuiz('icma')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
+          </div>
+          <select id="icma-quizzes" onchange="loadSavedQuizFromCategory('icma')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
+            <option value="">-- Select ICMA Quiz --</option>
+          </select>
+        </div>
       </div>
 
-      <!-- ACTIVE QUIZ MODE SWITCHER BUTTON -->
-      <div id="sidebar-mode-section" class="hidden text-xs mb-6 bg-indigo-950/60 p-3 rounded-xl border border-indigo-800/60">
-        <label class="block font-bold text-indigo-300 uppercase tracking-wider mb-2">Active Quiz Mode</label>
-        <button id="sidebar-active-mode-btn" onclick="openModeSelectionModal()" class="w-full py-2 px-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-500 transition shadow text-left flex justify-between items-center">
-          <span id="active-mode-label">📘 Practice Mode</span>
-          <span class="text-xs">⚙️ Change</span>
-        </button>
-      </div>
-
-      <!-- Action Tools -->
+      <!-- 3. Dark Mode & Go to Admin Page Buttons at Bottom -->
       <div class="space-y-2 text-xs border-t border-slate-800 pt-4">
-        <label class="block font-bold text-slate-400 uppercase tracking-wider mb-1">Tools</label>
-        <button onclick="shuffleCurrentQuiz()" class="w-full py-2 bg-slate-800 border border-slate-700 text-slate-200 font-semibold rounded-lg hover:bg-slate-700 transition flex items-center justify-center gap-2">
-          🔀 Shuffle Questions
-        </button>
-        <button onclick="toggleDarkMode()" class="w-full py-2 bg-slate-800 border border-slate-700 text-slate-200 font-semibold rounded-lg hover:bg-slate-700 transition flex items-center justify-center gap-2">
+        <button onclick="toggleDarkMode()" class="w-full py-2.5 bg-slate-800 border border-slate-700 text-slate-200 font-semibold rounded-lg hover:bg-slate-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-sm">
           <span id="dark-mode-icon">🌙</span> <span id="dark-mode-text">Dark Mode</span>
         </button>
         
-        <!-- LINK TO ADMIN LOGIN MODAL -->
-        <button onclick="openAdminLoginModal()" class="w-full py-2 bg-indigo-900/50 border border-indigo-700 text-indigo-300 font-semibold rounded-lg hover:bg-indigo-900/70 transition flex items-center justify-center gap-2">
+        <button onclick="openAdminLoginModal()" class="w-full py-2.5 bg-indigo-900/50 border border-indigo-700 text-indigo-300 font-semibold rounded-lg hover:bg-indigo-900/70 transition flex items-center justify-center gap-2 cursor-pointer shadow-sm">
           🔐 Go to Admin Uploader Page
         </button>
 
@@ -137,10 +138,10 @@
 
         <div class="flex items-center gap-2">
           <!-- Dynamic Header Upload Button -->
-          <button id="header-upload-btn" onclick="headerResetAndUpload()" class="hidden px-3.5 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition text-xs shadow flex items-center gap-1.5">
+          <button id="header-upload-btn" onclick="headerResetAndUpload()" class="hidden px-3.5 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition text-xs shadow flex items-center gap-1.5 cursor-pointer">
             📁 Choose / Upload
           </button>
-          <button onclick="toggleSidebar()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold rounded-lg hover:bg-indigo-100 transition flex items-center gap-2 text-sm border border-indigo-200 dark:border-indigo-800">
+          <button onclick="toggleSidebar()" class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold rounded-lg hover:bg-indigo-100 transition flex items-center gap-2 text-sm border border-indigo-200 dark:border-indigo-800 cursor-pointer">
             <span class="hidden sm:inline">Menu</span> <span>☰</span>
           </button>
         </div>
@@ -152,7 +153,6 @@
 
       <!-- Step 1: PDF Uploader Section -->
       <section id="upload-section" class="mb-6 p-6 border-2 border-dashed border-indigo-300 dark:border-indigo-800 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/30 text-center flex flex-col items-center">
-        <!-- Bounce Animated Icon -->
         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600 dark:text-indigo-400 mb-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
@@ -160,7 +160,7 @@
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Upload any MCQ PDF format to convert it instantly into an interactive quiz</p>
         
         <input type="file" id="pdf-input" accept="application/pdf" class="hidden" onchange="handlePDFUpload(event)">
-        <button onclick="document.getElementById('pdf-input').click()" class="px-6 py-2.5 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-lg hover:bg-indigo-700 shadow-md transition">
+        <button onclick="document.getElementById('pdf-input').click()" class="px-6 py-2.5 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-lg hover:bg-indigo-700 shadow-md transition cursor-pointer">
           Choose PDF File
         </button>
         <div id="extraction-status" class="hidden mt-3 text-xs font-semibold text-indigo-700 dark:text-indigo-400"></div>
@@ -179,7 +179,7 @@
         <!-- CATEGORY SELECTION -->
         <div class="space-y-1.5 text-left max-w-xs mx-auto">
           <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Select Category / Qualification:</label>
-          <select id="setup-category-select" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none">
+          <select id="setup-category-select" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none cursor-pointer">
             <option value="icma">🏛️ ICMA</option>
             <option value="ca">🎓 CA</option>
             <option value="acca">💼 ACCA</option>
@@ -188,13 +188,13 @@
 
         <!-- MODE SELECTION IN SETUP -->
         <div class="flex flex-wrap justify-center items-center gap-2">
-          <button id="setup-practice-btn" onclick="selectSetupMode('practice')" class="px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-indigo-600 text-white border-indigo-600 shadow">
+          <button id="setup-practice-btn" onclick="selectSetupMode('practice')" class="px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-indigo-600 text-white border-indigo-600 shadow cursor-pointer">
             📘 Practice Mode
           </button>
-          <button id="setup-exam-btn" onclick="selectSetupMode('exam')" class="px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600">
+          <button id="setup-exam-btn" onclick="selectSetupMode('exam')" class="px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 cursor-pointer">
             📝 Exam Mode
           </button>
-          <button id="setup-timer-btn" onclick="selectSetupMode('timer')" class="px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600">
+          <button id="setup-timer-btn" onclick="selectSetupMode('timer')" class="px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 cursor-pointer">
             ⏱️ Timer Mode
           </button>
         </div>
@@ -202,7 +202,7 @@
         <!-- TIMER DURATION SELECTION -->
         <div id="setup-timer-duration-box" class="hidden max-w-xs mx-auto text-left space-y-1">
           <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Select Timer Duration:</label>
-          <select id="setup-timer-minutes" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none">
+          <select id="setup-timer-minutes" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none cursor-pointer">
             <option value="10">⏱️ 10 Minutes</option>
             <option value="30">⏱️ 30 Minutes</option>
             <option value="60">⏱️ 1 Hour (60 Mins)</option>
@@ -211,10 +211,10 @@
 
         <!-- ACTION BUTTONS -->
         <div class="pt-2 flex flex-wrap justify-center gap-3 border-t border-slate-200 dark:border-slate-700">
-          <button onclick="confirmUploadNewPDF()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-lg hover:bg-slate-300 transition">
+          <button onclick="confirmUploadNewPDF()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-lg hover:bg-slate-300 transition cursor-pointer">
             📄 Upload Different PDF
           </button>
-          <button onclick="startQuiz()" class="px-6 py-2 bg-emerald-600 text-white font-bold text-xs rounded-lg hover:bg-emerald-700 shadow-md transition">
+          <button onclick="startQuiz()" class="px-6 py-2 bg-emerald-600 text-white font-bold text-xs rounded-lg hover:bg-emerald-700 shadow-md transition cursor-pointer">
             🚀 Start Quiz Now
           </button>
         </div>
@@ -224,7 +224,7 @@
       <section id="text-preview-section" class="hidden mb-6">
         <div class="flex justify-between items-center mb-1">
           <span class="text-xs font-bold text-slate-600 dark:text-slate-400">Extracted Text Preview:</span>
-          <button onclick="clearExtractedText()" class="text-xs text-rose-600 font-medium">Clear</button>
+          <button onclick="clearExtractedText()" class="text-xs text-rose-600 font-medium cursor-pointer">Clear</button>
         </div>
         <textarea id="raw-pdf-text" class="w-full h-20 p-3 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono text-slate-800 dark:text-slate-200" readonly></textarea>
       </section>
@@ -251,10 +251,10 @@
 
       <!-- Page Navigation Footer -->
       <footer id="quiz-footer" class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-6 mt-8 border-t border-slate-200 dark:border-slate-800">
-        <button id="prev-page-btn" onclick="prevPage()" class="w-full sm:w-auto px-5 py-3 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs md:text-sm rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm" disabled>
+        <button id="prev-page-btn" onclick="prevPage()" class="w-full sm:w-auto px-5 py-3 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs md:text-sm rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm cursor-pointer" disabled>
           <span>←</span> <span>Previous Questions</span>
         </button>
-        <button id="next-page-btn" onclick="nextPage()" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-xl hover:bg-indigo-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md" disabled>
+        <button id="next-page-btn" onclick="nextPage()" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-xl hover:bg-indigo-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md cursor-pointer" disabled>
           <span>Next Questions</span> <span>→</span>
         </button>
       </footer>
@@ -270,7 +270,7 @@
         <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
           🔐 Admin Authentication
         </h3>
-        <button onclick="closeAdminLoginModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+        <button onclick="closeAdminLoginModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">&times;</button>
       </div>
 
       <div class="space-y-3 text-xs">
@@ -285,10 +285,10 @@
       </div>
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-        <button onclick="closeAdminLoginModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg">
+        <button onclick="closeAdminLoginModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg cursor-pointer">
           Cancel
         </button>
-        <button onclick="verifyAdminLogin()" class="px-5 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg hover:bg-indigo-700 shadow">
+        <button onclick="verifyAdminLogin()" class="px-5 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg hover:bg-indigo-700 shadow cursor-pointer">
           Login
         </button>
       </div>
@@ -301,30 +301,30 @@
       <h3 class="font-bold text-base text-slate-900 dark:text-slate-100">Select Quiz Mode</h3>
       
       <div class="space-y-2.5 text-xs text-left">
-        <button onclick="applyModeFromModal('practice')" class="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-bold flex items-center justify-between text-slate-800 dark:text-slate-200">
+        <button onclick="applyModeFromModal('practice')" class="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-bold flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer">
           <span>📘 Practice Mode</span>
           <span class="text-[10px] text-slate-500 font-normal">Instant Answers</span>
         </button>
         
-        <button onclick="applyModeFromModal('exam')" class="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-bold flex items-center justify-between text-slate-800 dark:text-slate-200">
+        <button onclick="applyModeFromModal('exam')" class="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-bold flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer">
           <span>📝 Exam Mode</span>
           <span class="text-[10px] text-slate-500 font-normal">Hidden Answers</span>
         </button>
 
         <div class="p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2">
           <div class="font-bold text-slate-800 dark:text-slate-200">⏱️ Timer Mode</div>
-          <select id="modal-timer-minutes" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg font-bold text-slate-800 dark:text-slate-200 outline-none">
+          <select id="modal-timer-minutes" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg font-bold text-slate-800 dark:text-slate-200 outline-none cursor-pointer">
             <option value="10">⏱️ 10 Minutes</option>
             <option value="30">⏱️ 30 Minutes</option>
             <option value="60">⏱️ 1 Hour (60 Mins)</option>
           </select>
-          <button onclick="applyModeFromModal('timer')" class="w-full py-2 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 transition">
+          <button onclick="applyModeFromModal('timer')" class="w-full py-2 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 transition cursor-pointer">
             Start Timer Mode
           </button>
         </div>
       </div>
 
-      <button onclick="closeModeSelectionModal()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700">
+      <button onclick="closeModeSelectionModal()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 cursor-pointer">
         Cancel
       </button>
     </div>
@@ -341,10 +341,10 @@
         <p id="confirm-modal-msg" class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed"></p>
       </div>
       <div class="flex justify-center gap-3 pt-2">
-        <button id="confirm-cancel-btn" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+        <button id="confirm-cancel-btn" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer">
           Cancel
         </button>
-        <button id="confirm-yes-btn" class="px-5 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg hover:bg-indigo-700 shadow-md transition">
+        <button id="confirm-yes-btn" class="px-5 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg hover:bg-indigo-700 shadow-md transition cursor-pointer">
           Yes, Proceed
         </button>
       </div>
@@ -359,16 +359,16 @@
           <h3 class="font-bold text-xl text-slate-900 dark:text-slate-100">📊 Quiz Performance Summary</h3>
           <p id="summary-score-subtitle" class="text-xs text-slate-500 dark:text-slate-400 font-medium"></p>
         </div>
-        <button onclick="closeSummaryModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+        <button onclick="closeSummaryModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">&times;</button>
       </div>
 
       <div id="summary-review-list" class="flex-1 overflow-y-auto space-y-4 pr-2 text-xs md:text-sm"></div>
 
       <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-800 mt-4">
-        <button onclick="filterWrongAnswers(); closeSummaryModal();" class="px-4 py-2 bg-rose-600 text-white font-bold text-xs rounded-lg hover:bg-rose-700 shadow">
+        <button onclick="filterWrongAnswers(); closeSummaryModal();" class="px-4 py-2 bg-rose-600 text-white font-bold text-xs rounded-lg hover:bg-rose-700 shadow cursor-pointer">
           ⚠️ Practice Incorrect Questions Only
         </button>
-        <button onclick="closeSummaryModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700">
+        <button onclick="closeSummaryModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 cursor-pointer">
           Close Report
         </button>
       </div>
@@ -405,7 +405,7 @@
 
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Correct Answer Index:</label>
-          <select id="edit-correct" class="w-full p-2 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg bg-white dark:text-slate-100">
+          <select id="edit-correct" class="w-full p-2 border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-lg bg-white dark:text-slate-100 cursor-pointer">
             <option value="0">Option A</option>
             <option value="1">Option B</option>
             <option value="2">Option C</option>
@@ -420,10 +420,10 @@
       </div>
 
       <div class="flex justify-end gap-2 mt-6">
-        <button onclick="toggleEditModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700">
+        <button onclick="toggleEditModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 cursor-pointer">
           Cancel
         </button>
-        <button onclick="saveQuestionEdits()" class="px-4 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-lg hover:bg-emerald-700 shadow">
+        <button onclick="saveQuestionEdits()" class="px-4 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-lg hover:bg-emerald-700 shadow cursor-pointer">
           Save Changes
         </button>
       </div>
@@ -484,6 +484,7 @@
           if (res.ok) {
             const files = await res.json();
             const select = document.getElementById(`${cat}-quizzes`);
+            if (!select) return;
             
             files.forEach(file => {
               if (file.name.endsWith('.json')) {
@@ -589,20 +590,20 @@
 
       const activeLabel = document.getElementById("active-mode-label");
 
-      practiceBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600";
-      examBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600";
-      timerBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600";
+      practiceBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 cursor-pointer";
+      examBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 cursor-pointer";
+      timerBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 cursor-pointer";
 
       if (activeMode === 'practice') {
-        practiceBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-indigo-600 text-white border-indigo-600 shadow";
+        practiceBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-indigo-600 text-white border-indigo-600 shadow cursor-pointer";
         activeLabel.innerText = "📘 Practice Mode";
         stopTimer();
       } else if (activeMode === 'exam') {
-        examBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-amber-600 text-white border-amber-600 shadow";
+        examBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-amber-600 text-white border-amber-600 shadow cursor-pointer";
         activeLabel.innerText = "📝 Exam Mode";
         stopTimer();
       } else if (activeMode === 'timer') {
-        timerBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-amber-600 text-white border-amber-600 shadow";
+        timerBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg border transition bg-amber-600 text-white border-amber-600 shadow cursor-pointer";
         activeLabel.innerText = `⏱️ Timer (${timerDurationMinutes}m)`;
       }
 
@@ -674,7 +675,7 @@
       );
     }
 
-    // --- HEADER UPLOAD BUTTON LOGIC (Preserves Progress & Returns to Upload Screen) ---
+    // --- HEADER UPLOAD BUTTON LOGIC ---
     function headerResetAndUpload() {
       if (activeQuizKey && originalQuizData.length > 0) {
         saveQuizStateToLocalStorage();
@@ -806,7 +807,7 @@
       }
     }
 
-    // --- ORIGINAL WORKING PARSER FUNCTION KEPT INTACT ---
+    // --- ORIGINAL WORKING PARSER FUNCTION ---
     function parseMCQsLocally(text, fileName = "Uploaded Quiz") {
       const statusEl = document.getElementById('extraction-status');
       const parsedQuiz = [];
@@ -847,6 +848,8 @@
             correctIdx = globalAnswerKey[qNum];
           }
 
+          let expText = inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][correctIdx]}`;
+
           const rawOptions = [
             cleanTextSpaces(optA[1]),
             cleanTextSpaces(optB[1]),
@@ -857,8 +860,6 @@
 
           const shuffledOptions = [...rawOptions].sort(() => Math.random() - 0.5);
           const newCorrectIdx = shuffledOptions.indexOf(correctText);
-
-          let expText = inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`;
 
           parsedQuiz.push({
             masterIdx: origIdx,
@@ -1113,7 +1114,7 @@
 
         let optionsHTML = "";
         qData.options.forEach((opt, idx) => {
-          let btnStyle = "border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-300";
+          let btnStyle = "border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-300 cursor-pointer";
           if (userChoice !== undefined) {
             if (activeMode === 'practice') {
               if (idx === qData.correctAnswer) {
@@ -1149,7 +1150,7 @@
         qCard.innerHTML = `
           <div class="flex justify-between items-start">
             <h3 class="text-sm md:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">${qData.question}</h3>
-            <button onclick="openEditModalForMasterIndex(${masterIdx})" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 bg-indigo-50 dark:bg-indigo-950 px-2 py-1 rounded border border-indigo-200 dark:border-indigo-800 flex-shrink-0 ml-2">
+            <button onclick="openEditModalForMasterIndex(${masterIdx})" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 bg-indigo-50 dark:bg-indigo-950 px-2 py-1 rounded border border-indigo-200 dark:border-indigo-800 flex-shrink-0 ml-2 cursor-pointer">
               ✏️ Edit
             </button>
           </div>
