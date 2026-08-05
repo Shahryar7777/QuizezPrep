@@ -801,11 +801,15 @@
       }
     }
 
+    // --- FLEXIBLE MULTI-FORMAT PARSER ENGINE ---
     function parseMCQsLocally(text, fileName = "Uploaded Quiz") {
       const statusEl = document.getElementById('extraction-status');
       const parsedQuiz = [];
 
+      // 1. Flexible global answer key parsing (Supports both "Q11: D" and "Q11: D — explanation")
       const globalAnswerKey = {};
+      const globalExplanations = {};
+      
       const keyMatches = text.matchAll(/Q(\d{1,3})\s*[:\-\—]\s*([A-D])\b/gi);
       for (const match of keyMatches) {
         const qNum = parseInt(match[1]);
@@ -814,13 +818,13 @@
         globalAnswerKey[qNum] = optionMap[ans];
       }
 
-      const globalExplanations = {};
       const expMatches = text.matchAll(/Q(\d{1,3})\s*[:\-\—]\s*[A-D]\s*[:\-\—]\s*([\s\S]+?)(?=\s*Q\d{1,3}\s*[:\-\—]|\s*$)/gi);
       for (const match of expMatches) {
         const qNum = parseInt(match[1]);
         globalExplanations[qNum] = cleanTextSpaces(match[2]);
       }
 
+      // 2. Split questions cleanly
       const rawQuestions = text.split(/(?=\bQ\d{1,3}\.\s+)/gi);
 
       rawQuestions.forEach((qBlock, origIdx) => {
@@ -835,6 +839,10 @@
         const optC = qBlock.match(/C[\)\.]\s+([\s\S]+?)(?=\s+D[\)\.]\s)/i);
         const optD = qBlock.match(/D[\)\.]\s+([\s\S]+?)(?=\s*(?:✅\s*ANSWER\s*KEY|Q\d{1,3}\.|\n\s*\n|$))/i);
 
+        // Also check for inline answers if no global answer key was matched for this specific question
+        const inlineAnsMatch = qBlock.match(/(?:Correct\s*Answer|Answer)\s*:\s*([A-D])/i);
+        const inlineExpMatch = qBlock.match(/Explanation\s*:\s*([\s\S]+?)(?=\bQ\d{1,3}\.|$)/i);
+
         if (optA && optB && optC && optD) {
           const rawOptions = [
             cleanTextSpaces(optA[1]),
@@ -843,13 +851,22 @@
             cleanTextSpaces(optD[1])
           ];
 
-          let correctIdx = globalAnswerKey[qNum] !== undefined ? globalAnswerKey[qNum] : 0;
+          const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+          let correctIdx = 0;
+
+          if (globalAnswerKey[qNum] !== undefined) {
+            correctIdx = globalAnswerKey[qNum];
+          } else if (inlineAnsMatch) {
+            correctIdx = optionMap[inlineAnsMatch[1].toUpperCase()];
+          }
+
           const correctText = rawOptions[correctIdx];
 
+          // Shuffle options securely and re-index
           const shuffledOptions = [...rawOptions].sort(() => Math.random() - 0.5);
           const newCorrectIdx = shuffledOptions.indexOf(correctText);
 
-          let expText = globalExplanations[qNum] || `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`;
+          let expText = globalExplanations[qNum] || (inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`);
 
           parsedQuiz.push({
             masterIdx: origIdx,
