@@ -16,7 +16,7 @@
     <header class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl mb-6 flex flex-col items-center text-center">
         <h1 class="text-2xl font-bold tracking-tight text-white">🔐 Admin Quiz Publisher Portal</h1>
         <p class="text-slate-400 text-sm mt-1">Convert study PDFs into structured interactive quizzes</p>
-        
+
         <div class="flex gap-3 mt-4">
             <button onclick="openTokenModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-indigo-400 text-sm font-medium rounded-lg border border-slate-700 transition">
                 ⚙️ Update GitHub Token
@@ -25,6 +25,12 @@
                 ← Back to App
             </a>
         </div>
+
+        <p class="text-[11px] text-amber-400/80 mt-3 max-w-md leading-relaxed">
+            ⚠️ This page and your GitHub token are only as protected as your browser. Anyone with this
+            URL can open it, and the token is stored in plain localStorage. Use a fine-grained PAT
+            scoped only to this repo (Contents: Read &amp; write), and revoke it if you ever suspect exposure.
+        </p>
     </header>
 
     <!-- Workspace -->
@@ -53,15 +59,18 @@
                     <span id="fileNameDisplay" class="text-sm font-medium text-white block">file.pdf</span>
                     <span id="mcqCountDisplay" class="text-xs text-indigo-400">0 MCQs Extracted</span>
                 </div>
-                
+
+                <div id="previewArea" class="hidden max-h-40 overflow-y-auto text-xs text-slate-400 bg-slate-900/60 border border-slate-800 rounded-lg p-2 space-y-1"></div>
+
                 <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
                     <button onclick="downloadQuizJSON()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-1.5">
                         📥 Download Structured JSON
                     </button>
-                    <button onclick="publishToGitHub()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-1.5">
+                    <button id="publishBtn" onclick="publishToGitHub()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-1.5">
                         🚀 Publish to GitHub
                     </button>
                 </div>
+                <p id="publishStatus" class="hidden text-xs mt-1"></p>
             </div>
         </div>
     </main>
@@ -70,18 +79,34 @@
     <div id="tokenModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h2 class="text-lg font-bold text-white mb-2">🔑 GitHub Admin Access</h2>
-            <input type="password" id="patInput" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500 mb-6">
+            <p class="text-xs text-slate-400 mb-3">
+                Use a fine-grained Personal Access Token scoped only to the
+                <span class="text-slate-200 font-medium">QuizezPrep</span> repo, with
+                <span class="text-slate-200 font-medium">Contents: Read and write</span> permission. Nothing more.
+            </p>
+            <input type="password" id="patInput" placeholder="github_pat_xxxxxxxxxxxx" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500 mb-4">
             <div class="flex gap-3">
                 <button onclick="closeTokenModal()" class="flex-1 py-2.5 bg-slate-800 text-slate-300 font-medium rounded-xl">Cancel</button>
                 <button onclick="saveToken()" class="flex-1 py-2.5 bg-indigo-600 text-white font-medium rounded-xl">Save Token</button>
             </div>
+            <button onclick="clearToken()" class="w-full mt-2 py-2 text-rose-400 text-xs font-medium hover:text-rose-300">
+                🗑️ Clear saved token from this browser
+            </button>
         </div>
     </div>
 
     <script>
-        const REPO_OWNER = "Shahryar777";
+        // FIXED: this must exactly match your GitHub username (shahryar7777.github.io -> owner "shahryar7777")
+        const REPO_OWNER = "shahryar7777";
         const REPO_NAME = "QuizezPrep";
         let parsedQuizData = null;
+
+        // Cosmetic gate only — this is NOT real security, it just matches the flow from index.html.
+        // Anyone who knows/guesses this URL can still open it directly; true protection would require
+        // a server-side check, which a static GitHub Pages site can't provide.
+        if (localStorage.getItem("admin_logged_in") !== "true") {
+            window.location.href = "index.html";
+        }
 
         function openTokenModal() {
             document.getElementById("patInput").value = localStorage.getItem("github_pat") || "";
@@ -93,6 +118,11 @@
             closeTokenModal();
             alert("Token saved!");
         }
+        function clearToken() {
+            localStorage.removeItem("github_pat");
+            document.getElementById("patInput").value = "";
+            alert("Token cleared from this browser.");
+        }
 
         async function handleFileUpload(event) {
             const file = event.target.files[0];
@@ -101,6 +131,8 @@
             document.getElementById("fileNameDisplay").innerText = file.name;
             document.getElementById("statusArea").classList.remove("hidden");
             document.getElementById("mcqCountDisplay").innerText = "Extracting and parsing MCQs...";
+            document.getElementById("previewArea").classList.add("hidden");
+            document.getElementById("publishStatus").classList.add("hidden");
 
             try {
                 const arrayBuffer = await file.arrayBuffer();
@@ -113,36 +145,129 @@
                     fullText += textContent.items.map(item => item.str).join(" ") + "\n";
                 }
 
-                // Properly format into structured quiz questions array
-                const questions = parseTextToQuestions(fullText);
+                const questions = parseMCQsLocally(fullText);
+
+                if (questions.length === 0) {
+                    document.getElementById("mcqCountDisplay").innerText =
+                        "❌ Could not parse any MCQs from this PDF (expected A) B) C) D) option format).";
+                    parsedQuizData = null;
+                    return;
+                }
+
                 parsedQuizData = {
                     title: file.name.replace(/\.[^/.]+$/, ""),
                     questions: questions
                 };
 
-                document.getElementById("mcqCountDisplay").innerText = `Successfully Parsed (${questions.length} Questions Found)`;
+                document.getElementById("mcqCountDisplay").innerText =
+                    `Successfully Parsed (${questions.length} Questions Found)`;
+
+                renderPreview(questions);
             } catch (err) {
                 console.error(err);
                 alert("Error reading PDF file.");
             }
         }
 
-        function parseTextToQuestions(text) {
-            const chunks = text.split(/(?=Q\d+[\.:]|\bQuestion\s*\d+)/i);
-            let questions = [];
-            
-            chunks.forEach((chunk, idx) => {
-                if (chunk.trim().length > 15) {
-                    questions.push({
-                        masterIdx: idx,
-                        question: chunk.trim().substring(0, 250),
-                        options: ["Option A", "Option B", "Option C", "Option D"],
-                        correctAnswer: 0,
-                        explanation: "Correct option based on study text."
+        function renderPreview(questions) {
+            const previewArea = document.getElementById("previewArea");
+            previewArea.innerHTML = questions.slice(0, 5).map(q =>
+                `<div class="border-b border-slate-800 pb-1 mb-1">
+                    <span class="text-slate-200">${q.question.substring(0, 90)}${q.question.length > 90 ? '…' : ''}</span>
+                    <span class="text-emerald-400 ml-1">[Ans: ${['A','B','C','D'][q.correctAnswer]}]</span>
+                 </div>`
+            ).join('');
+            if (questions.length > 5) {
+                previewArea.innerHTML += `<div class="text-slate-500">…and ${questions.length - 5} more</div>`;
+            }
+            previewArea.classList.remove("hidden");
+        }
+
+        // --- Same cleanup logic used in index.html, kept identical so both pages parse consistently ---
+        function cleanTextSpaces(text) {
+            if (!text) return "";
+            return text
+                .replace(/\b(\w+)\s+fi\s+(\w+)\b/gi, '$1fi$2')
+                .replace(/\b(\w+)\s+fi\b/gi, '$1fi')
+                .replace(/\bfi\s+(\w+)\b/gi, 'fi$1')
+                .replace(/\b(\w+)\s+fl\s+(\w+)\b/gi, '$1fl$2')
+                .replace(/\b(\w+)\s+ff\s+(\w+)\b/gi, '$1ff$2')
+                .replace(/={2,}/g, '')
+                .replace(/-{2,}/g, '')
+                .replace(/SECTION\s+[A-Z]\s*:[\s\S]*?\)\s*/gi, '')
+                .replace(/CHAPTER\s+\d+\s*:[\s\S]*?\n/gi, '')
+                .replace(/Shahryar\s+Sheikh/gi, '')
+                .replace(/\d+\s*Page/gi, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // --- REAL parser, ported from index.html's parseMCQsLocally, instead of the old placeholder ---
+        // Returns an array of question objects ready to drop into quizData/originalQuizData on load.
+        function parseMCQsLocally(text) {
+            const parsedQuiz = [];
+
+            const globalAnswerKey = {};
+            const keyMatches = text.matchAll(/(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\:\s\|]+\s*([A-D])\b/gi);
+            for (const match of keyMatches) {
+                const qNum = parseInt(match[1]);
+                const ans = match[2].toUpperCase();
+                const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+                globalAnswerKey[qNum] = optionMap[ans];
+            }
+
+            const rawQuestions = text.split(/(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]\s+[A-Z])/gi);
+
+            rawQuestions.forEach((qBlock, origIdx) => {
+                const qMatch = qBlock.match(/^(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\)]\s+([\s\S]+?)(?=\s+[A][\.\)]\s)/i);
+                if (!qMatch) return;
+
+                const qNum = parseInt(qMatch[1]);
+                let qText = cleanTextSpaces(qMatch[2]).replace(/\[Original:\s*Q?\d+\]/gi, '').trim();
+
+                const optA = qBlock.match(/[A][\.\)]\s+([\s\S]+?)(?=\s+[B][\.\)]\s)/i);
+                const optB = qBlock.match(/[B][\.\)]\s+([\s\S]+?)(?=\s+[C][\.\)]\s)/i);
+                const optC = qBlock.match(/[C][\.\)]\s+([\s\S]+?)(?=\s+[D][\.\)]\s)/i);
+                const optD = qBlock.match(/[D][\.\)]\s+([\s\S]+?)(?=\s*(?:Correct\s*Answer|Answer|Explanation|SECTION\s+[A-Z]|CHAPTER|={2,}|-{2,}|\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]|$))/i);
+
+                const inlineAnsMatch = qBlock.match(/(?:Correct\s*Answer|Answer)\s*:\s*([A-D])/i);
+                const inlineExpMatch = qBlock.match(/Explanation\s*:\s*([\s\S]+?)(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]|$)/i);
+
+                if (optA && optB && optC && optD) {
+                    const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+
+                    let correctIdx = 0;
+                    if (inlineAnsMatch) {
+                        correctIdx = optionMap[inlineAnsMatch[1].toUpperCase()];
+                    } else if (globalAnswerKey[qNum] !== undefined) {
+                        correctIdx = globalAnswerKey[qNum];
+                    }
+
+                    let expText = inlineExpMatch
+                        ? cleanTextSpaces(inlineExpMatch[1])
+                        : `Correct option according to Answer Key is Option ${['A','B','C','D'][correctIdx]}`;
+
+                    const rawOptions = [
+                        cleanTextSpaces(optA[1]),
+                        cleanTextSpaces(optB[1]),
+                        cleanTextSpaces(optC[1]),
+                        cleanTextSpaces(optD[1])
+                    ];
+
+                    parsedQuiz.push({
+                        masterIdx: origIdx,
+                        questionNumber: qNum,
+                        question: `Q${qNum}. ${qText}`,
+                        options: rawOptions,
+                        correctAnswer: correctIdx,
+                        explanation: expText
                     });
                 }
             });
-            return questions.length > 0 ? questions : [{ masterIdx: 0, question: text.substring(0, 300), options: ["A", "B", "C", "D"], correctAnswer: 0, explanation: "Default fallback." }];
+
+            // Re-index masterIdx sequentially so it lines up cleanly once loaded into the app
+            parsedQuiz.forEach((q, i) => q.masterIdx = i);
+            return parsedQuiz;
         }
 
         function downloadQuizJSON() {
@@ -157,9 +282,25 @@
             downloadAnchor.remove();
         }
 
+        function setPublishStatus(message, isError) {
+            const el = document.getElementById("publishStatus");
+            el.innerText = message;
+            el.className = "text-xs mt-1 " + (isError ? "text-rose-400" : "text-emerald-400");
+            el.classList.remove("hidden");
+        }
+
         async function publishToGitHub() {
+            if (!parsedQuizData) {
+                alert("Upload and parse a PDF first.");
+                return;
+            }
+
             const token = localStorage.getItem("github_pat");
             if (!token) { alert("Please set your GitHub PAT token first."); openTokenModal(); return; }
+
+            const btn = document.getElementById("publishBtn");
+            btn.disabled = true;
+            btn.innerText = "Publishing...";
 
             const category = document.getElementById("categorySelect").value;
             const cleanName = parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
@@ -171,7 +312,15 @@
             try {
                 let sha = null;
                 const checkRes = await fetch(url, { headers: { "Authorization": `token ${token}` } });
-                if (checkRes.ok) { const data = await checkRes.json(); sha = data.sha; }
+                if (checkRes.ok) {
+                    const data = await checkRes.json();
+                    sha = data.sha;
+                } else if (checkRes.status !== 404) {
+                    // 404 here just means "file doesn't exist yet" — fine, we're creating it.
+                    // Anything else (401/403) means the token itself is the problem.
+                    const errJson = await checkRes.json().catch(() => ({}));
+                    throw new Error(`Token check failed (${checkRes.status}): ${errJson.message || checkRes.statusText}`);
+                }
 
                 const response = await fetch(url, {
                     method: "PUT",
@@ -180,14 +329,17 @@
                 });
 
                 if (response.ok) {
-                    alert("🚀 Quiz successfully published to GitHub!");
+                    setPublishStatus(`🚀 Published to quizzes/${category}/${fileName}`, false);
                 } else {
-                    const errJson = await response.json();
-                    alert(`Failed to publish: ${errJson.message}`);
+                    const errJson = await response.json().catch(() => ({}));
+                    setPublishStatus(`Failed to publish (${response.status}): ${errJson.message || "Unknown error"}`, true);
                 }
             } catch (error) {
                 console.error(error);
-                alert("Network error occurred.");
+                setPublishStatus(`Network or auth error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "🚀 Publish to GitHub";
             }
         }
     </script>
