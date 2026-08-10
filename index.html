@@ -447,8 +447,12 @@
     let editingQuestionIndex = -1;
     let lastScrollTop = 0;
 
+    // NEW: remembers each remote (GitHub-hosted) quiz's raw download URL so we can
+    // actually fetch its content when selected, instead of just listing the filename.
+    let remoteQuizMeta = { icma: {}, ca: {}, acca: {} };
+
     // --- HARDCODED REPO CREDENTIALS ---
-    const REPO_OWNER = "Shahryar777";
+    const REPO_OWNER = "shahryar7777";
     const REPO_NAME = "QuizezPrep";
 
     // --- ADMIN LOGIN MODAL CONTROLS ---
@@ -499,6 +503,8 @@
                   opt.innerText = `🌐 ${optName}`;
                   select.appendChild(opt);
                 }
+                // NEW: remember where to actually download this quiz's JSON from
+                remoteQuizMeta[cat][optName] = file.download_url;
               }
             });
           }
@@ -932,7 +938,8 @@
       fetchGitHubRepositoryQuizzes();
     }
 
-    function loadSavedQuizFromCategory(cat, keyToLoad = null, showSetup = false) {
+    // NOTE: now async, so it can await a remote fetch when a GitHub-hosted quiz is selected.
+    async function loadSavedQuizFromCategory(cat, keyToLoad = null, showSetup = false) {
       const select = document.getElementById(`${cat}-quizzes`);
       const selectedKey = keyToLoad || (select ? select.value : null);
       if (!selectedKey) return;
@@ -980,7 +987,59 @@
             startTimer(secToRun);
           }
         }
+        return;
       }
+
+      // NEW: quiz isn't cached locally yet — check if it's a remote (GitHub-hosted) quiz
+      // and, if so, actually fetch and load its content instead of doing nothing.
+      if (remoteQuizMeta[cat] && remoteQuizMeta[cat][selectedKey]) {
+        const statusEl = document.getElementById('extraction-status');
+        try {
+          if (statusEl) {
+            statusEl.innerText = "Loading quiz from GitHub...";
+            statusEl.classList.remove('hidden');
+          }
+
+          const res = await fetch(remoteQuizMeta[cat][selectedKey]);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          if (!data || !Array.isArray(data.questions) || data.questions.length === 0) {
+            throw new Error("Quiz file has no questions");
+          }
+
+          originalQuizData = data.questions.map((q, i) => ({ ...q, masterIdx: i }));
+          quizData = [...originalQuizData];
+          activeQuizKey = selectedKey;
+          if (select) select.value = activeQuizKey;
+          selectedAnswers = {};
+          score = 0;
+          currentPage = 1;
+          isPracticingWrong = false;
+
+          saveQuizStateToLocalStorage(); // cache locally so next load is instant
+          updateSavedQuizzesDropdowns();
+
+          if (statusEl) statusEl.classList.add('hidden');
+
+          if (showSetup) {
+            showSetupCard(selectedKey, originalQuizData.length);
+          } else {
+            hideUploadSection();
+            hideSetupCard();
+            setMode('practice');
+            updateScore();
+            renderPage();
+          }
+        } catch (err) {
+          console.error("Failed to load remote quiz:", err);
+          if (statusEl) statusEl.classList.add('hidden');
+          alert(`Couldn't load "${selectedKey}" from GitHub. Check your connection and try again.`);
+        }
+        return;
+      }
+
+      alert(`Quiz "${selectedKey}" could not be found locally or on GitHub.`);
     }
 
     function confirmDeleteCategoryQuiz(cat) {
@@ -1000,7 +1059,11 @@
       );
     }
 
-    // --- WORKING SIDEBAR DELETE FUNCTIONALITY ---
+    // --- FIXED SIDEBAR DELETE FUNCTIONALITY ---
+    // Previously, deleting the currently active quiz would trigger headerResetAndUpload(),
+    // which auto-saves "on exit" using the still-populated activeQuizKey/originalQuizData —
+    // silently re-writing the just-deleted quiz straight back into localStorage.
+    // Clearing activeQuizKey first prevents that resurrection.
     function deleteCategoryQuiz(cat, selectedKey) {
       let storageKey = `savedQuizzes_${cat}`;
       let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
@@ -1011,6 +1074,7 @@
       if (select) select.value = "";
 
       if (activeQuizKey === selectedKey && activeCategory === cat) {
+        activeQuizKey = ""; // FIX: prevents headerResetAndUpload's auto-save from re-adding the deleted quiz
         headerResetAndUpload();
       }
 
