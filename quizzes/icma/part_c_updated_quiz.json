@@ -1,0 +1,2605 @@
+{
+  "title": "Part C updated",
+  "questions": [
+    {
+      "masterIdx": 0,
+      "questionNumber": 1,
+      "question": "Q1. Prompt engineering is important because:",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 1,
+      "questionNumber": 2,
+      "question": "Q2. Large Language Models (LLMs) are:",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 2,
+      "questionNumber": 3,
+      "question": "Q3. Randomness in LLM outputs is controlled by:",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 3,
+      "questionNumber": 4,
+      "question": "Q4. Core prompt engineering principle and application mechanism (Item 4):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "How prompts influence outputs"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 4,
+      "questionNumber": 5,
+      "question": "Q5. A prompt is:",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 5,
+      "questionNumber": 6,
+      "question": "Q6. Core prompt engineering principle and application mechanism (Item 6):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 6,
+      "questionNumber": 7,
+      "question": "Q7. Core prompt engineering principle and application mechanism (Item 7):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 7,
+      "questionNumber": 8,
+      "question": "Q8. Core prompt engineering principle and application mechanism (Item 8):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 8,
+      "questionNumber": 9,
+      "question": "Q9. Core prompt engineering principle and application mechanism (Item 9):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 9,
+      "questionNumber": 10,
+      "question": "Q10. Core prompt engineering principle and application mechanism (Item 10):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 10,
+      "questionNumber": 11,
+      "question": "Q11. Core prompt engineering principle and application mechanism (Item 11):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 11,
+      "questionNumber": 12,
+      "question": "Q12. Core prompt engineering principle and application mechanism (Item 12):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 12,
+      "questionNumber": 13,
+      "question": "Q13. Core prompt engineering principle and application mechanism (Item 13):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 13,
+      "questionNumber": 14,
+      "question": "Q14. Core prompt engineering principle and application mechanism (Item 14):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 14,
+      "questionNumber": 15,
+      "question": "Q15. Core prompt engineering principle and application mechanism (Item 15):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 15,
+      "questionNumber": 16,
+      "question": "Q16. Core prompt engineering principle and application mechanism (Item 16):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 16,
+      "questionNumber": 17,
+      "question": "Q17. Core prompt engineering principle and application mechanism (Item 17):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 17,
+      "questionNumber": 18,
+      "question": "Q18. Core prompt engineering principle and application mechanism (Item 18):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 18,
+      "questionNumber": 19,
+      "question": "Q19. Few-shot prompting is:",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 19,
+      "questionNumber": 20,
+      "question": "Q20. Core prompt engineering principle and application mechanism (Item 20):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 20,
+      "questionNumber": 21,
+      "question": "Q21. Chain of Thought Prompting:",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 21,
+      "questionNumber": 22,
+      "question": "Q22. ReAct Prompting combines:",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 22,
+      "questionNumber": 23,
+      "question": "Q23. Core prompt engineering principle and application mechanism (Item 23):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 23,
+      "questionNumber": 24,
+      "question": "Q24. Core prompt engineering principle and application mechanism (Item 24):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 24,
+      "questionNumber": 25,
+      "question": "Q25. Core prompt engineering principle and application mechanism (Item 25):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 25,
+      "questionNumber": 26,
+      "question": "Q26. Core prompt engineering principle and application mechanism (Item 26):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 26,
+      "questionNumber": 27,
+      "question": "Q27. Core prompt engineering principle and application mechanism (Item 27):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 27,
+      "questionNumber": 28,
+      "question": "Q28. Core prompt engineering principle and application mechanism (Item 28):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 28,
+      "questionNumber": 29,
+      "question": "Q29. Core prompt engineering principle and application mechanism (Item 29):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 29,
+      "questionNumber": 30,
+      "question": "Q30. Core prompt engineering principle and application mechanism (Item 30):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 30,
+      "questionNumber": 31,
+      "question": "Q31. Core prompt engineering principle and application mechanism (Item 31):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 31,
+      "questionNumber": 32,
+      "question": "Q32. Core prompt engineering principle and application mechanism (Item 32):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 32,
+      "questionNumber": 33,
+      "question": "Q33. Core prompt engineering principle and application mechanism (Item 33):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 33,
+      "questionNumber": 34,
+      "question": "Q34. Core prompt engineering principle and application mechanism (Item 34):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 34,
+      "questionNumber": 35,
+      "question": "Q35. Core prompt engineering principle and application mechanism (Item 35):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 35,
+      "questionNumber": 36,
+      "question": "Q36. Core prompt engineering principle and application mechanism (Item 36):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 36,
+      "questionNumber": 37,
+      "question": "Q37. Core prompt engineering principle and application mechanism (Item 37):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 37,
+      "questionNumber": 38,
+      "question": "Q38. Core prompt engineering principle and application mechanism (Item 38):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 38,
+      "questionNumber": 39,
+      "question": "Q39. Core prompt engineering principle and application mechanism (Item 39):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 39,
+      "questionNumber": 40,
+      "question": "Q40. Core prompt engineering principle and application mechanism (Item 40):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 40,
+      "questionNumber": 41,
+      "question": "Q41. Core prompt engineering principle and application mechanism (Item 41):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 41,
+      "questionNumber": 42,
+      "question": "Q42. Core prompt engineering principle and application mechanism (Item 42):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 42,
+      "questionNumber": 43,
+      "question": "Q43. Core prompt engineering principle and application mechanism (Item 43):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 43,
+      "questionNumber": 44,
+      "question": "Q44. Core prompt engineering principle and application mechanism (Item 44):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 44,
+      "questionNumber": 45,
+      "question": "Q45. Core prompt engineering principle and application mechanism (Item 45):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 45,
+      "questionNumber": 46,
+      "question": "Q46. Core prompt engineering principle and application mechanism (Item 46):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 46,
+      "questionNumber": 47,
+      "question": "Q47. Core prompt engineering principle and application mechanism (Item 47):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 47,
+      "questionNumber": 48,
+      "question": "Q48. Core prompt engineering principle and application mechanism (Item 48):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 48,
+      "questionNumber": 49,
+      "question": "Q49. Core prompt engineering principle and application mechanism (Item 49):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 49,
+      "questionNumber": 50,
+      "question": "Q50. Core prompt engineering principle and application mechanism (Item 50):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 50,
+      "questionNumber": 51,
+      "question": "Q51. Core prompt engineering principle and application mechanism (Item 51):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 51,
+      "questionNumber": 52,
+      "question": "Q52. Core prompt engineering principle and application mechanism (Item 52):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 52,
+      "questionNumber": 53,
+      "question": "Q53. Core prompt engineering principle and application mechanism (Item 53):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 53,
+      "questionNumber": 54,
+      "question": "Q54. Core prompt engineering principle and application mechanism (Item 54):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 54,
+      "questionNumber": 55,
+      "question": "Q55. Core prompt engineering principle and application mechanism (Item 55):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 55,
+      "questionNumber": 56,
+      "question": "Q56. Core prompt engineering principle and application mechanism (Item 56):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 56,
+      "questionNumber": 57,
+      "question": "Q57. Core prompt engineering principle and application mechanism (Item 57):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 57,
+      "questionNumber": 58,
+      "question": "Q58. Core prompt engineering principle and application mechanism (Item 58):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 58,
+      "questionNumber": 59,
+      "question": "Q59. Core prompt engineering principle and application mechanism (Item 59):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 59,
+      "questionNumber": 60,
+      "question": "Q60. Core prompt engineering principle and application mechanism (Item 60):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 60,
+      "questionNumber": 61,
+      "question": "Q61. Core prompt engineering principle and application mechanism (Item 61):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 61,
+      "questionNumber": 62,
+      "question": "Q62. Core prompt engineering principle and application mechanism (Item 62):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 62,
+      "questionNumber": 63,
+      "question": "Q63. Core prompt engineering principle and application mechanism (Item 63):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 63,
+      "questionNumber": 64,
+      "question": "Q64. Core prompt engineering principle and application mechanism (Item 64):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 64,
+      "questionNumber": 65,
+      "question": "Q65. Core prompt engineering principle and application mechanism (Item 65):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 65,
+      "questionNumber": 66,
+      "question": "Q66. Core prompt engineering principle and application mechanism (Item 66):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 66,
+      "questionNumber": 67,
+      "question": "Q67. Core prompt engineering principle and application mechanism (Item 67):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 67,
+      "questionNumber": 68,
+      "question": "Q68. Core prompt engineering principle and application mechanism (Item 68):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 68,
+      "questionNumber": 69,
+      "question": "Q69. Core prompt engineering principle and application mechanism (Item 69):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 69,
+      "questionNumber": 70,
+      "question": "Q70. Core prompt engineering principle and application mechanism (Item 70):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 70,
+      "questionNumber": 71,
+      "question": "Q71. Core prompt engineering principle and application mechanism (Item 71):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 71,
+      "questionNumber": 72,
+      "question": "Q72. Core prompt engineering principle and application mechanism (Item 72):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 72,
+      "questionNumber": 73,
+      "question": "Q73. Core prompt engineering principle and application mechanism (Item 73):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 73,
+      "questionNumber": 74,
+      "question": "Q74. Core prompt engineering principle and application mechanism (Item 74):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 74,
+      "questionNumber": 75,
+      "question": "Q75. Temperature in LLMs controls:",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 75,
+      "questionNumber": 76,
+      "question": "Q76. Top-k sampling controls:",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 76,
+      "questionNumber": 77,
+      "question": "Q77. Top-p (nucleus) sampling:",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 77,
+      "questionNumber": 78,
+      "question": "Q78. Core prompt engineering principle and application mechanism (Item 78):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 78,
+      "questionNumber": 79,
+      "question": "Q79. Core prompt engineering principle and application mechanism (Item 79):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 79,
+      "questionNumber": 80,
+      "question": "Q80. Core prompt engineering principle and application mechanism (Item 80):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 80,
+      "questionNumber": 81,
+      "question": "Q81. Core prompt engineering principle and application mechanism (Item 81):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 81,
+      "questionNumber": 82,
+      "question": "Q82. Core prompt engineering principle and application mechanism (Item 82):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 82,
+      "questionNumber": 83,
+      "question": "Q83. Core prompt engineering principle and application mechanism (Item 83):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 83,
+      "questionNumber": 84,
+      "question": "Q84. Core prompt engineering principle and application mechanism (Item 84):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 84,
+      "questionNumber": 85,
+      "question": "Q85. Core prompt engineering principle and application mechanism (Item 85):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 85,
+      "questionNumber": 86,
+      "question": "Q86. Core prompt engineering principle and application mechanism (Item 86):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 86,
+      "questionNumber": 87,
+      "question": "Q87. Core prompt engineering principle and application mechanism (Item 87):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 87,
+      "questionNumber": 88,
+      "question": "Q88. Core prompt engineering principle and application mechanism (Item 88):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 88,
+      "questionNumber": 89,
+      "question": "Q89. Core prompt engineering principle and application mechanism (Item 89):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 89,
+      "questionNumber": 90,
+      "question": "Q90. Core prompt engineering principle and application mechanism (Item 90):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 90,
+      "questionNumber": 91,
+      "question": "Q91. Core prompt engineering principle and application mechanism (Item 91):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 91,
+      "questionNumber": 92,
+      "question": "Q92. Core prompt engineering principle and application mechanism (Item 92):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 92,
+      "questionNumber": 93,
+      "question": "Q93. Core prompt engineering principle and application mechanism (Item 93):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 93,
+      "questionNumber": 94,
+      "question": "Q94. Core prompt engineering principle and application mechanism (Item 94):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 94,
+      "questionNumber": 95,
+      "question": "Q95. Core prompt engineering principle and application mechanism (Item 95):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 95,
+      "questionNumber": 96,
+      "question": "Q96. Core prompt engineering principle and application mechanism (Item 96):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 96,
+      "questionNumber": 97,
+      "question": "Q97. Core prompt engineering principle and application mechanism (Item 97):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 97,
+      "questionNumber": 98,
+      "question": "Q98. Core prompt engineering principle and application mechanism (Item 98):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 98,
+      "questionNumber": 99,
+      "question": "Q99. Core prompt engineering principle and application mechanism (Item 99):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 99,
+      "questionNumber": 100,
+      "question": "Q100. Core prompt engineering principle and application mechanism (Item 100):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 100,
+      "questionNumber": 101,
+      "question": "Q101. Core prompt engineering principle and application mechanism (Item 101):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 101,
+      "questionNumber": 102,
+      "question": "Q102. Core prompt engineering principle and application mechanism (Item 102):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 102,
+      "questionNumber": 103,
+      "question": "Q103. Core prompt engineering principle and application mechanism (Item 103):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 103,
+      "questionNumber": 104,
+      "question": "Q104. Core prompt engineering principle and application mechanism (Item 104):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 104,
+      "questionNumber": 105,
+      "question": "Q105. Core prompt engineering principle and application mechanism (Item 105):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 105,
+      "questionNumber": 106,
+      "question": "Q106. Core prompt engineering principle and application mechanism (Item 106):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 106,
+      "questionNumber": 107,
+      "question": "Q107. Core prompt engineering principle and application mechanism (Item 107):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 107,
+      "questionNumber": 108,
+      "question": "Q108. Core prompt engineering principle and application mechanism (Item 108):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 108,
+      "questionNumber": 109,
+      "question": "Q109. Core prompt engineering principle and application mechanism (Item 109):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 109,
+      "questionNumber": 110,
+      "question": "Q110. Core prompt engineering principle and application mechanism (Item 110):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 110,
+      "questionNumber": 111,
+      "question": "Q111. Core prompt engineering principle and application mechanism (Item 111):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 111,
+      "questionNumber": 112,
+      "question": "Q112. Core prompt engineering principle and application mechanism (Item 112):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 112,
+      "questionNumber": 113,
+      "question": "Q113. Core prompt engineering principle and application mechanism (Item 113):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 113,
+      "questionNumber": 114,
+      "question": "Q114. Core prompt engineering principle and application mechanism (Item 114):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 114,
+      "questionNumber": 115,
+      "question": "Q115. Core prompt engineering principle and application mechanism (Item 115):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 115,
+      "questionNumber": 116,
+      "question": "Q116. Core prompt engineering principle and application mechanism (Item 116):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 116,
+      "questionNumber": 117,
+      "question": "Q117. Core prompt engineering principle and application mechanism (Item 117):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 117,
+      "questionNumber": 118,
+      "question": "Q118. Core prompt engineering principle and application mechanism (Item 118):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 118,
+      "questionNumber": 119,
+      "question": "Q119. Core prompt engineering principle and application mechanism (Item 119):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 119,
+      "questionNumber": 120,
+      "question": "Q120. Core prompt engineering principle and application mechanism (Item 120):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 120,
+      "questionNumber": 121,
+      "question": "Q121. Core prompt engineering principle and application mechanism (Item 121):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 121,
+      "questionNumber": 122,
+      "question": "Q122. Core prompt engineering principle and application mechanism (Item 122):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 122,
+      "questionNumber": 123,
+      "question": "Q123. Core prompt engineering principle and application mechanism (Item 123):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 123,
+      "questionNumber": 124,
+      "question": "Q124. Core prompt engineering principle and application mechanism (Item 124):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 124,
+      "questionNumber": 125,
+      "question": "Q125. Core prompt engineering principle and application mechanism (Item 125):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 125,
+      "questionNumber": 126,
+      "question": "Q126. Core prompt engineering principle and application mechanism (Item 126):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 126,
+      "questionNumber": 127,
+      "question": "Q127. Core prompt engineering principle and application mechanism (Item 127):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 127,
+      "questionNumber": 128,
+      "question": "Q128. Core prompt engineering principle and application mechanism (Item 128):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 128,
+      "questionNumber": 129,
+      "question": "Q129. Core prompt engineering principle and application mechanism (Item 129):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 129,
+      "questionNumber": 130,
+      "question": "Q130. Core prompt engineering principle and application mechanism (Item 130):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 130,
+      "questionNumber": 131,
+      "question": "Q131. Core prompt engineering principle and application mechanism (Item 131):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 131,
+      "questionNumber": 132,
+      "question": "Q132. Core prompt engineering principle and application mechanism (Item 132):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 132,
+      "questionNumber": 133,
+      "question": "Q133. Core prompt engineering principle and application mechanism (Item 133):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 133,
+      "questionNumber": 134,
+      "question": "Q134. Core prompt engineering principle and application mechanism (Item 134):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 134,
+      "questionNumber": 135,
+      "question": "Q135. Core prompt engineering principle and application mechanism (Item 135):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 135,
+      "questionNumber": 136,
+      "question": "Q136. Core prompt engineering principle and application mechanism (Item 136):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 136,
+      "questionNumber": 137,
+      "question": "Q137. Core prompt engineering principle and application mechanism (Item 137):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 137,
+      "questionNumber": 138,
+      "question": "Q138. Core prompt engineering principle and application mechanism (Item 138):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 138,
+      "questionNumber": 139,
+      "question": "Q139. Core prompt engineering principle and application mechanism (Item 139):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 139,
+      "questionNumber": 140,
+      "question": "Q140. Core prompt engineering principle and application mechanism (Item 140):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 140,
+      "questionNumber": 141,
+      "question": "Q141. Core prompt engineering principle and application mechanism (Item 141):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 141,
+      "questionNumber": 142,
+      "question": "Q142. Core prompt engineering principle and application mechanism (Item 142):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 142,
+      "questionNumber": 143,
+      "question": "Q143. Core prompt engineering principle and application mechanism (Item 143):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 143,
+      "questionNumber": 144,
+      "question": "Q144. Core prompt engineering principle and application mechanism (Item 144):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 144,
+      "questionNumber": 145,
+      "question": "Q145. Core prompt engineering principle and application mechanism (Item 145):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 145,
+      "questionNumber": 146,
+      "question": "Q146. Core prompt engineering principle and application mechanism (Item 146):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 146,
+      "questionNumber": 147,
+      "question": "Q147. Core prompt engineering principle and application mechanism (Item 147):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 147,
+      "questionNumber": 148,
+      "question": "Q148. Core prompt engineering principle and application mechanism (Item 148):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 148,
+      "questionNumber": 149,
+      "question": "Q149. Core prompt engineering principle and application mechanism (Item 149):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 149,
+      "questionNumber": 150,
+      "question": "Q150. Core prompt engineering principle and application mechanism (Item 150):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 150,
+      "questionNumber": 151,
+      "question": "Q151. Core prompt engineering principle and application mechanism (Item 151):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 151,
+      "questionNumber": 152,
+      "question": "Q152. Core prompt engineering principle and application mechanism (Item 152):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 152,
+      "questionNumber": 153,
+      "question": "Q153. Core prompt engineering principle and application mechanism (Item 153):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 153,
+      "questionNumber": 154,
+      "question": "Q154. Core prompt engineering principle and application mechanism (Item 154):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 154,
+      "questionNumber": 155,
+      "question": "Q155. Core prompt engineering principle and application mechanism (Item 155):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 155,
+      "questionNumber": 156,
+      "question": "Q156. Core prompt engineering principle and application mechanism (Item 156):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 156,
+      "questionNumber": 157,
+      "question": "Q157. Core prompt engineering principle and application mechanism (Item 157):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 157,
+      "questionNumber": 158,
+      "question": "Q158. Core prompt engineering principle and application mechanism (Item 158):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 158,
+      "questionNumber": 159,
+      "question": "Q159. Core prompt engineering principle and application mechanism (Item 159):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 159,
+      "questionNumber": 160,
+      "question": "Q160. Core prompt engineering principle and application mechanism (Item 160):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 160,
+      "questionNumber": 161,
+      "question": "Q161. Core prompt engineering principle and application mechanism (Item 161):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 161,
+      "questionNumber": 162,
+      "question": "Q162. Core prompt engineering principle and application mechanism (Item 162):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 162,
+      "questionNumber": 163,
+      "question": "Q163. Core prompt engineering principle and application mechanism (Item 163):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 163,
+      "questionNumber": 164,
+      "question": "Q164. Core prompt engineering principle and application mechanism (Item 164):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 164,
+      "questionNumber": 165,
+      "question": "Q165. Core prompt engineering principle and application mechanism (Item 165):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 165,
+      "questionNumber": 166,
+      "question": "Q166. Core prompt engineering principle and application mechanism (Item 166):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 166,
+      "questionNumber": 167,
+      "question": "Q167. Core prompt engineering principle and application mechanism (Item 167):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 167,
+      "questionNumber": 168,
+      "question": "Q168. Core prompt engineering principle and application mechanism (Item 168):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 168,
+      "questionNumber": 169,
+      "question": "Q169. Core prompt engineering principle and application mechanism (Item 169):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 169,
+      "questionNumber": 170,
+      "question": "Q170. Core prompt engineering principle and application mechanism (Item 170):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 170,
+      "questionNumber": 171,
+      "question": "Q171. Core prompt engineering principle and application mechanism (Item 171):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 171,
+      "questionNumber": 172,
+      "question": "Q172. Core prompt engineering principle and application mechanism (Item 172):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 172,
+      "questionNumber": 173,
+      "question": "Q173. Core prompt engineering principle and application mechanism (Item 173):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 173,
+      "questionNumber": 174,
+      "question": "Q174. Core prompt engineering principle and application mechanism (Item 174):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 174,
+      "questionNumber": 175,
+      "question": "Q175. Core prompt engineering principle and application mechanism (Item 175):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 175,
+      "questionNumber": 176,
+      "question": "Q176. Core prompt engineering principle and application mechanism (Item 176):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 176,
+      "questionNumber": 177,
+      "question": "Q177. Core prompt engineering principle and application mechanism (Item 177):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 177,
+      "questionNumber": 178,
+      "question": "Q178. Core prompt engineering principle and application mechanism (Item 178):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 178,
+      "questionNumber": 179,
+      "question": "Q179. Core prompt engineering principle and application mechanism (Item 179):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 179,
+      "questionNumber": 180,
+      "question": "Q180. Core prompt engineering principle and application mechanism (Item 180):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 180,
+      "questionNumber": 181,
+      "question": "Q181. Core prompt engineering principle and application mechanism (Item 181):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 181,
+      "questionNumber": 182,
+      "question": "Q182. Core prompt engineering principle and application mechanism (Item 182):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 182,
+      "questionNumber": 183,
+      "question": "Q183. Core prompt engineering principle and application mechanism (Item 183):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 183,
+      "questionNumber": 184,
+      "question": "Q184. Core prompt engineering principle and application mechanism (Item 184):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 184,
+      "questionNumber": 185,
+      "question": "Q185. Core prompt engineering principle and application mechanism (Item 185):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 185,
+      "questionNumber": 186,
+      "question": "Q186. Core prompt engineering principle and application mechanism (Item 186):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 186,
+      "questionNumber": 187,
+      "question": "Q187. Core prompt engineering principle and application mechanism (Item 187):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 187,
+      "questionNumber": 188,
+      "question": "Q188. Core prompt engineering principle and application mechanism (Item 188):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 188,
+      "questionNumber": 189,
+      "question": "Q189. Core prompt engineering principle and application mechanism (Item 189):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 189,
+      "questionNumber": 190,
+      "question": "Q190. Core prompt engineering principle and application mechanism (Item 190):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 190,
+      "questionNumber": 191,
+      "question": "Q191. Core prompt engineering principle and application mechanism (Item 191):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 191,
+      "questionNumber": 192,
+      "question": "Q192. Core prompt engineering principle and application mechanism (Item 192):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 192,
+      "questionNumber": 193,
+      "question": "Q193. Core prompt engineering principle and application mechanism (Item 193):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 193,
+      "questionNumber": 194,
+      "question": "Q194. Core prompt engineering principle and application mechanism (Item 194):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 194,
+      "questionNumber": 195,
+      "question": "Q195. Core prompt engineering principle and application mechanism (Item 195):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 195,
+      "questionNumber": 196,
+      "question": "Q196. Core prompt engineering principle and application mechanism (Item 196):",
+      "options": [
+        "Manual file sorting via basic scripting engines",
+        "Bypassing neural network backpropagation entirely",
+        "Executing static database queries without deep learning inference",
+        "Maximum token limits per LLM input window"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Correct option according to Answer Key is Option D"
+    },
+    {
+      "masterIdx": 196,
+      "questionNumber": 197,
+      "question": "Q197. Core prompt engineering principle and application mechanism (Item 197):",
+      "options": [
+        "Automated manual hyperparameter tuning via local shell scripts",
+        "Enforcing rigid rule-based constraints without probabilistic inference",
+        "Temperature and top-k/top-p sampling parameters",
+        "Restricting generation parameters to prevent multi-modal mapping"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Correct option according to Answer Key is Option C"
+    },
+    {
+      "masterIdx": 197,
+      "questionNumber": 198,
+      "question": "Q198. Core prompt engineering principle and application mechanism (Item 198):",
+      "options": [
+        "Statically caching hardcoded relational dataset rows without updating model weights",
+        "AI models trained on vast text corpora to understand and generate text",
+        "Compiling manual rule-based heuristics into isolated server nodes",
+        "Restricting inference telemetry via static hardware firewalls"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Correct option according to Answer Key is Option B"
+    },
+    {
+      "masterIdx": 198,
+      "questionNumber": 199,
+      "question": "Q199. Core prompt engineering principle and application mechanism (Item 199):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    },
+    {
+      "masterIdx": 199,
+      "questionNumber": 200,
+      "question": "Q200. Core prompt engineering principle and application mechanism (Item 200):",
+      "options": [
+        "Guides LLMs to produce desired outputs effectively",
+        "Statically compiling legacy scripts without probabilistic models",
+        "Executing manual database joins on small relational schemas",
+        "Hardcoding rule-based heuristics into isolated server clusters"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Correct option according to Answer Key is Option A"
+    }
+  ]
+}
