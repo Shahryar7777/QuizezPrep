@@ -62,6 +62,9 @@
             </span>
             <button onclick="confirmDeleteCategoryQuiz('ca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
           </div>
+          <select id="ca-subjects" onchange="refreshQuizDropdownForSubject('ca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
+            <option value="">-- Select Subject --</option>
+          </select>
           <select id="ca-quizzes" onchange="loadSavedQuizFromCategory('ca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
             <option value="">-- Select CA Quiz --</option>
           </select>
@@ -75,6 +78,9 @@
             </span>
             <button onclick="confirmDeleteCategoryQuiz('acca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
           </div>
+          <select id="acca-subjects" onchange="refreshQuizDropdownForSubject('acca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
+            <option value="">-- Select Subject --</option>
+          </select>
           <select id="acca-quizzes" onchange="loadSavedQuizFromCategory('acca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
             <option value="">-- Select ACCA Quiz --</option>
           </select>
@@ -88,6 +94,9 @@
             </span>
             <button onclick="confirmDeleteCategoryQuiz('icma')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
           </div>
+          <select id="icma-subjects" onchange="refreshQuizDropdownForSubject('icma')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
+            <option value="">-- Select Subject --</option>
+          </select>
           <select id="icma-quizzes" onchange="loadSavedQuizFromCategory('icma')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
             <option value="">-- Select ICMA Quiz --</option>
           </select>
@@ -182,11 +191,19 @@
         <!-- CATEGORY SELECTION -->
         <div class="space-y-1.5 text-left max-w-xs mx-auto">
           <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Select Category / Qualification:</label>
-          <select id="setup-category-select" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none cursor-pointer">
+          <select id="setup-category-select" onchange="refreshSubjectDatalist()" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none cursor-pointer">
             <option value="icma">🏛️ ICMA</option>
             <option value="ca">🎓 CA</option>
             <option value="acca">💼 ACCA</option>
           </select>
+        </div>
+
+        <!-- SUBJECT SELECTION -->
+        <div class="space-y-1.5 text-left max-w-xs mx-auto">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Subject / Topic:</label>
+          <input type="text" id="setup-subject-input" list="setup-subject-datalist" placeholder="e.g. Generative AI & Business Productivity" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none">
+          <datalist id="setup-subject-datalist"></datalist>
+          <p class="text-[10px] text-slate-400 dark:text-slate-500">Groups this quiz under a subject in the sidebar (e.g. all 6 Gen AI chapters + the full bank together). Reuse an existing name to add to it, or type a new one. Leave blank for "General".</p>
         </div>
 
         <!-- MODE SELECTION IN SETUP -->
@@ -438,6 +455,7 @@
     let originalQuizData = [];
     let activeQuizKey = "";
     let activeCategory = "icma";
+    let activeSubject = "General"; // NEW: groups quizzes under a subject within a category (e.g. all Gen AI chapters + full bank together)
     let currentPage = 1;
     const questionsPerPage = 10;
     let selectedAnswers = {};
@@ -452,8 +470,9 @@
     let isFreshUpload = false; // true right after a new PDF parse, used to warn before overwriting a same-named saved quiz
     let timerEndTimestamp = null; // real-world epoch ms when the timer hits zero — see startTimer()
 
-    // NEW: remembers each remote (GitHub-hosted) quiz's raw download URL so we can
-    // actually fetch its content when selected, instead of just listing the filename.
+    // Remembers each remote (GitHub-hosted) quiz's download URL AND which subject folder it
+    // came from, so we can fetch its content on demand and group it correctly in the sidebar.
+    // Shape: remoteQuizMeta[category][quizName] = { url, subject }
     let remoteQuizMeta = { icma: {}, ca: {}, acca: {} };
 
     // --- HARDCODED REPO CREDENTIALS ---
@@ -488,6 +507,31 @@
     // Rewritten with Promise.allSettled instead of a bare forEach(async ...), so we can
     // actually tell when all three category fetches have finished (forEach never awaits its
     // callbacks) and show a real loading/synced indicator instead of updating silently.
+    //
+    // REVISED: now recurses one level into subject subfolders (quizzes/<cat>/<subject>/*.json),
+    // and still supports old-style flat files directly under quizzes/<cat>/*.json — those get
+    // grouped under a "General" subject so nothing existing breaks.
+    function humanizeSubjectSlug(slug) {
+      return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+    }
+
+    async function fetchCategoryContents(cat, path, subjectLabel) {
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const entries = await res.json();
+
+      for (const entry of entries) {
+        if (entry.type === 'dir') {
+          // A subject subfolder — recurse into it, one level only.
+          await fetchCategoryContents(cat, entry.path, humanizeSubjectSlug(entry.name));
+        } else if (entry.type === 'file' && entry.name.endsWith('.json')) {
+          const optName = entry.name.replace('.json', '');
+          remoteQuizMeta[cat][optName] = { url: entry.download_url, subject: subjectLabel };
+        }
+      }
+    }
+
     async function fetchGitHubRepositoryQuizzes() {
       const statusEl = document.getElementById('github-sync-status');
       if (statusEl) {
@@ -496,31 +540,9 @@
       }
 
       const categories = ['icma', 'ca', 'acca'];
-      const results = await Promise.allSettled(categories.map(async (cat) => {
-        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/quizzes/${cat}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const files = await res.json();
-        const select = document.getElementById(`${cat}-quizzes`);
-        if (!select) return;
-
-        files.forEach(file => {
-          if (file.name.endsWith('.json')) {
-            const optName = file.name.replace('.json', '');
-            let exists = false;
-            for (let i = 0; i < select.options.length; i++) {
-              if (select.options[i].value === optName) exists = true;
-            }
-            if (!exists) {
-              const opt = document.createElement('option');
-              opt.value = optName;
-              opt.innerText = `🌐 ${optName}`;
-              select.appendChild(opt);
-            }
-            remoteQuizMeta[cat][optName] = file.download_url;
-          }
-        });
-      }));
+      const results = await Promise.allSettled(categories.map(cat =>
+        fetchCategoryContents(cat, `quizzes/${cat}`, 'General')
+      ));
 
       const anyFailed = results.some(r => r.status === 'rejected');
       results.forEach((r, i) => {
@@ -528,6 +550,9 @@
           console.log(`No remote quizzes found for ${categories[i]}:`, r.reason);
         }
       });
+
+      // Rebuild the subject/quiz dropdowns now that remote data (with subjects) has arrived.
+      categories.forEach(cat => refreshSubjectDropdown(cat));
 
       if (statusEl) {
         if (anyFailed) {
@@ -727,6 +752,7 @@
       score = 0;
       isPracticingWrong = false;
       isFreshUpload = false;
+      activeSubject = "General";
       stopTimer();
 
       document.getElementById("quiz-container").innerHTML = `
@@ -766,7 +792,14 @@
       document.getElementById("setup-quiz-title").innerText = title;
       document.getElementById("setup-mcq-count").innerText = `${count} MCQs Loaded`;
       document.getElementById("quiz-setup-card").classList.remove("hidden");
-      
+
+      // Prefill the Subject field with whatever's currently active (e.g. reopening an existing
+      // quiz's settings keeps its subject; a fresh upload defaults to "General"), and refresh
+      // the suggestion list for the currently selected category.
+      const subjectInput = document.getElementById("setup-subject-input");
+      if (subjectInput) subjectInput.value = (activeSubject && activeSubject !== 'General') ? activeSubject : '';
+      refreshSubjectDatalist();
+
       document.getElementById("text-preview-section").classList.remove("hidden");
       document.getElementById("quiz-container").innerHTML = "";
     }
@@ -780,6 +813,8 @@
     function startQuiz() {
       const categorySelect = document.getElementById("setup-category-select");
       const chosenCategory = categorySelect.value || "icma";
+      const subjectInput = document.getElementById("setup-subject-input");
+      const chosenSubject = (subjectInput && subjectInput.value.trim()) || "General";
 
       if (activeMode === 'timer') {
         timerDurationMinutes = parseInt(document.getElementById('setup-timer-minutes').value || 10);
@@ -797,6 +832,7 @@
             `A quiz named "${activeQuizKey}" already exists in your ${chosenCategory.toUpperCase()} library. Starting now will overwrite it and any saved progress on it. Continue?`,
             function () {
               activeCategory = chosenCategory;
+              activeSubject = chosenSubject;
               isFreshUpload = false;
               finalizeStartQuiz();
             }
@@ -806,6 +842,7 @@
       }
 
       activeCategory = chosenCategory;
+      activeSubject = chosenSubject;
       isFreshUpload = false;
       finalizeStartQuiz();
     }
@@ -991,29 +1028,114 @@
         secondsRemaining: secondsRemaining,
         timerEndTimestamp: timerEndTimestamp,
         isPracticingWrong: isPracticingWrong,
-        category: activeCategory
+        category: activeCategory,
+        subject: activeSubject || 'General'
       };
       localStorage.setItem(storageKey, JSON.stringify(saved));
       localStorage.setItem('lastActiveQuizCategory', activeCategory);
       localStorage.setItem('lastActiveQuizKey', activeQuizKey);
     }
 
-    function updateSavedQuizzesDropdowns() {
-      ['icma', 'ca', 'acca'].forEach(cat => {
-        let storageKey = `savedQuizzes_${cat}`;
-        let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-        const select = document.getElementById(`${cat}-quizzes`);
-        if (!select) return;
-        select.innerHTML = `<option value="">-- Select ${cat.toUpperCase()} Quiz --</option>`;
-        Object.keys(saved).forEach(key => {
-          const opt = document.createElement('option');
-          opt.value = key;
-          opt.innerText = key;
-          select.appendChild(opt);
-        });
+    // Gathers the distinct set of subjects known for a category, from BOTH locally saved
+    // quizzes and remote (GitHub) quizzes, so the sidebar and the upload setup card's subject
+    // suggestions always reflect everything the user has, not just one source.
+    function getKnownSubjects(cat) {
+      const subjects = new Set(['General']);
+      const storageKey = `savedQuizzes_${cat}`;
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      Object.values(saved).forEach(q => subjects.add(q.subject || 'General'));
+      Object.values(remoteQuizMeta[cat] || {}).forEach(meta => subjects.add(meta.subject || 'General'));
+      return Array.from(subjects).sort((a, b) => {
+        if (a === 'General') return 1;   // General always sorts last
+        if (b === 'General') return -1;
+        return a.localeCompare(b);
+      });
+    }
+
+    // Rebuilds a category's Subject dropdown, preserving the current selection if it's still
+    // valid, then refreshes the Quiz dropdown beneath it to match.
+    function refreshSubjectDropdown(cat) {
+      const subjectSelect = document.getElementById(`${cat}-subjects`);
+      if (!subjectSelect) return;
+
+      const previousValue = subjectSelect.value;
+      const subjects = getKnownSubjects(cat);
+
+      subjectSelect.innerHTML = `<option value="">-- Select Subject --</option>`;
+      subjects.forEach(subj => {
+        const opt = document.createElement('option');
+        opt.value = subj;
+        opt.innerText = subj;
+        subjectSelect.appendChild(opt);
       });
 
-      fetchGitHubRepositoryQuizzes();
+      if (previousValue && subjects.includes(previousValue)) {
+        subjectSelect.value = previousValue;
+      }
+
+      refreshQuizDropdownForSubject(cat);
+    }
+
+    // Populates a category's Quiz dropdown with only the quizzes (local + remote) that belong
+    // to the currently selected subject. If no subject is selected yet, the quiz list is empty
+    // — pick a subject first, same pattern as the existing Category -> Quiz flow.
+    function refreshQuizDropdownForSubject(cat) {
+      const subjectSelect = document.getElementById(`${cat}-subjects`);
+      const quizSelect = document.getElementById(`${cat}-quizzes`);
+      if (!quizSelect) return;
+
+      const selectedSubject = subjectSelect ? subjectSelect.value : '';
+      const previousQuizValue = quizSelect.value;
+
+      quizSelect.innerHTML = `<option value="">-- Select ${cat.toUpperCase()} Quiz --</option>`;
+      if (!selectedSubject) return;
+
+      const storageKey = `savedQuizzes_${cat}`;
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      const addedNames = new Set();
+
+      Object.entries(saved).forEach(([name, q]) => {
+        if ((q.subject || 'General') === selectedSubject) {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.innerText = name;
+          quizSelect.appendChild(opt);
+          addedNames.add(name);
+        }
+      });
+
+      Object.entries(remoteQuizMeta[cat] || {}).forEach(([name, meta]) => {
+        if ((meta.subject || 'General') === selectedSubject && !addedNames.has(name)) {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.innerText = `🌐 ${name}`;
+          quizSelect.appendChild(opt);
+        }
+      });
+
+      if (previousQuizValue) {
+        for (let i = 0; i < quizSelect.options.length; i++) {
+          if (quizSelect.options[i].value === previousQuizValue) {
+            quizSelect.value = previousQuizValue;
+            break;
+          }
+        }
+      }
+    }
+
+    // Refreshes the Subject <datalist> suggestions on the post-upload setup card, based on
+    // whichever category is currently selected there.
+    function refreshSubjectDatalist() {
+      const categorySelect = document.getElementById('setup-category-select');
+      const datalist = document.getElementById('setup-subject-datalist');
+      if (!categorySelect || !datalist) return;
+      const subjects = getKnownSubjects(categorySelect.value || 'icma').filter(s => s !== 'General');
+      datalist.innerHTML = subjects.map(s => `<option value="${s.replace(/"/g, '&quot;')}"></option>`).join('');
+    }
+
+    function updateSavedQuizzesDropdowns() {
+      ['icma', 'ca', 'acca'].forEach(cat => refreshSubjectDropdown(cat));
+      fetchGitHubRepositoryQuizzes(); // will call refreshSubjectDropdown again per category once remote data arrives
     }
 
     // NOTE: now async, so it can await a remote fetch when a GitHub-hosted quiz is selected.
@@ -1031,6 +1153,7 @@
         activeQuizKey = selectedKey;
         if (select) select.value = activeQuizKey;
         const quizObj = saved[selectedKey];
+        activeSubject = quizObj.subject || 'General';
 
         originalQuizData = [...quizObj.originalQuizData];
         selectedAnswers = quizObj.selectedAnswers || {};
@@ -1078,9 +1201,10 @@
         return;
       }
 
-      // NEW: quiz isn't cached locally yet — check if it's a remote (GitHub-hosted) quiz
+      // Quiz isn't cached locally yet — check if it's a remote (GitHub-hosted) quiz
       // and, if so, actually fetch and load its content instead of doing nothing.
-      if (remoteQuizMeta[cat] && remoteQuizMeta[cat][selectedKey]) {
+      const remoteMeta = remoteQuizMeta[cat] && remoteQuizMeta[cat][selectedKey];
+      if (remoteMeta) {
         const statusEl = document.getElementById('extraction-status');
         try {
           if (statusEl) {
@@ -1088,7 +1212,7 @@
             statusEl.classList.remove('hidden');
           }
 
-          const res = await fetch(remoteQuizMeta[cat][selectedKey]);
+          const res = await fetch(remoteMeta.url);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
 
@@ -1099,6 +1223,7 @@
           originalQuizData = data.questions.map((q, i) => ({ ...q, masterIdx: i }));
           quizData = [...originalQuizData];
           activeQuizKey = selectedKey;
+          activeSubject = remoteMeta.subject || 'General';
           if (select) select.value = activeQuizKey;
           selectedAnswers = {};
           score = 0;
@@ -1106,7 +1231,7 @@
           isPracticingWrong = false;
 
           saveQuizStateToLocalStorage(); // cache locally so next load is instant
-          updateSavedQuizzesDropdowns();
+          refreshSubjectDropdown(cat); // no need to re-hit GitHub — just refresh from what we already have
 
           if (statusEl) statusEl.classList.add('hidden');
 
