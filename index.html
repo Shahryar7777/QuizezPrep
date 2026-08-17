@@ -49,7 +49,10 @@
 
       <!-- 2. Three Qualification Categories (CA, ACCA, ICMA) -->
       <div class="space-y-4 text-xs">
-        <p class="font-bold text-slate-400 uppercase tracking-wider text-[11px]">Quiz Libraries</p>
+        <div class="flex items-center justify-between">
+          <p class="font-bold text-slate-400 uppercase tracking-wider text-[11px]">Quiz Libraries</p>
+          <span id="github-sync-status" class="text-[10px] text-slate-500"></span>
+        </div>
 
         <!-- CA COLUMN -->
         <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80 space-y-2">
@@ -446,6 +449,8 @@
     let isPracticingWrong = false;
     let editingQuestionIndex = -1;
     let lastScrollTop = 0;
+    let isFreshUpload = false; // true right after a new PDF parse, used to warn before overwriting a same-named saved quiz
+    let timerEndTimestamp = null; // real-world epoch ms when the timer hits zero — see startTimer()
 
     // NEW: remembers each remote (GitHub-hosted) quiz's raw download URL so we can
     // actually fetch its content when selected, instead of just listing the filename.
@@ -480,38 +485,59 @@
     }
 
     // FETCH OFFICIAL QUIZZES FROM GITHUB REPOSITORY AUTOMATICALLY
+    // Rewritten with Promise.allSettled instead of a bare forEach(async ...), so we can
+    // actually tell when all three category fetches have finished (forEach never awaits its
+    // callbacks) and show a real loading/synced indicator instead of updating silently.
     async function fetchGitHubRepositoryQuizzes() {
-      ['icma', 'ca', 'acca'].forEach(async (cat) => {
-        try {
-          const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/quizzes/${cat}`;
-          const res = await fetch(url);
-          if (res.ok) {
-            const files = await res.json();
-            const select = document.getElementById(`${cat}-quizzes`);
-            if (!select) return;
-            
-            files.forEach(file => {
-              if (file.name.endsWith('.json')) {
-                const optName = file.name.replace('.json', '');
-                let exists = false;
-                for (let i = 0; i < select.options.length; i++) {
-                  if (select.options[i].value === optName) exists = true;
-                }
-                if (!exists) {
-                  const opt = document.createElement('option');
-                  opt.value = optName;
-                  opt.innerText = `🌐 ${optName}`;
-                  select.appendChild(opt);
-                }
-                // NEW: remember where to actually download this quiz's JSON from
-                remoteQuizMeta[cat][optName] = file.download_url;
-              }
-            });
+      const statusEl = document.getElementById('github-sync-status');
+      if (statusEl) {
+        statusEl.innerText = '🔄 Syncing...';
+        statusEl.title = 'Checking GitHub for published quizzes...';
+      }
+
+      const categories = ['icma', 'ca', 'acca'];
+      const results = await Promise.allSettled(categories.map(async (cat) => {
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/quizzes/${cat}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const files = await res.json();
+        const select = document.getElementById(`${cat}-quizzes`);
+        if (!select) return;
+
+        files.forEach(file => {
+          if (file.name.endsWith('.json')) {
+            const optName = file.name.replace('.json', '');
+            let exists = false;
+            for (let i = 0; i < select.options.length; i++) {
+              if (select.options[i].value === optName) exists = true;
+            }
+            if (!exists) {
+              const opt = document.createElement('option');
+              opt.value = optName;
+              opt.innerText = `🌐 ${optName}`;
+              select.appendChild(opt);
+            }
+            remoteQuizMeta[cat][optName] = file.download_url;
           }
-        } catch (e) {
-          console.log(`No remote quizzes found for ${cat}`);
+        });
+      }));
+
+      const anyFailed = results.some(r => r.status === 'rejected');
+      results.forEach((r, i) => {
+        if (r.status === 'rejected') {
+          console.log(`No remote quizzes found for ${categories[i]}:`, r.reason);
         }
       });
+
+      if (statusEl) {
+        if (anyFailed) {
+          statusEl.innerText = '⚠️ Sync incomplete';
+          statusEl.title = 'Some categories could not be reached (offline or GitHub API rate limit). Locally saved quizzes are unaffected.';
+        } else {
+          statusEl.innerText = '✅ Synced';
+          statusEl.title = `Quiz list last refreshed from GitHub at ${new Date().toLocaleTimeString()}`;
+        }
+      }
     }
 
     // --- DARK MODE TOGGLE ---
@@ -617,24 +643,30 @@
     }
 
     // --- PERSISTENT TIMER ENGINE ---
-    function startTimer(durationInSeconds) {
+    // Rewritten to count down from a fixed real-world end timestamp instead of decrementing a
+    // counter once per tick. A tick counter drifts (or effectively pauses) whenever the tab is
+    // backgrounded/throttled by the browser, or the laptop sleeps — recomputing "time left" from
+    // Date.now() on every tick instead keeps the countdown accurate regardless, and lets a timer
+    // correctly keep running (or discover it already expired) even if the tab was closed and reopened.
+    function startTimer(durationInSeconds, endTimestamp = null) {
       stopTimer();
-      secondsRemaining = durationInSeconds;
+      timerEndTimestamp = endTimestamp || (Date.now() + durationInSeconds * 1000);
       document.getElementById('timer-badge').classList.remove('hidden');
 
+      tickTimer(); // paint immediately instead of waiting a full second for the first tick
+      timerInterval = setInterval(tickTimer, 1000);
+    }
+
+    function tickTimer() {
+      secondsRemaining = Math.max(0, Math.round((timerEndTimestamp - Date.now()) / 1000));
       updateTimerDisplay();
+      saveQuizStateToLocalStorage();
 
-      timerInterval = setInterval(() => {
-        secondsRemaining--;
-        saveQuizStateToLocalStorage();
-        updateTimerDisplay();
-
-        if (secondsRemaining <= 0) {
-          stopTimer();
-          alert("⏱️ Time's up! Submitting your exam now.");
-          showExamSummaryModal();
-        }
-      }, 1000);
+      if (secondsRemaining <= 0) {
+        stopTimer();
+        alert("⏱️ Time's up! Submitting your exam now.");
+        showExamSummaryModal();
+      }
     }
 
     function stopTimer() {
@@ -642,6 +674,7 @@
         clearInterval(timerInterval);
         timerInterval = null;
       }
+      timerEndTimestamp = null;
       document.getElementById('timer-badge').classList.add('hidden');
     }
 
@@ -693,6 +726,7 @@
       selectedAnswers = {};
       score = 0;
       isPracticingWrong = false;
+      isFreshUpload = false;
       stopTimer();
 
       document.getElementById("quiz-container").innerHTML = `
@@ -745,12 +779,38 @@
 
     function startQuiz() {
       const categorySelect = document.getElementById("setup-category-select");
-      activeCategory = categorySelect.value || "icma";
+      const chosenCategory = categorySelect.value || "icma";
 
       if (activeMode === 'timer') {
         timerDurationMinutes = parseInt(document.getElementById('setup-timer-minutes').value || 10);
       }
 
+      // NEW: warn before silently overwriting an existing saved quiz with the same name.
+      // Only relevant right after a fresh PDF upload (isFreshUpload) — reopening or
+      // reconfiguring the mode of an already-saved quiz never triggers this.
+      if (isFreshUpload) {
+        const storageKey = `savedQuizzes_${chosenCategory}`;
+        const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        if (saved[activeQuizKey]) {
+          showConfirmationBox(
+            "Overwrite Existing Quiz?",
+            `A quiz named "${activeQuizKey}" already exists in your ${chosenCategory.toUpperCase()} library. Starting now will overwrite it and any saved progress on it. Continue?`,
+            function () {
+              activeCategory = chosenCategory;
+              isFreshUpload = false;
+              finalizeStartQuiz();
+            }
+          );
+          return;
+        }
+      }
+
+      activeCategory = chosenCategory;
+      isFreshUpload = false;
+      finalizeStartQuiz();
+    }
+
+    function finalizeStartQuiz() {
       saveQuizStateToLocalStorage();
       updateSavedQuizzesDropdowns();
 
@@ -827,7 +887,15 @@
         globalAnswerKey[qNum] = optionMap[ans];
       }
 
-      const rawQuestions = text.split(/(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]\s+[A-Z])/gi);
+      // FIX: previously required an uppercase Latin letter [A-Z] right after "N. "/"N) " to
+      // recognize it as the start of a new question. Any question stem starting with a
+      // quotation mark — e.g. 10. "Control" in an operating system means: — didn't match,
+      // so that whole question silently vanished into the previous question's captured text
+      // instead of becoming its own entry. No error was shown; it just disappeared from the
+      // output. Broadening the allowed character class to include common quote/paren openers
+      // fixes this (confirmed on a real 745-question source PDF: 674 parsed before this fix,
+      // 744 after).
+      const rawQuestions = text.split(/(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]\s+[A-Z"'\u2018\u2019\u201C\u201D\(])/gi);
 
       rawQuestions.forEach((qBlock, origIdx) => {
         const qMatch = qBlock.match(/^(?:Q|Q\.\s*)?(\d{1,4})\s*[\.\)]\s+([\s\S]+?)(?=\s+[A][\.\)]\s)/i);
@@ -854,7 +922,7 @@
             correctIdx = globalAnswerKey[qNum];
           }
 
-          let expText = inlineExpMatch ? cleanTextSpaces(inlineExpMatch[1]) : `Correct option according to Answer Key is Option ${['A','B','C','D'][correctIdx]}`;
+          let expText;
 
           const rawOptions = [
             cleanTextSpaces(optA[1]),
@@ -866,6 +934,14 @@
 
           const shuffledOptions = [...rawOptions].sort(() => Math.random() - 0.5);
           const newCorrectIdx = shuffledOptions.indexOf(correctText);
+
+          // FIX: the fallback explanation must be built AFTER shuffling and must reference
+          // newCorrectIdx (the shuffled position actually stored/highlighted as correct), not
+          // correctIdx (the pre-shuffle letter). Previously these could point at different
+          // options — e.g. explanation says "Option C" while the UI highlights D as correct.
+          expText = inlineExpMatch
+            ? cleanTextSpaces(inlineExpMatch[1])
+            : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`;
 
           parsedQuiz.push({
             masterIdx: origIdx,
@@ -888,6 +964,7 @@
         score = 0;
         currentPage = 1;
         isPracticingWrong = false;
+        isFreshUpload = true; // flags startQuiz() to check for a same-named quiz before overwriting it
 
         statusEl.innerText = `🎉 Loaded ${quizData.length} MCQs!`;
         document.getElementById("reset-quiz-btn").classList.add("hidden");
@@ -912,6 +989,7 @@
         activeMode: activeMode,
         timerDurationMinutes: timerDurationMinutes,
         secondsRemaining: secondsRemaining,
+        timerEndTimestamp: timerEndTimestamp,
         isPracticingWrong: isPracticingWrong,
         category: activeCategory
       };
@@ -944,6 +1022,7 @@
       const selectedKey = keyToLoad || (select ? select.value : null);
       if (!selectedKey) return;
 
+      isFreshUpload = false; // loading an existing saved/remote quiz is never an "overwrite" situation
       activeCategory = cat;
       let storageKey = `savedQuizzes_${cat}`;
       let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
@@ -983,8 +1062,17 @@
           renderPage();
 
           if (activeMode === 'timer') {
-            const secToRun = (quizObj.secondsRemaining !== undefined && quizObj.secondsRemaining > 0) ? quizObj.secondsRemaining : (timerDurationMinutes * 60);
-            startTimer(secToRun);
+            // Prefer resuming from the saved real-world end timestamp — accurate even if the
+            // browser was closed for a while (correctly discovers the timer already expired,
+            // rather than resuming as if no time had passed). Fall back to the older
+            // secondsRemaining field for quizzes saved before this change, then to a fresh timer.
+            if (quizObj.timerEndTimestamp) {
+              startTimer(null, quizObj.timerEndTimestamp);
+            } else if (quizObj.secondsRemaining !== undefined && quizObj.secondsRemaining > 0) {
+              startTimer(quizObj.secondsRemaining);
+            } else {
+              startTimer(timerDurationMinutes * 60);
+            }
           }
         }
         return;
@@ -1179,12 +1267,17 @@
         let optionsHTML = "";
         qData.options.forEach((opt, idx) => {
           let btnStyle = "border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-300 cursor-pointer";
+          // NEW: icon-based feedback in addition to color, so correctness isn't conveyed by color alone
+          // (helps colorblind users and improves scanability generally).
+          let feedbackIcon = "";
           if (userChoice !== undefined) {
             if (activeMode === 'practice') {
               if (idx === qData.correctAnswer) {
                 btnStyle = "border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-300 font-bold";
+                feedbackIcon = `<span class="ml-auto pl-2 text-emerald-600 dark:text-emerald-400 font-bold flex-shrink-0" aria-label="Correct answer">✓</span>`;
               } else if (idx === userChoice && userChoice !== qData.correctAnswer) {
                 btnStyle = "border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-300 font-bold";
+                feedbackIcon = `<span class="ml-auto pl-2 text-rose-600 dark:text-rose-400 font-bold flex-shrink-0" aria-label="Your incorrect answer">✗</span>`;
               }
             } else {
               if (idx === userChoice) {
@@ -1197,6 +1290,7 @@
             <button onclick="selectOption(${masterIdx}, ${idx})" ${userChoice !== undefined && activeMode === 'practice' ? 'disabled' : ''} class="w-full text-left p-3.5 rounded-lg border transition-colors duration-150 font-medium flex items-center ${btnStyle}">
               <span class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold mr-3 text-xs flex-shrink-0">${optionLabels[idx]}</span>
               <span class="text-xs md:text-sm">${opt}</span>
+              ${feedbackIcon}
             </button>
           `;
         });
