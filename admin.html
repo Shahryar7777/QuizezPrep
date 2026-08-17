@@ -37,11 +37,18 @@
     <main class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-6">
         <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">Select Target Qualification / Category:</label>
-            <select id="categorySelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
+            <select id="categorySelect" onchange="refreshSubjectSuggestions()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
                 <option value="icma">ICMA Quizzes</option>
                 <option value="ca">CA Quizzes</option>
                 <option value="acca">ACCA Quizzes</option>
             </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Subject / Topic (optional):</label>
+            <input type="text" id="subjectInput" list="subjectDatalist" placeholder="e.g. Generative AI &amp; Business Productivity" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+            <datalist id="subjectDatalist"></datalist>
+            <p class="text-xs text-slate-500 mt-1">Groups this quiz with others of the same subject in the app's sidebar (e.g. all chapters of one subject, plus its full question bank). Reuse an existing name to add to it. Leave blank to publish ungrouped ("General").</p>
         </div>
 
         <div class="border-2 border-dashed border-slate-800 rounded-xl p-8 text-center flex flex-col items-center justify-center bg-slate-950/50">
@@ -106,6 +113,42 @@
         // a server-side check, which a static GitHub Pages site can't provide.
         if (localStorage.getItem("admin_logged_in") !== "true") {
             window.location.href = "index.html";
+        }
+
+        // Existing subject subfolders per category, fetched from GitHub so the datalist can
+        // suggest names already in use (helps avoid accidentally creating "Gen AI" and
+        // "Generative AI" as two separate subjects by typo).
+        let knownSubjectsByCategory = { icma: [], ca: [], acca: [] };
+
+        async function fetchExistingSubjects(cat) {
+            try {
+                const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/quizzes/${cat}`;
+                const res = await fetch(url);
+                if (!res.ok) return [];
+                const entries = await res.json();
+                return entries
+                    .filter(e => e.type === 'dir')
+                    .map(e => e.name.replace(/[-_]+/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase()));
+            } catch (e) {
+                console.log(`Could not fetch existing subjects for ${cat}:`, e);
+                return [];
+            }
+        }
+
+        async function refreshSubjectSuggestions() {
+            const cat = document.getElementById("categorySelect").value || "icma";
+            if (!knownSubjectsByCategory[cat].length) {
+                knownSubjectsByCategory[cat] = await fetchExistingSubjects(cat);
+            }
+            const datalist = document.getElementById("subjectDatalist");
+            datalist.innerHTML = knownSubjectsByCategory[cat]
+                .map(s => `<option value="${s.replace(/"/g, '&quot;')}"></option>`)
+                .join('');
+        }
+        refreshSubjectSuggestions(); // populate for the default category on page load
+
+        function slugifySubject(subject) {
+            return subject.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         }
 
         function openTokenModal() {
@@ -307,9 +350,16 @@
             btn.innerText = "Publishing...";
 
             const category = document.getElementById("categorySelect").value;
+            const subjectRaw = document.getElementById("subjectInput").value.trim();
+            const subjectSlug = subjectRaw ? slugifySubject(subjectRaw) : '';
             const cleanName = parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
             const fileName = `${cleanName}_quiz.json`;
-            const filePath = `quizzes/${category}/${fileName}`;
+            // With a subject: quizzes/<cat>/<subject-slug>/<file>.json — groups this quiz with
+            // others of the same subject. Without one: quizzes/<cat>/<file>.json as before,
+            // which the app treats as subject "General".
+            const filePath = subjectSlug
+                ? `quizzes/${category}/${subjectSlug}/${fileName}`
+                : `quizzes/${category}/${fileName}`;
             const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(parsedQuizData, null, 2))));
             const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
 
@@ -333,7 +383,8 @@
                 });
 
                 if (response.ok) {
-                    setPublishStatus(`🚀 Published to quizzes/${category}/${fileName}`, false);
+                    setPublishStatus(`🚀 Published to ${filePath}`, false);
+                    knownSubjectsByCategory[category] = []; // force a re-fetch next time so the new subject shows up in suggestions
                 } else {
                     const errJson = await response.json().catch(() => ({}));
                     setPublishStatus(`Failed to publish (${response.status}): ${errJson.message || "Unknown error"}`, true);
