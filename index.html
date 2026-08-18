@@ -567,7 +567,8 @@
             title: q.title || key,
             count: (q.count !== undefined && q.count !== null) ? q.count : '?',
             type: q.type || 'chapter',
-            cachedLocally: false
+            cachedLocally: false,
+            fromRemote: true // published via admin.html — safe to delete the local cache, GitHub still has it
           });
         });
       });
@@ -584,7 +585,8 @@
             title: key,
             count: (q.originalQuizData || []).length || '?',
             type: 'chapter',
-            cachedLocally: true
+            cachedLocally: true,
+            fromRemote: false // uploaded straight from a PDF on this page — lives ONLY in this browser
           });
         }
       });
@@ -614,6 +616,15 @@
             const sourceBadge = q.cachedLocally ? '' : '🌐 ';
             const safeKey = q.key.replace(/'/g, "\\'");
             const safeSlug = slug.replace(/'/g, "\\'");
+            // The delete button itself signals whether this is safe (backed up on GitHub,
+            // deleting just clears the local cache) or permanent (never published, this
+            // browser is the only copy) — instead of both looking identical.
+            let deleteBtn = '';
+            if (q.cachedLocally && q.fromRemote) {
+              deleteBtn = `<button onclick="deleteLocalQuiz('${cat}', '${safeKey}', true)" title="Clear local cache (safe — still on GitHub)" class="text-slate-400 hover:text-slate-300 text-[11px] px-1 cursor-pointer flex-shrink-0">🗑️</button>`;
+            } else if (q.cachedLocally && !q.fromRemote) {
+              deleteBtn = `<button onclick="deleteLocalQuiz('${cat}', '${safeKey}', false)" title="Delete permanently — never published to GitHub" class="text-rose-400 hover:text-rose-300 text-[11px] px-1 cursor-pointer flex-shrink-0">⚠️🗑️</button>`;
+            }
             return `
               <div class="flex items-center gap-1">
                 <button onclick="loadQuiz('${cat}', '${safeKey}', false)"
@@ -621,7 +632,7 @@
                   <span class="truncate">${typeBadge} ${sourceBadge}${q.title}</span>
                   <span class="text-[10px] opacity-70 flex-shrink-0">${q.count}</span>
                 </button>
-                ${q.cachedLocally ? `<button onclick="deleteLocalQuiz('${cat}', '${safeKey}')" title="Remove local copy" class="text-rose-400 hover:text-rose-300 text-[11px] px-1 cursor-pointer flex-shrink-0">🗑️</button>` : ''}
+                ${deleteBtn}
               </div>`;
           }).join('');
 
@@ -636,10 +647,15 @@
       }).join('');
     }
 
-    function deleteLocalQuiz(cat, key) {
+    function deleteLocalQuiz(cat, key, isSafe) {
+      const title = isSafe ? "Clear Local Cache?" : "⚠️ Delete Permanently?";
+      const message = isSafe
+        ? `"${key}" is published on GitHub — this only clears it from this browser's cache. It'll simply re-download (🌐) next time you open it.`
+        : `"${key}" was uploaded straight from a PDF on this device and was NEVER published to GitHub. This browser is the only copy — deleting it is permanent and cannot be undone. If you want to keep it, cancel and publish it from the Admin page first.`;
+
       showConfirmationBox(
-        "Remove Local Copy?",
-        `Remove "${key}" from this browser's saved quizzes? This does not delete it from GitHub if it was published there — it'll just re-download next time you open it.`,
+        title,
+        message,
         function () {
           const storageKey = `savedQuizzes_${cat}`;
           const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
