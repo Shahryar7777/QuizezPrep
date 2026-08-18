@@ -1,0 +1,18 @@
+{
+  "icma": {
+    "gen-ai": {
+      "label": "Gen Ai",
+      "quizzes": [
+        {
+          "file": "gen_ai_1000_mcqs_quiz.json",
+          "title": "Gen Ai 1000 Mcqs",
+          "count": 993,
+          "type": "chapter",
+          "updatedAt": "2026-08-18T13:59:02.575Z"
+        }
+      ]
+    }
+  },
+  "ca": {},
+  "acca": {}
+}
