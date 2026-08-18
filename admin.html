@@ -67,6 +67,31 @@
                     <span id="mcqCountDisplay" class="text-xs text-indigo-400">0 MCQs Extracted</span>
                 </div>
 
+                <!-- Display Title (shown in the app's sidebar; independent of the underlying filename) -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Display Title (shown in the sidebar):</label>
+                    <input type="text" id="displayTitleInput" placeholder="e.g. Chapter 1: Introduction" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <!-- Chapter vs Full Question Bank -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Quiz Type:</label>
+                    <div class="flex gap-2">
+                        <button type="button" id="typeChapterBtn" onclick="setQuizType('chapter')" class="flex-1 py-2 text-xs font-semibold rounded-lg border transition bg-indigo-600 text-white border-indigo-600">
+                            📄 Chapter
+                        </button>
+                        <button type="button" id="typeFullBankBtn" onclick="setQuizType('full-bank')" class="flex-1 py-2 text-xs font-semibold rounded-lg border transition bg-slate-800 text-slate-300 border-slate-700">
+                            📚 Full Question Bank
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Full Question Bank quizzes are pinned separately from chapters in the sidebar for this subject (e.g. all 1000 MCQs in one file).</p>
+                </div>
+
+                <label class="flex items-center gap-2 text-xs text-slate-400">
+                    <input type="checkbox" id="shuffleBeforePublish" checked class="accent-indigo-600">
+                    Shuffle answer options before publishing (recommended — keeps the correct answer from always landing on the same letter)
+                </label>
+
                 <div id="previewArea" class="hidden max-h-40 overflow-y-auto text-xs text-slate-400 bg-slate-900/60 border border-slate-800 rounded-lg p-2 space-y-1"></div>
 
                 <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
@@ -79,6 +104,15 @@
                 </div>
                 <p id="publishStatus" class="hidden text-xs mt-1"></p>
             </div>
+        </div>
+
+        <!-- Recent catalog snapshot, so you can see at a glance what's already published without leaving this page -->
+        <div class="border-t border-slate-800 pt-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Current Catalog (from manifest.json)</span>
+                <button onclick="loadManifestPreview()" class="text-[11px] text-indigo-400 hover:text-indigo-300 cursor-pointer">🔄 Refresh</button>
+            </div>
+            <div id="catalogPreview" class="text-xs text-slate-500 italic">Not loaded yet.</div>
         </div>
     </main>
 
@@ -106,7 +140,10 @@
         // FIXED: this must exactly match your GitHub username (shahryar7777.github.io -> owner "shahryar7777")
         const REPO_OWNER = "shahryar7777";
         const REPO_NAME = "QuizezPrep";
+        const REPO_BRANCH = "main";
+        const MANIFEST_PATH = "quizzes/manifest.json";
         let parsedQuizData = null;
+        let selectedQuizType = 'chapter';
 
         // Cosmetic gate only — this is NOT real security, it just matches the flow from index.html.
         // Anyone who knows/guesses this URL can still open it directly; true protection would require
@@ -115,40 +152,123 @@
             window.location.href = "index.html";
         }
 
-        // Existing subject subfolders per category, fetched from GitHub so the datalist can
-        // suggest names already in use (helps avoid accidentally creating "Gen AI" and
-        // "Generative AI" as two separate subjects by typo).
-        let knownSubjectsByCategory = { icma: [], ca: [], acca: [] };
+        function authHeaders() {
+            const token = localStorage.getItem("github_pat");
+            return token ? { "Authorization": `token ${token}` } : {};
+        }
 
-        async function fetchExistingSubjects(cat) {
+        // === MANIFEST HELPERS ==========================================================
+        // manifest.json is the single source of truth the public index.html reads to build
+        // its sidebar. Shape: { <cat>: { <subjectSlug>: { label, quizzes: [{file,title,count,type}] } } }
+        // Every publish both writes the quiz .json AND updates this file in the same flow,
+        // using the authenticated Contents API (so it isn't subject to the 60/hr anonymous
+        // rate limit that silently broke reads before).
+        async function getManifest() {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${MANIFEST_PATH}`;
+            const res = await fetch(url, { headers: authHeaders() });
+            if (res.status === 404) {
+                return { data: { icma: {}, ca: {}, acca: {} }, sha: null };
+            }
+            if (!res.ok) {
+                const errJson = await res.json().catch(() => ({}));
+                throw new Error(`Could not read manifest.json (${res.status}): ${errJson.message || res.statusText}`);
+            }
+            const fileInfo = await res.json();
+            const decoded = decodeURIComponent(escape(atob(fileInfo.content.replace(/\n/g, ''))));
+            let data;
             try {
-                const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/quizzes/${cat}`;
-                const res = await fetch(url);
-                if (!res.ok) return [];
-                const entries = await res.json();
-                return entries
-                    .filter(e => e.type === 'dir')
-                    .map(e => e.name.replace(/[-_]+/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase()));
+                data = JSON.parse(decoded);
             } catch (e) {
-                console.log(`Could not fetch existing subjects for ${cat}:`, e);
-                return [];
+                data = { icma: {}, ca: {}, acca: {} };
+            }
+            ['icma', 'ca', 'acca'].forEach(cat => { if (!data[cat]) data[cat] = {}; });
+            return { data, sha: fileInfo.sha };
+        }
+
+        async function putManifest(manifestData, sha) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${MANIFEST_PATH}`;
+            const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(manifestData, null, 2))));
+            const res = await fetch(url, {
+                method: "PUT",
+                headers: { ...authHeaders(), "Content-Type": "application/json" },
+                body: JSON.stringify({ message: `Update manifest.json`, content: contentEncoded, sha: sha || undefined })
+            });
+            if (!res.ok) {
+                const errJson = await res.json().catch(() => ({}));
+                throw new Error(`Failed to update manifest.json (${res.status}): ${errJson.message || res.statusText}`);
             }
         }
 
+        function upsertManifestEntry(manifestData, category, subjectSlug, subjectLabel, entry) {
+            if (!manifestData[category]) manifestData[category] = {};
+            if (!manifestData[category][subjectSlug]) {
+                manifestData[category][subjectSlug] = { label: subjectLabel, quizzes: [] };
+            }
+            manifestData[category][subjectSlug].label = subjectLabel; // keep label fresh if renamed
+            const list = manifestData[category][subjectSlug].quizzes;
+            const idx = list.findIndex(q => q.file === entry.file);
+            if (idx >= 0) list[idx] = entry; else list.push(entry);
+            return manifestData;
+        }
+
+        function humanizeSubjectSlug(slug) {
+            return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+        }
+
+        async function loadManifestPreview() {
+            const el = document.getElementById('catalogPreview');
+            el.innerText = 'Loading...';
+            try {
+                const { data } = await getManifest();
+                const lines = [];
+                ['icma', 'ca', 'acca'].forEach(cat => {
+                    const subjects = data[cat] || {};
+                    Object.entries(subjects).forEach(([slug, subj]) => {
+                        const quizNames = (subj.quizzes || []).map(q => `${q.type === 'full-bank' ? '📚' : '📄'} ${q.title} (${q.count})`).join(', ');
+                        if (quizNames) lines.push(`<div><span class="text-slate-300 font-semibold">${cat.toUpperCase()} / ${subj.label || humanizeSubjectSlug(slug)}:</span> ${quizNames}</div>`);
+                    });
+                });
+                el.innerHTML = lines.length ? lines.join('') : '<span class="italic">manifest.json is empty — nothing published yet.</span>';
+            } catch (e) {
+                el.innerHTML = `<span class="text-rose-400">${e.message}</span>`;
+            }
+        }
+        // === END MANIFEST HELPERS ======================================================
+
+        function slugifySubject(subject) {
+            const slug = subject.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            return slug || 'general';
+        }
+
+        // Existing subject subfolders per category, sourced from manifest.json, so the
+        // datalist can suggest names already in use (avoids "Gen AI" vs "Generative AI"
+        // becoming two separate subjects by typo).
+        let knownSubjectsByCategory = { icma: [], ca: [], acca: [] };
+
         async function refreshSubjectSuggestions() {
             const cat = document.getElementById("categorySelect").value || "icma";
-            if (!knownSubjectsByCategory[cat].length) {
-                knownSubjectsByCategory[cat] = await fetchExistingSubjects(cat);
+            try {
+                const { data } = await getManifest();
+                knownSubjectsByCategory[cat] = Object.values(data[cat] || {}).map(s => s.label).filter(Boolean);
+            } catch (e) {
+                console.log(`Could not fetch existing subjects for ${cat}:`, e);
             }
             const datalist = document.getElementById("subjectDatalist");
             datalist.innerHTML = knownSubjectsByCategory[cat]
                 .map(s => `<option value="${s.replace(/"/g, '&quot;')}"></option>`)
                 .join('');
         }
-        refreshSubjectSuggestions(); // populate for the default category on page load
+        refreshSubjectSuggestions();
+        loadManifestPreview();
 
-        function slugifySubject(subject) {
-            return subject.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        function setQuizType(type) {
+            selectedQuizType = type;
+            const chapterBtn = document.getElementById('typeChapterBtn');
+            const fullBankBtn = document.getElementById('typeFullBankBtn');
+            const active = "flex-1 py-2 text-xs font-semibold rounded-lg border transition bg-indigo-600 text-white border-indigo-600";
+            const inactive = "flex-1 py-2 text-xs font-semibold rounded-lg border transition bg-slate-800 text-slate-300 border-slate-700";
+            chapterBtn.className = type === 'chapter' ? active : inactive;
+            fullBankBtn.className = type === 'full-bank' ? active : inactive;
         }
 
         function openTokenModal() {
@@ -176,6 +296,7 @@
             document.getElementById("mcqCountDisplay").innerText = "Extracting and parsing MCQs...";
             document.getElementById("previewArea").classList.add("hidden");
             document.getElementById("publishStatus").classList.add("hidden");
+            setQuizType('chapter');
 
             try {
                 const arrayBuffer = await file.arrayBuffer();
@@ -197,10 +318,13 @@
                     return;
                 }
 
+                const title = file.name.replace(/\.[^/.]+$/, "");
                 parsedQuizData = {
-                    title: file.name.replace(/\.[^/.]+$/, ""),
+                    title: title,
                     questions: questions
                 };
+
+                document.getElementById("displayTitleInput").value = title;
 
                 document.getElementById("mcqCountDisplay").innerText =
                     `Successfully Parsed (${questions.length} Questions Found)`;
@@ -245,8 +369,9 @@
                 .trim();
         }
 
-        // --- REAL parser, ported from index.html's parseMCQsLocally, instead of the old placeholder ---
-        // Returns an array of question objects ready to drop into quizData/originalQuizData on load.
+        // --- Parser, ported from index.html's parseMCQsLocally. Options are NOT shuffled
+        // here (that happens right before publish, gated by the "shuffle before publish"
+        // checkbox, so the preview above always shows raw, easy-to-verify A/B/C/D order). ---
         function parseMCQsLocally(text) {
             const parsedQuiz = [];
 
@@ -259,10 +384,6 @@
                 globalAnswerKey[qNum] = optionMap[ans];
             }
 
-            // FIX: broadened to also recognize question stems that start with a quotation
-            // mark or parenthesis (e.g. 10. "Control" in an operating system means:), not just
-            // a capital letter — previously such questions were silently dropped entirely
-            // rather than producing a visible error. See index.html for the full writeup.
             const rawQuestions = text.split(/(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]\s+[A-Z"'\u2018\u2019\u201C\u201D\(])/gi);
 
             rawQuestions.forEach((qBlock, origIdx) => {
@@ -312,9 +433,26 @@
                 }
             });
 
-            // Re-index masterIdx sequentially so it lines up cleanly once loaded into the app
             parsedQuiz.forEach((q, i) => q.masterIdx = i);
             return parsedQuiz;
+        }
+
+        // Shuffles each question's options in place and rewrites correctAnswer + any
+        // auto-generated (non-inline) explanation to match the new position — mirrors the
+        // logic index.html uses for locally-uploaded PDFs, so published quizzes behave the
+        // same way as ones a student uploads themselves.
+        function shuffleQuizOptions(quiz) {
+            quiz.questions.forEach(q => {
+                const correctText = q.options[q.correctAnswer];
+                const wasAutoExplanation = /^Correct option according to Answer Key is Option [A-D]$/.test(q.explanation || '');
+                const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+                const newCorrectIdx = shuffled.indexOf(correctText);
+                q.options = shuffled;
+                q.correctAnswer = newCorrectIdx;
+                if (wasAutoExplanation) {
+                    q.explanation = `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`;
+                }
+            });
         }
 
         function downloadQuizJSON() {
@@ -349,49 +487,66 @@
             btn.disabled = true;
             btn.innerText = "Publishing...";
 
-            const category = document.getElementById("categorySelect").value;
-            const subjectRaw = document.getElementById("subjectInput").value.trim();
-            const subjectSlug = subjectRaw ? slugifySubject(subjectRaw) : '';
-            const cleanName = parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            const fileName = `${cleanName}_quiz.json`;
-            // With a subject: quizzes/<cat>/<subject-slug>/<file>.json — groups this quiz with
-            // others of the same subject. Without one: quizzes/<cat>/<file>.json as before,
-            // which the app treats as subject "General".
-            const filePath = subjectSlug
-                ? `quizzes/${category}/${subjectSlug}/${fileName}`
-                : `quizzes/${category}/${fileName}`;
-            const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(parsedQuizData, null, 2))));
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
-
             try {
+                const category = document.getElementById("categorySelect").value;
+                const subjectRaw = document.getElementById("subjectInput").value.trim();
+                const subjectSlug = slugifySubject(subjectRaw); // 'general' when blank
+                const subjectLabel = subjectRaw || 'General';
+                const displayTitle = (document.getElementById("displayTitleInput").value.trim()) || parsedQuizData.title;
+
+                if (document.getElementById("shuffleBeforePublish").checked) {
+                    shuffleQuizOptions(parsedQuizData);
+                }
+
+                const cleanName = parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                const fileName = `${cleanName}_quiz.json`;
+                // Every quiz now lives under its subject folder, including "General" — this
+                // keeps ONE consistent path shape instead of two, which is what the manifest
+                // (and index.html's raw-URL builder) both assume.
+                const filePath = `quizzes/${category}/${subjectSlug}/${fileName}`;
+                const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(parsedQuizData, null, 2))));
+                const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
+
+                // Step 1: publish the quiz file itself
                 let sha = null;
-                const checkRes = await fetch(url, { headers: { "Authorization": `token ${token}` } });
+                const checkRes = await fetch(url, { headers: authHeaders() });
                 if (checkRes.ok) {
                     const data = await checkRes.json();
                     sha = data.sha;
                 } else if (checkRes.status !== 404) {
-                    // 404 here just means "file doesn't exist yet" — fine, we're creating it.
-                    // Anything else (401/403) means the token itself is the problem.
                     const errJson = await checkRes.json().catch(() => ({}));
                     throw new Error(`Token check failed (${checkRes.status}): ${errJson.message || checkRes.statusText}`);
                 }
 
-                const response = await fetch(url, {
+                const putRes = await fetch(url, {
                     method: "PUT",
-                    headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
+                    headers: { ...authHeaders(), "Content-Type": "application/json" },
                     body: JSON.stringify({ message: `Add ${fileName}`, content: contentEncoded, sha: sha || undefined })
                 });
 
-                if (response.ok) {
-                    setPublishStatus(`🚀 Published to ${filePath}`, false);
-                    knownSubjectsByCategory[category] = []; // force a re-fetch next time so the new subject shows up in suggestions
-                } else {
-                    const errJson = await response.json().catch(() => ({}));
-                    setPublishStatus(`Failed to publish (${response.status}): ${errJson.message || "Unknown error"}`, true);
+                if (!putRes.ok) {
+                    const errJson = await putRes.json().catch(() => ({}));
+                    throw new Error(`Failed to publish quiz file (${putRes.status}): ${errJson.message || "Unknown error"}`);
                 }
+
+                // Step 2: update manifest.json so index.html's sidebar picks this up in one read
+                const { data: manifestData, sha: manifestSha } = await getManifest();
+                upsertManifestEntry(manifestData, category, subjectSlug, subjectLabel, {
+                    file: fileName,
+                    title: displayTitle,
+                    count: parsedQuizData.questions.length,
+                    type: selectedQuizType,
+                    updatedAt: new Date().toISOString()
+                });
+                await putManifest(manifestData, manifestSha);
+
+                setPublishStatus(`🚀 Published "${displayTitle}" to ${filePath} and updated manifest.json`, false);
+                knownSubjectsByCategory[category] = [];
+                refreshSubjectSuggestions();
+                loadManifestPreview();
             } catch (error) {
                 console.error(error);
-                setPublishStatus(`Network or auth error: ${error.message}`, true);
+                setPublishStatus(`${error.message}`, true);
             } finally {
                 btn.disabled = false;
                 btn.innerText = "🚀 Publish to GitHub";
