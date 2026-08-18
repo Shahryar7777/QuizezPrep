@@ -18,7 +18,7 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 min-h-screen text-slate-800 dark:text-slate-100 flex flex-col md:flex-row overflow-x-hidden transition-colors duration-200">
 
-  <!-- COLLAPSIBLE SIDEBAR (REORDERED DESIGN) -->
+  <!-- COLLAPSIBLE SIDEBAR -->
   <aside id="sidebar" class="bg-slate-900 dark:bg-slate-900 text-white w-80 p-6 flex flex-col justify-between flex-shrink-0 transition-all duration-300 transform -translate-x-full fixed inset-y-0 left-0 z-50 shadow-2xl overflow-y-auto max-h-screen border-r border-slate-800">
     <div class="space-y-6">
       <!-- Sidebar Header -->
@@ -32,7 +32,7 @@
         </button>
       </div>
 
-      <!-- 1. Active Quiz Mode & Shuffle Questions on Top -->
+      <!-- Active Quiz Mode & Shuffle Questions -->
       <div class="space-y-3">
         <div id="sidebar-mode-section" class="hidden text-xs bg-indigo-950/60 p-3 rounded-xl border border-indigo-800/60">
           <label class="block font-bold text-indigo-300 uppercase tracking-wider mb-2">Active Quiz Mode</label>
@@ -47,68 +47,47 @@
         </button>
       </div>
 
-      <!-- 2. Three Qualification Categories (CA, ACCA, ICMA) -->
+      <!-- Quiz Libraries: Category -> Subject -> Chapter/Full-Bank tree -->
       <div class="space-y-4 text-xs">
         <div class="flex items-center justify-between">
           <p class="font-bold text-slate-400 uppercase tracking-wider text-[11px]">Quiz Libraries</p>
-          <span id="github-sync-status" class="text-[10px] text-slate-500"></span>
+          <div class="flex items-center gap-2">
+            <span id="github-sync-status" class="text-[10px] text-slate-500"></span>
+            <button onclick="fetchGitHubRepositoryQuizzes()" title="Refresh catalog from GitHub" class="text-[11px] text-indigo-400 hover:text-indigo-300 cursor-pointer">🔄</button>
+          </div>
         </div>
 
         <!-- CA COLUMN -->
         <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80 space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-              🎓 CA Quizzes
-            </span>
-            <button onclick="confirmDeleteCategoryQuiz('ca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
-          </div>
-          <select id="ca-subjects" onchange="refreshQuizDropdownForSubject('ca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
-            <option value="">-- Select Subject --</option>
-          </select>
-          <select id="ca-quizzes" onchange="loadSavedQuizFromCategory('ca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
-            <option value="">-- Select CA Quiz --</option>
-          </select>
+          <span class="font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+            🎓 CA Quizzes
+          </span>
+          <div id="ca-tree" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
         </div>
 
         <!-- ACCA COLUMN -->
         <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80 space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-              💼 ACCA Quizzes
-            </span>
-            <button onclick="confirmDeleteCategoryQuiz('acca')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
-          </div>
-          <select id="acca-subjects" onchange="refreshQuizDropdownForSubject('acca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
-            <option value="">-- Select Subject --</option>
-          </select>
-          <select id="acca-quizzes" onchange="loadSavedQuizFromCategory('acca')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
-            <option value="">-- Select ACCA Quiz --</option>
-          </select>
+          <span class="font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+            💼 ACCA Quizzes
+          </span>
+          <div id="acca-tree" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
         </div>
 
         <!-- ICMA COLUMN -->
         <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80 space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-              🏛️ ICMA Quizzes
-            </span>
-            <button onclick="confirmDeleteCategoryQuiz('icma')" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer">Delete</button>
-          </div>
-          <select id="icma-subjects" onchange="refreshQuizDropdownForSubject('icma')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
-            <option value="">-- Select Subject --</option>
-          </select>
-          <select id="icma-quizzes" onchange="loadSavedQuizFromCategory('icma')" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none cursor-pointer">
-            <option value="">-- Select ICMA Quiz --</option>
-          </select>
+          <span class="font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+            🏛️ ICMA Quizzes
+          </span>
+          <div id="icma-tree" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
         </div>
       </div>
 
-      <!-- 3. Dark Mode & Go to Admin Page Buttons at Bottom -->
+      <!-- Dark Mode & Admin -->
       <div class="space-y-2 text-xs border-t border-slate-800 pt-4">
         <button onclick="toggleDarkMode()" class="w-full py-2.5 bg-slate-800 border border-slate-700 text-slate-200 font-semibold rounded-lg hover:bg-slate-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-sm">
           <span id="dark-mode-icon">🌙</span> <span id="dark-mode-text">Dark Mode</span>
         </button>
-        
+
         <button onclick="openAdminLoginModal()" class="w-full py-2.5 bg-indigo-900/50 border border-indigo-700 text-indigo-300 font-semibold rounded-lg hover:bg-indigo-900/70 transition flex items-center justify-center gap-2 cursor-pointer shadow-sm">
           🔐 Go to Admin Uploader Page
         </button>
@@ -135,7 +114,7 @@
 
   <!-- MAIN CONTENT AREA -->
   <div class="flex-1 flex flex-col min-h-screen p-4 md:p-8 pt-20">
-    
+
     <!-- Top Bar Header -->
     <div id="top-header" class="fixed top-0 left-0 right-0 z-30 transition-transform duration-300 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-3 shadow-sm">
       <div class="max-w-3xl mx-auto flex justify-between items-center">
@@ -149,7 +128,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- Dynamic Header Upload Button -->
           <button id="header-upload-btn" onclick="headerResetAndUpload()" class="hidden px-3.5 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition text-xs shadow flex items-center gap-1.5 cursor-pointer">
             📁 Choose / Upload
           </button>
@@ -170,7 +148,7 @@
         </svg>
         <h3 class="font-bold text-indigo-950 dark:text-indigo-200 mb-1 text-sm md:text-base">Upload Study PDF</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Upload any MCQ PDF format to convert it instantly into an interactive quiz</p>
-        
+
         <input type="file" id="pdf-input" accept="application/pdf" class="hidden" onchange="handlePDFUpload(event)">
         <button onclick="document.getElementById('pdf-input').click()" class="px-6 py-2.5 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-lg hover:bg-indigo-700 shadow-md transition cursor-pointer">
           Choose PDF File
@@ -319,13 +297,13 @@
   <div id="mode-modal" class="hidden fixed inset-0 bg-slate-900/60 flex justify-center items-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-sm rounded-xl p-6 shadow-2xl space-y-5 text-center">
       <h3 class="font-bold text-base text-slate-900 dark:text-slate-100">Select Quiz Mode</h3>
-      
+
       <div class="space-y-2.5 text-xs text-left">
         <button onclick="applyModeFromModal('practice')" class="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-bold flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer">
           <span>📘 Practice Mode</span>
           <span class="text-[10px] text-slate-500 font-normal">Instant Answers</span>
         </button>
-        
+
         <button onclick="applyModeFromModal('exam')" class="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-bold flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer">
           <span>📝 Exam Mode</span>
           <span class="text-[10px] text-slate-500 font-normal">Hidden Answers</span>
@@ -399,7 +377,7 @@
   <div id="edit-modal" class="hidden fixed inset-0 bg-slate-900/50 flex justify-center items-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-lg rounded-xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
       <h3 class="font-bold text-lg text-slate-900 dark:text-slate-100 mb-4">Edit Question</h3>
-      
+
       <div class="space-y-3 text-xs">
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Question Text:</label>
@@ -455,7 +433,7 @@
     let originalQuizData = [];
     let activeQuizKey = "";
     let activeCategory = "icma";
-    let activeSubject = "General"; // NEW: groups quizzes under a subject within a category (e.g. all Gen AI chapters + full bank together)
+    let activeSubject = "General";
     let currentPage = 1;
     const questionsPerPage = 10;
     let selectedAnswers = {};
@@ -467,17 +445,326 @@
     let isPracticingWrong = false;
     let editingQuestionIndex = -1;
     let lastScrollTop = 0;
-    let isFreshUpload = false; // true right after a new PDF parse, used to warn before overwriting a same-named saved quiz
-    let timerEndTimestamp = null; // real-world epoch ms when the timer hits zero — see startTimer()
-
-    // Remembers each remote (GitHub-hosted) quiz's download URL AND which subject folder it
-    // came from, so we can fetch its content on demand and group it correctly in the sidebar.
-    // Shape: remoteQuizMeta[category][quizName] = { url, subject }
-    let remoteQuizMeta = { icma: {}, ca: {}, acca: {} };
+    let isFreshUpload = false;
+    let timerEndTimestamp = null;
 
     // --- HARDCODED REPO CREDENTIALS ---
     const REPO_OWNER = "shahryar7777";
     const REPO_NAME = "QuizezPrep";
+    const REPO_BRANCH = "main";
+    const MANIFEST_PATH = "quizzes/manifest.json";
+
+    // === CATALOG (manifest-driven) ===============================================
+    // Shape of remoteManifest[cat]: { <subjectSlug>: { label, quizzes: [{file,title,count,type}] } }
+    // 'type' is 'chapter' or 'full-bank'. This whole object comes from ONE fetch of
+    // manifest.json instead of recursively walking GitHub API folders (which is what
+    // silently broke before: the recursive walk hits GitHub's 60/hr anonymous API rate
+    // limit fast during normal testing, fails quietly, and only shows a tiny gray
+    // "Sync incomplete" label in the sidebar). Reading manifest.json via
+    // raw.githubusercontent.com is a single request and isn't subject to that limit.
+    let remoteManifest = { icma: {}, ca: {}, acca: {} };
+
+    function slugifySubjectClient(subject) {
+      const slug = (subject || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      return slug || 'general';
+    }
+    function humanizeSubjectSlug(slug) {
+      return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+    }
+    function manifestRawUrl() {
+      return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/${MANIFEST_PATH}?t=${Date.now()}`;
+    }
+    function quizRawUrl(cat, subjectSlug, file) {
+      return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/quizzes/${cat}/${subjectSlug}/${file}?t=${Date.now()}`;
+    }
+
+    async function fetchGitHubRepositoryQuizzes() {
+      const statusEl = document.getElementById('github-sync-status');
+      if (statusEl) { statusEl.innerText = '🔄 Syncing...'; statusEl.title = 'Fetching catalog from GitHub...'; }
+
+      try {
+        const res = await fetch(manifestRawUrl(), { cache: 'no-store' });
+        if (res.status === 404) {
+          remoteManifest = { icma: {}, ca: {}, acca: {} };
+        } else if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        } else {
+          remoteManifest = await res.json();
+        }
+        if (statusEl) { statusEl.innerText = '✅ Synced'; statusEl.title = `Catalog last refreshed at ${new Date().toLocaleTimeString()}`; }
+      } catch (err) {
+        console.log('Could not load manifest.json:', err);
+        if (statusEl) { statusEl.innerText = '⚠️ Sync failed'; statusEl.title = 'Could not reach the GitHub catalog (offline, or manifest.json missing/not published yet). Locally saved quizzes are unaffected.'; }
+      }
+
+      refreshCatalogUI();
+    }
+
+    // Re-renders the sidebar trees from whatever we currently have in memory/localStorage.
+    // No network call — safe to call often (after start/delete/upload) without re-hitting GitHub.
+    function refreshCatalogUI() {
+      ['icma', 'ca', 'acca'].forEach(cat => renderCategoryTree(cat));
+    }
+
+    function findRemoteMeta(cat, key) {
+      const remoteCat = remoteManifest[cat] || {};
+      for (const [slug, subj] of Object.entries(remoteCat)) {
+        const match = (subj.quizzes || []).find(q => q.file.replace(/\.json$/i, '') === key);
+        if (match) {
+          return {
+            url: quizRawUrl(cat, slug, match.file),
+            subject: subj.label || humanizeSubjectSlug(slug),
+            title: match.title || key,
+            count: match.count,
+            type: match.type || 'chapter'
+          };
+        }
+      }
+      return null;
+    }
+
+    function getKnownSubjectLabels(cat) {
+      const labels = new Set(['General']);
+      const remoteCat = remoteManifest[cat] || {};
+      Object.values(remoteCat).forEach(s => labels.add(s.label || 'General'));
+      const storageKey = `savedQuizzes_${cat}`;
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      Object.values(saved).forEach(q => labels.add(q.subject || 'General'));
+      return Array.from(labels).sort((a, b) => {
+        if (a === 'General') return 1;
+        if (b === 'General') return -1;
+        return a.localeCompare(b);
+      });
+    }
+
+    function refreshSubjectDatalist() {
+      const categorySelect = document.getElementById('setup-category-select');
+      const datalist = document.getElementById('setup-subject-datalist');
+      if (!categorySelect || !datalist) return;
+      const subjects = getKnownSubjectLabels(categorySelect.value || 'icma').filter(s => s !== 'General');
+      datalist.innerHTML = subjects.map(s => `<option value="${s.replace(/"/g, '&quot;')}"></option>`).join('');
+    }
+
+    // Builds the collapsible Subject -> Chapters/Full-Bank tree for one category,
+    // merging what's published on GitHub (remoteManifest) with whatever's cached or
+    // was uploaded straight from a PDF and only exists in this browser (localStorage).
+    function renderCategoryTree(cat) {
+      const container = document.getElementById(`${cat}-tree`);
+      if (!container) return;
+
+      const storageKey = `savedQuizzes_${cat}`;
+      const localSaved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      const remoteCat = remoteManifest[cat] || {};
+
+      const subjects = {};
+
+      Object.entries(remoteCat).forEach(([slug, subj]) => {
+        subjects[slug] = { label: subj.label || humanizeSubjectSlug(slug), quizzes: [] };
+        (subj.quizzes || []).forEach(q => {
+          const key = q.file.replace(/\.json$/i, '');
+          subjects[slug].quizzes.push({
+            key,
+            title: q.title || key,
+            count: (q.count !== undefined && q.count !== null) ? q.count : '?',
+            type: q.type || 'chapter',
+            cachedLocally: false
+          });
+        });
+      });
+
+      Object.entries(localSaved).forEach(([key, q]) => {
+        const slug = slugifySubjectClient(q.subject || 'General');
+        if (!subjects[slug]) subjects[slug] = { label: q.subject || 'General', quizzes: [] };
+        const existing = subjects[slug].quizzes.find(item => item.key === key);
+        if (existing) {
+          existing.cachedLocally = true;
+        } else {
+          subjects[slug].quizzes.push({
+            key,
+            title: key,
+            count: (q.originalQuizData || []).length || '?',
+            type: 'chapter',
+            cachedLocally: true
+          });
+        }
+      });
+
+      const slugs = Object.keys(subjects).sort((a, b) => {
+        if (a === 'general') return 1;
+        if (b === 'general') return -1;
+        return subjects[a].label.localeCompare(subjects[b].label);
+      });
+
+      if (slugs.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-slate-500 italic px-1 py-2">No quizzes yet — upload a PDF or publish one from the admin page.</p>`;
+        return;
+      }
+
+      container.innerHTML = slugs.map(slug => {
+        const subj = subjects[slug];
+        const rows = subj.quizzes
+          .slice()
+          .sort((a, b) => {
+            if (a.type !== b.type) return a.type === 'full-bank' ? 1 : -1;
+            return a.title.localeCompare(b.title);
+          })
+          .map(q => {
+            const isActive = (activeCategory === cat && activeQuizKey === q.key);
+            const typeBadge = q.type === 'full-bank' ? '📚' : '📄';
+            const sourceBadge = q.cachedLocally ? '' : '🌐 ';
+            const safeKey = q.key.replace(/'/g, "\\'");
+            const safeSlug = slug.replace(/'/g, "\\'");
+            return `
+              <div class="flex items-center gap-1">
+                <button onclick="loadQuiz('${cat}', '${safeKey}', false)"
+                  class="flex-1 min-w-0 text-left px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition cursor-pointer flex items-center justify-between gap-2 ${isActive ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-300 hover:bg-slate-700'}">
+                  <span class="truncate">${typeBadge} ${sourceBadge}${q.title}</span>
+                  <span class="text-[10px] opacity-70 flex-shrink-0">${q.count}</span>
+                </button>
+                ${q.cachedLocally ? `<button onclick="deleteLocalQuiz('${cat}', '${safeKey}')" title="Remove local copy" class="text-rose-400 hover:text-rose-300 text-[11px] px-1 cursor-pointer flex-shrink-0">🗑️</button>` : ''}
+              </div>`;
+          }).join('');
+
+        return `
+          <details class="group rounded-lg" ${slugs.length <= 2 ? 'open' : ''}>
+            <summary class="cursor-pointer list-none text-[11px] font-bold text-slate-300 flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-900/60 hover:bg-slate-900">
+              <span class="truncate">📂 ${subj.label}</span>
+              <span class="text-[10px] text-slate-500 flex-shrink-0 ml-2">${subj.quizzes.length}</span>
+            </summary>
+            <div class="mt-1 space-y-1 pl-1.5">${rows || '<p class="text-[10px] text-slate-500 italic px-2 py-1">Empty</p>'}</div>
+          </details>`;
+      }).join('');
+    }
+
+    function deleteLocalQuiz(cat, key) {
+      showConfirmationBox(
+        "Remove Local Copy?",
+        `Remove "${key}" from this browser's saved quizzes? This does not delete it from GitHub if it was published there — it'll just re-download next time you open it.`,
+        function () {
+          const storageKey = `savedQuizzes_${cat}`;
+          const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+          delete saved[key];
+          localStorage.setItem(storageKey, JSON.stringify(saved));
+          if (activeQuizKey === key && activeCategory === cat) {
+            activeQuizKey = "";
+            headerResetAndUpload();
+          }
+          refreshCatalogUI();
+        }
+      );
+    }
+
+    // Loads a quiz by (category, key). Checks the local cache first, then falls back
+    // to fetching it straight from GitHub via the manifest-derived raw URL.
+    async function loadQuiz(cat, key, showSetup = false) {
+      if (!key) return;
+
+      isFreshUpload = false;
+      activeCategory = cat;
+      const storageKey = `savedQuizzes_${cat}`;
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+      if (saved[key]) {
+        activeQuizKey = key;
+        const quizObj = saved[key];
+        activeSubject = quizObj.subject || 'General';
+
+        originalQuizData = [...quizObj.originalQuizData];
+        selectedAnswers = quizObj.selectedAnswers || {};
+        activeMode = quizObj.activeMode || 'practice';
+        timerDurationMinutes = quizObj.timerDurationMinutes || 10;
+        isPracticingWrong = quizObj.isPracticingWrong || false;
+
+        setMode(activeMode, timerDurationMinutes);
+
+        if (isPracticingWrong && quizObj.quizData && quizObj.quizData.length > 0) {
+          quizData = [...quizObj.quizData];
+          document.getElementById("reset-quiz-btn").classList.remove("hidden");
+        } else if (activeMode === 'exam' || activeMode === 'timer') {
+          quizData = originalQuizData.filter(q => selectedAnswers[q.masterIdx] === undefined);
+          score = 0;
+          currentPage = 1;
+        } else {
+          quizData = [...originalQuizData];
+          score = quizObj.score || 0;
+          currentPage = quizObj.currentPage || 1;
+        }
+
+        refreshCatalogUI();
+
+        if (showSetup) {
+          showSetupCard(key, originalQuizData.length);
+        } else {
+          hideUploadSection();
+          hideSetupCard();
+          updateScore();
+          renderPage();
+
+          if (activeMode === 'timer') {
+            if (quizObj.timerEndTimestamp) {
+              startTimer(null, quizObj.timerEndTimestamp);
+            } else if (quizObj.secondsRemaining !== undefined && quizObj.secondsRemaining > 0) {
+              startTimer(quizObj.secondsRemaining);
+            } else {
+              startTimer(timerDurationMinutes * 60);
+            }
+          }
+        }
+        return;
+      }
+
+      const remoteMeta = findRemoteMeta(cat, key);
+      if (remoteMeta) {
+        const statusEl = document.getElementById('extraction-status');
+        try {
+          if (statusEl) {
+            statusEl.innerText = "Loading quiz from GitHub...";
+            statusEl.classList.remove('hidden');
+          }
+
+          const res = await fetch(remoteMeta.url, { cache: 'no-store' });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          if (!data || !Array.isArray(data.questions) || data.questions.length === 0) {
+            throw new Error("Quiz file has no questions");
+          }
+
+          originalQuizData = data.questions.map((q, i) => ({ ...q, masterIdx: i }));
+          quizData = [...originalQuizData];
+          activeQuizKey = key;
+          activeSubject = remoteMeta.subject || 'General';
+          selectedAnswers = {};
+          score = 0;
+          currentPage = 1;
+          isPracticingWrong = false;
+
+          saveQuizStateToLocalStorage();
+          refreshCatalogUI();
+
+          if (statusEl) statusEl.classList.add('hidden');
+
+          if (showSetup) {
+            showSetupCard(key, originalQuizData.length);
+          } else {
+            hideUploadSection();
+            hideSetupCard();
+            setMode('practice');
+            updateScore();
+            renderPage();
+          }
+        } catch (err) {
+          console.error("Failed to load remote quiz:", err);
+          if (statusEl) statusEl.classList.add('hidden');
+          alert(`Couldn't load "${key}" from GitHub. Check your connection and try again, or hit 🔄 in the sidebar to re-sync the catalog.`);
+        }
+        return;
+      }
+
+      alert(`Quiz "${key}" could not be found locally or on GitHub.`);
+    }
+
+    // === END CATALOG ===============================================================
 
     // --- ADMIN LOGIN MODAL CONTROLS ---
     function openAdminLoginModal() {
@@ -503,74 +790,12 @@
       }
     }
 
-    // FETCH OFFICIAL QUIZZES FROM GITHUB REPOSITORY AUTOMATICALLY
-    // Rewritten with Promise.allSettled instead of a bare forEach(async ...), so we can
-    // actually tell when all three category fetches have finished (forEach never awaits its
-    // callbacks) and show a real loading/synced indicator instead of updating silently.
-    //
-    // REVISED: now recurses one level into subject subfolders (quizzes/<cat>/<subject>/*.json),
-    // and still supports old-style flat files directly under quizzes/<cat>/*.json — those get
-    // grouped under a "General" subject so nothing existing breaks.
-    function humanizeSubjectSlug(slug) {
-      return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
-    }
-
-    async function fetchCategoryContents(cat, path, subjectLabel) {
-      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const entries = await res.json();
-
-      for (const entry of entries) {
-        if (entry.type === 'dir') {
-          // A subject subfolder — recurse into it, one level only.
-          await fetchCategoryContents(cat, entry.path, humanizeSubjectSlug(entry.name));
-        } else if (entry.type === 'file' && entry.name.endsWith('.json')) {
-          const optName = entry.name.replace('.json', '');
-          remoteQuizMeta[cat][optName] = { url: entry.download_url, subject: subjectLabel };
-        }
-      }
-    }
-
-    async function fetchGitHubRepositoryQuizzes() {
-      const statusEl = document.getElementById('github-sync-status');
-      if (statusEl) {
-        statusEl.innerText = '🔄 Syncing...';
-        statusEl.title = 'Checking GitHub for published quizzes...';
-      }
-
-      const categories = ['icma', 'ca', 'acca'];
-      const results = await Promise.allSettled(categories.map(cat =>
-        fetchCategoryContents(cat, `quizzes/${cat}`, 'General')
-      ));
-
-      const anyFailed = results.some(r => r.status === 'rejected');
-      results.forEach((r, i) => {
-        if (r.status === 'rejected') {
-          console.log(`No remote quizzes found for ${categories[i]}:`, r.reason);
-        }
-      });
-
-      // Rebuild the subject/quiz dropdowns now that remote data (with subjects) has arrived.
-      categories.forEach(cat => refreshSubjectDropdown(cat));
-
-      if (statusEl) {
-        if (anyFailed) {
-          statusEl.innerText = '⚠️ Sync incomplete';
-          statusEl.title = 'Some categories could not be reached (offline or GitHub API rate limit). Locally saved quizzes are unaffected.';
-        } else {
-          statusEl.innerText = '✅ Synced';
-          statusEl.title = `Quiz list last refreshed from GitHub at ${new Date().toLocaleTimeString()}`;
-        }
-      }
-    }
-
     // --- DARK MODE TOGGLE ---
     function toggleDarkMode() {
       const html = document.documentElement;
       const isDark = html.classList.toggle('dark');
       localStorage.setItem('themeMode', isDark ? 'dark' : 'light');
-      
+
       document.getElementById('dark-mode-icon').innerText = isDark ? '☀️' : '🌙';
       document.getElementById('dark-mode-text').innerText = isDark ? 'Light Mode' : 'Dark Mode';
     }
@@ -585,7 +810,7 @@
     window.addEventListener("scroll", function () {
       let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       const header = document.getElementById("top-header");
-      
+
       if (scrollTop > lastScrollTop && scrollTop > 60) {
         header.style.transform = "translateY(-100%)";
       } else {
@@ -598,7 +823,7 @@
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebar-overlay');
-      
+
       sidebar.classList.toggle('-translate-x-full');
       overlay.classList.toggle('hidden');
     }
@@ -620,9 +845,9 @@
         setMode(mode);
       }
       closeModeSelectionModal();
-      
+
       if (activeQuizKey) {
-        loadSavedQuizFromCategory(activeCategory, activeQuizKey, false);
+        loadQuiz(activeCategory, activeQuizKey, false);
       }
     }
 
@@ -668,17 +893,12 @@
     }
 
     // --- PERSISTENT TIMER ENGINE ---
-    // Rewritten to count down from a fixed real-world end timestamp instead of decrementing a
-    // counter once per tick. A tick counter drifts (or effectively pauses) whenever the tab is
-    // backgrounded/throttled by the browser, or the laptop sleeps — recomputing "time left" from
-    // Date.now() on every tick instead keeps the countdown accurate regardless, and lets a timer
-    // correctly keep running (or discover it already expired) even if the tab was closed and reopened.
     function startTimer(durationInSeconds, endTimestamp = null) {
       stopTimer();
       timerEndTimestamp = endTimestamp || (Date.now() + durationInSeconds * 1000);
       document.getElementById('timer-badge').classList.remove('hidden');
 
-      tickTimer(); // paint immediately instead of waiting a full second for the first tick
+      tickTimer();
       timerInterval = setInterval(tickTimer, 1000);
     }
 
@@ -759,10 +979,10 @@
         <div class="text-center py-12 text-slate-400 dark:text-slate-500">
           Upload a PDF or select a saved quiz from the sidebar menu to start!
         </div>`;
-      
+
       const jumpSelect = document.getElementById("page-jump-select");
       if (jumpSelect) jumpSelect.innerHTML = `<option value="1">Page 1 of 1</option>`;
-      
+
       document.getElementById("total-mcqs-text").innerText = `No PDF Loaded`;
       document.getElementById("score-badge").innerText = `Score: 0 / 0`;
 
@@ -770,11 +990,11 @@
       document.getElementById("text-preview-section").classList.add("hidden");
       document.getElementById("quiz-setup-card").classList.add("hidden");
       document.getElementById("upload-section").classList.remove("hidden");
-      
+
       document.getElementById("header-upload-btn").classList.add("hidden");
       document.getElementById("pdf-input").value = "";
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      updateSavedQuizzesDropdowns();
+      refreshCatalogUI();
     }
 
     function prepareForNewPDFUpload() {
@@ -793,9 +1013,6 @@
       document.getElementById("setup-mcq-count").innerText = `${count} MCQs Loaded`;
       document.getElementById("quiz-setup-card").classList.remove("hidden");
 
-      // Prefill the Subject field with whatever's currently active (e.g. reopening an existing
-      // quiz's settings keeps its subject; a fresh upload defaults to "General"), and refresh
-      // the suggestion list for the currently selected category.
       const subjectInput = document.getElementById("setup-subject-input");
       if (subjectInput) subjectInput.value = (activeSubject && activeSubject !== 'General') ? activeSubject : '';
       refreshSubjectDatalist();
@@ -820,9 +1037,6 @@
         timerDurationMinutes = parseInt(document.getElementById('setup-timer-minutes').value || 10);
       }
 
-      // NEW: warn before silently overwriting an existing saved quiz with the same name.
-      // Only relevant right after a fresh PDF upload (isFreshUpload) — reopening or
-      // reconfiguring the mode of an already-saved quiz never triggers this.
       if (isFreshUpload) {
         const storageKey = `savedQuizzes_${chosenCategory}`;
         const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
@@ -849,11 +1063,11 @@
 
     function finalizeStartQuiz() {
       saveQuizStateToLocalStorage();
-      updateSavedQuizzesDropdowns();
+      refreshCatalogUI();
 
       hideSetupCard();
       if (activeQuizKey) {
-        loadSavedQuizFromCategory(activeCategory, activeQuizKey, false);
+        loadQuiz(activeCategory, activeQuizKey, false);
       } else {
         renderPage();
       }
@@ -924,14 +1138,6 @@
         globalAnswerKey[qNum] = optionMap[ans];
       }
 
-      // FIX: previously required an uppercase Latin letter [A-Z] right after "N. "/"N) " to
-      // recognize it as the start of a new question. Any question stem starting with a
-      // quotation mark — e.g. 10. "Control" in an operating system means: — didn't match,
-      // so that whole question silently vanished into the previous question's captured text
-      // instead of becoming its own entry. No error was shown; it just disappeared from the
-      // output. Broadening the allowed character class to include common quote/paren openers
-      // fixes this (confirmed on a real 745-question source PDF: 674 parsed before this fix,
-      // 744 after).
       const rawQuestions = text.split(/(?=\b(?:Q|Q\.\s*)?\d{1,4}\s*[\.\)]\s+[A-Z"'\u2018\u2019\u201C\u201D\(])/gi);
 
       rawQuestions.forEach((qBlock, origIdx) => {
@@ -951,7 +1157,7 @@
 
         if (optA && optB && optC && optD) {
           const optionMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
-          
+
           let correctIdx = 0;
           if (inlineAnsMatch) {
             correctIdx = optionMap[inlineAnsMatch[1].toUpperCase()];
@@ -972,10 +1178,6 @@
           const shuffledOptions = [...rawOptions].sort(() => Math.random() - 0.5);
           const newCorrectIdx = shuffledOptions.indexOf(correctText);
 
-          // FIX: the fallback explanation must be built AFTER shuffling and must reference
-          // newCorrectIdx (the shuffled position actually stored/highlighted as correct), not
-          // correctIdx (the pre-shuffle letter). Previously these could point at different
-          // options — e.g. explanation says "Option C" while the UI highlights D as correct.
           expText = inlineExpMatch
             ? cleanTextSpaces(inlineExpMatch[1])
             : `Correct option according to Answer Key is Option ${['A','B','C','D'][newCorrectIdx]}`;
@@ -994,19 +1196,21 @@
       if (parsedQuiz.length > 0) {
         parsedQuiz.forEach((q, i) => q.masterIdx = i);
 
-        activeQuizKey = fileName;
+        // Key is the filename with its extension stripped, so locally-uploaded quizzes
+        // use the same key style as GitHub-published ones (no ".pdf" hanging off the end).
+        activeQuizKey = fileName.replace(/\.[^/.]+$/, '');
         originalQuizData = [...parsedQuiz];
         quizData = [...parsedQuiz];
         selectedAnswers = {};
         score = 0;
         currentPage = 1;
         isPracticingWrong = false;
-        isFreshUpload = true; // flags startQuiz() to check for a same-named quiz before overwriting it
+        isFreshUpload = true;
 
         statusEl.innerText = `🎉 Loaded ${quizData.length} MCQs!`;
         document.getElementById("reset-quiz-btn").classList.add("hidden");
 
-        showSetupCard(fileName, quizData.length);
+        showSetupCard(activeQuizKey, quizData.length);
       } else {
         statusEl.innerText = "❌ Could not parse structure automatically.";
       }
@@ -1036,264 +1240,6 @@
       localStorage.setItem('lastActiveQuizKey', activeQuizKey);
     }
 
-    // Gathers the distinct set of subjects known for a category, from BOTH locally saved
-    // quizzes and remote (GitHub) quizzes, so the sidebar and the upload setup card's subject
-    // suggestions always reflect everything the user has, not just one source.
-    function getKnownSubjects(cat) {
-      const subjects = new Set(['General']);
-      const storageKey = `savedQuizzes_${cat}`;
-      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      Object.values(saved).forEach(q => subjects.add(q.subject || 'General'));
-      Object.values(remoteQuizMeta[cat] || {}).forEach(meta => subjects.add(meta.subject || 'General'));
-      return Array.from(subjects).sort((a, b) => {
-        if (a === 'General') return 1;   // General always sorts last
-        if (b === 'General') return -1;
-        return a.localeCompare(b);
-      });
-    }
-
-    // Rebuilds a category's Subject dropdown, preserving the current selection if it's still
-    // valid, then refreshes the Quiz dropdown beneath it to match.
-    function refreshSubjectDropdown(cat) {
-      const subjectSelect = document.getElementById(`${cat}-subjects`);
-      if (!subjectSelect) return;
-
-      const previousValue = subjectSelect.value;
-      const subjects = getKnownSubjects(cat);
-
-      subjectSelect.innerHTML = `<option value="">-- Select Subject --</option>`;
-      subjects.forEach(subj => {
-        const opt = document.createElement('option');
-        opt.value = subj;
-        opt.innerText = subj;
-        subjectSelect.appendChild(opt);
-      });
-
-      if (previousValue && subjects.includes(previousValue)) {
-        subjectSelect.value = previousValue;
-      }
-
-      refreshQuizDropdownForSubject(cat);
-    }
-
-    // Populates a category's Quiz dropdown with only the quizzes (local + remote) that belong
-    // to the currently selected subject. If no subject is selected yet, the quiz list is empty
-    // — pick a subject first, same pattern as the existing Category -> Quiz flow.
-    function refreshQuizDropdownForSubject(cat) {
-      const subjectSelect = document.getElementById(`${cat}-subjects`);
-      const quizSelect = document.getElementById(`${cat}-quizzes`);
-      if (!quizSelect) return;
-
-      const selectedSubject = subjectSelect ? subjectSelect.value : '';
-      const previousQuizValue = quizSelect.value;
-
-      quizSelect.innerHTML = `<option value="">-- Select ${cat.toUpperCase()} Quiz --</option>`;
-      if (!selectedSubject) return;
-
-      const storageKey = `savedQuizzes_${cat}`;
-      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      const addedNames = new Set();
-
-      Object.entries(saved).forEach(([name, q]) => {
-        if ((q.subject || 'General') === selectedSubject) {
-          const opt = document.createElement('option');
-          opt.value = name;
-          opt.innerText = name;
-          quizSelect.appendChild(opt);
-          addedNames.add(name);
-        }
-      });
-
-      Object.entries(remoteQuizMeta[cat] || {}).forEach(([name, meta]) => {
-        if ((meta.subject || 'General') === selectedSubject && !addedNames.has(name)) {
-          const opt = document.createElement('option');
-          opt.value = name;
-          opt.innerText = `🌐 ${name}`;
-          quizSelect.appendChild(opt);
-        }
-      });
-
-      if (previousQuizValue) {
-        for (let i = 0; i < quizSelect.options.length; i++) {
-          if (quizSelect.options[i].value === previousQuizValue) {
-            quizSelect.value = previousQuizValue;
-            break;
-          }
-        }
-      }
-    }
-
-    // Refreshes the Subject <datalist> suggestions on the post-upload setup card, based on
-    // whichever category is currently selected there.
-    function refreshSubjectDatalist() {
-      const categorySelect = document.getElementById('setup-category-select');
-      const datalist = document.getElementById('setup-subject-datalist');
-      if (!categorySelect || !datalist) return;
-      const subjects = getKnownSubjects(categorySelect.value || 'icma').filter(s => s !== 'General');
-      datalist.innerHTML = subjects.map(s => `<option value="${s.replace(/"/g, '&quot;')}"></option>`).join('');
-    }
-
-    function updateSavedQuizzesDropdowns() {
-      ['icma', 'ca', 'acca'].forEach(cat => refreshSubjectDropdown(cat));
-      fetchGitHubRepositoryQuizzes(); // will call refreshSubjectDropdown again per category once remote data arrives
-    }
-
-    // NOTE: now async, so it can await a remote fetch when a GitHub-hosted quiz is selected.
-    async function loadSavedQuizFromCategory(cat, keyToLoad = null, showSetup = false) {
-      const select = document.getElementById(`${cat}-quizzes`);
-      const selectedKey = keyToLoad || (select ? select.value : null);
-      if (!selectedKey) return;
-
-      isFreshUpload = false; // loading an existing saved/remote quiz is never an "overwrite" situation
-      activeCategory = cat;
-      let storageKey = `savedQuizzes_${cat}`;
-      let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      
-      if (saved[selectedKey]) {
-        activeQuizKey = selectedKey;
-        if (select) select.value = activeQuizKey;
-        const quizObj = saved[selectedKey];
-        activeSubject = quizObj.subject || 'General';
-
-        originalQuizData = [...quizObj.originalQuizData];
-        selectedAnswers = quizObj.selectedAnswers || {};
-        activeMode = quizObj.activeMode || 'practice';
-        timerDurationMinutes = quizObj.timerDurationMinutes || 10;
-        isPracticingWrong = quizObj.isPracticingWrong || false;
-
-        setMode(activeMode, timerDurationMinutes);
-        
-        if (isPracticingWrong && quizObj.quizData && quizObj.quizData.length > 0) {
-          quizData = [...quizObj.quizData];
-          document.getElementById("reset-quiz-btn").classList.remove("hidden");
-        } else if (activeMode === 'exam' || activeMode === 'timer') {
-          quizData = originalQuizData.filter(q => selectedAnswers[q.masterIdx] === undefined);
-          score = 0;
-          currentPage = 1;
-        } else {
-          quizData = [...originalQuizData];
-          score = quizObj.score || 0;
-          currentPage = quizObj.currentPage || 1;
-        }
-
-        if (showSetup) {
-          showSetupCard(selectedKey, originalQuizData.length);
-        } else {
-          hideUploadSection();
-          hideSetupCard();
-          updateScore();
-          renderPage();
-
-          if (activeMode === 'timer') {
-            // Prefer resuming from the saved real-world end timestamp — accurate even if the
-            // browser was closed for a while (correctly discovers the timer already expired,
-            // rather than resuming as if no time had passed). Fall back to the older
-            // secondsRemaining field for quizzes saved before this change, then to a fresh timer.
-            if (quizObj.timerEndTimestamp) {
-              startTimer(null, quizObj.timerEndTimestamp);
-            } else if (quizObj.secondsRemaining !== undefined && quizObj.secondsRemaining > 0) {
-              startTimer(quizObj.secondsRemaining);
-            } else {
-              startTimer(timerDurationMinutes * 60);
-            }
-          }
-        }
-        return;
-      }
-
-      // Quiz isn't cached locally yet — check if it's a remote (GitHub-hosted) quiz
-      // and, if so, actually fetch and load its content instead of doing nothing.
-      const remoteMeta = remoteQuizMeta[cat] && remoteQuizMeta[cat][selectedKey];
-      if (remoteMeta) {
-        const statusEl = document.getElementById('extraction-status');
-        try {
-          if (statusEl) {
-            statusEl.innerText = "Loading quiz from GitHub...";
-            statusEl.classList.remove('hidden');
-          }
-
-          const res = await fetch(remoteMeta.url);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
-
-          if (!data || !Array.isArray(data.questions) || data.questions.length === 0) {
-            throw new Error("Quiz file has no questions");
-          }
-
-          originalQuizData = data.questions.map((q, i) => ({ ...q, masterIdx: i }));
-          quizData = [...originalQuizData];
-          activeQuizKey = selectedKey;
-          activeSubject = remoteMeta.subject || 'General';
-          if (select) select.value = activeQuizKey;
-          selectedAnswers = {};
-          score = 0;
-          currentPage = 1;
-          isPracticingWrong = false;
-
-          saveQuizStateToLocalStorage(); // cache locally so next load is instant
-          refreshSubjectDropdown(cat); // no need to re-hit GitHub — just refresh from what we already have
-
-          if (statusEl) statusEl.classList.add('hidden');
-
-          if (showSetup) {
-            showSetupCard(selectedKey, originalQuizData.length);
-          } else {
-            hideUploadSection();
-            hideSetupCard();
-            setMode('practice');
-            updateScore();
-            renderPage();
-          }
-        } catch (err) {
-          console.error("Failed to load remote quiz:", err);
-          if (statusEl) statusEl.classList.add('hidden');
-          alert(`Couldn't load "${selectedKey}" from GitHub. Check your connection and try again.`);
-        }
-        return;
-      }
-
-      alert(`Quiz "${selectedKey}" could not be found locally or on GitHub.`);
-    }
-
-    function confirmDeleteCategoryQuiz(cat) {
-      const select = document.getElementById(`${cat}-quizzes`);
-      const selectedKey = select ? select.value : "";
-      if (!selectedKey) {
-        showConfirmationBox("Select Quiz", `Please select a ${cat.toUpperCase()} quiz from the dropdown list to delete.`, function(){});
-        return;
-      }
-
-      showConfirmationBox(
-        "Delete Quiz?",
-        `Are you sure you want to delete "${selectedKey}" from your ${cat.toUpperCase()} library?`,
-        function () {
-          deleteCategoryQuiz(cat, selectedKey);
-        }
-      );
-    }
-
-    // --- FIXED SIDEBAR DELETE FUNCTIONALITY ---
-    // Previously, deleting the currently active quiz would trigger headerResetAndUpload(),
-    // which auto-saves "on exit" using the still-populated activeQuizKey/originalQuizData —
-    // silently re-writing the just-deleted quiz straight back into localStorage.
-    // Clearing activeQuizKey first prevents that resurrection.
-    function deleteCategoryQuiz(cat, selectedKey) {
-      let storageKey = `savedQuizzes_${cat}`;
-      let saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      delete saved[selectedKey];
-      localStorage.setItem(storageKey, JSON.stringify(saved));
-      
-      const select = document.getElementById(`${cat}-quizzes`);
-      if (select) select.value = "";
-
-      if (activeQuizKey === selectedKey && activeCategory === cat) {
-        activeQuizKey = ""; // FIX: prevents headerResetAndUpload's auto-save from re-adding the deleted quiz
-        headerResetAndUpload();
-      }
-
-      updateSavedQuizzesDropdowns();
-    }
-
     function clearExtractedText() {
       document.getElementById('raw-pdf-text').value = '';
       document.getElementById('text-preview-section').classList.add('hidden');
@@ -1318,12 +1264,12 @@
         alert("No incorrect answers found to practice!");
         return;
       }
-      
+
       quizData = [...wrongList];
       isPracticingWrong = true;
       currentPage = 1;
       document.getElementById("reset-quiz-btn").classList.remove("hidden");
-      
+
       saveQuizStateToLocalStorage();
       updateScore();
       renderPage();
@@ -1348,7 +1294,7 @@
           <div class="text-center py-12 text-slate-400 dark:text-slate-500">
             No MCQs to display. Select or upload a quiz to start!
           </div>`;
-        
+
         const jumpSelect = document.getElementById("page-jump-select");
         if (jumpSelect) jumpSelect.innerHTML = `<option value="1">Page 1 of 1</option>`;
         document.getElementById("total-mcqs-text").innerText = `No PDF Loaded`;
@@ -1363,7 +1309,6 @@
       const endIdx = Math.min(startIdx + questionsPerPage, quizData.length);
       const currentQuestions = quizData.slice(startIdx, endIdx);
 
-      // Populate Page Jump Dropdown
       const jumpSelect = document.getElementById("page-jump-select");
       if (jumpSelect) {
         jumpSelect.innerHTML = "";
@@ -1392,8 +1337,6 @@
         let optionsHTML = "";
         qData.options.forEach((opt, idx) => {
           let btnStyle = "border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-300 cursor-pointer";
-          // NEW: icon-based feedback in addition to color, so correctness isn't conveyed by color alone
-          // (helps colorblind users and improves scanability generally).
           let feedbackIcon = "";
           if (userChoice !== undefined) {
             if (activeMode === 'practice') {
@@ -1463,7 +1406,7 @@
 
     function selectOption(masterIdx, optionIdx) {
       selectedAnswers[masterIdx] = optionIdx;
-      
+
       score = 0;
       Object.keys(selectedAnswers).forEach(mIdx => {
         if (originalQuizData[mIdx] && selectedAnswers[mIdx] === originalQuizData[mIdx].correctAnswer) {
@@ -1602,7 +1545,8 @@
     }
 
     // INITIALIZATION ON PAGE LOAD
-    updateSavedQuizzesDropdowns();
+    refreshCatalogUI();
+    fetchGitHubRepositoryQuizzes();
   </script>
 </body>
 </html>
