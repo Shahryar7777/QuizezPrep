@@ -37,11 +37,21 @@
     <main class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-6">
         <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">Select Target Qualification / Category:</label>
-            <select id="categorySelect" onchange="refreshSubjectSuggestions()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
+            <select id="categorySelect" onchange="refreshLevelSuggestions()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
                 <option value="icma">ICMA Quizzes</option>
                 <option value="ca">CA Quizzes</option>
                 <option value="acca">ACCA Quizzes</option>
             </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Level / Stage:</label>
+            <select id="levelSelect" onchange="handleLevelSelectChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+                <option value="">— No Level —</option>
+                <option value="__new__">➕ Add New Level...</option>
+            </select>
+            <input type="text" id="newLevelInput" placeholder="e.g. Operational Level 1" class="hidden mt-2 w-full bg-slate-950 border border-indigo-700 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+            <p class="text-xs text-slate-500 mt-1">Top-level grouping in the sidebar (e.g. Operational Level 1, PRC). Pick one, or add a new one.</p>
         </div>
 
         <div>
@@ -51,7 +61,7 @@
                 <option value="__new__">➕ Add New Subject...</option>
             </select>
             <input type="text" id="newSubjectInput" placeholder="e.g. Generative AI &amp; Business Productivity" class="hidden mt-2 w-full bg-slate-950 border border-indigo-700 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
-            <p class="text-xs text-slate-500 mt-1">Pick an existing subject to add this quiz to the same folder as its other chapters (and full question bank), or add a new one. Leave on "General" to publish ungrouped.</p>
+            <p class="text-xs text-slate-500 mt-1">Pick an existing subject within the chosen level to add this quiz to the same folder as its other chapters (and full question bank), or add a new one. Leave on "General" to publish ungrouped within the level.</p>
         </div>
 
         <div class="border-2 border-dashed border-slate-800 rounded-xl p-8 text-center flex flex-col items-center justify-center bg-slate-950/50">
@@ -148,6 +158,14 @@
         let parsedQuizData = null;
         let selectedQuizType = 'chapter';
 
+        // Suggested level names per category — just a starting point for the dropdown;
+        // any level actually saved to manifest.json (including custom ones) shows up too.
+        const PREDEFINED_LEVELS = {
+            icma: ["Operational Level 1", "Operational Level 2", "Management Level", "Strategic Level"],
+            ca: ["PRC", "CAF", "CFAP"],
+            acca: ["Applied Knowledge", "Applied Skills", "Strategic Professional"]
+        };
+
         // Cosmetic gate only — this is NOT real security, it just matches the flow from index.html.
         // Anyone who knows/guesses this URL can still open it directly; true protection would require
         // a server-side check, which a static GitHub Pages site can't provide.
@@ -162,7 +180,10 @@
 
         // === MANIFEST HELPERS ==========================================================
         // manifest.json is the single source of truth the public index.html reads to build
-        // its sidebar. Shape: { <cat>: { <subjectSlug>: { label, quizzes: [{file,title,count,type}] } } }
+        // its sidebar. Shape: { <cat>: { <levelSlug>: { label, subjects: { <subjectSlug>: { label, quizzes: [{file,title,count,type}] } } } } }
+        // Entries published before levels existed look like { <subjectSlug>: { label, quizzes } }
+        // directly under the category (no "subjects" wrapper) — still supported for reading,
+        // but every new publish writes the level-nested shape.
         // Every publish both writes the quiz .json AND updates this file in the same flow,
         // using the authenticated Contents API (so it isn't subject to the 60/hr anonymous
         // rate limit that silently broke reads before).
@@ -202,19 +223,47 @@
             }
         }
 
-        function upsertManifestEntry(manifestData, category, subjectSlug, subjectLabel, entry) {
+        // Only treats an entry as a "level" if it has a .subjects wrapper — legacy flat
+        // subject entries (pre-level publishes) are left untouched so they keep working in
+        // index.html's "Unclassified" fallback, and are simply not offered as level options here.
+        function getLevelsForCategory(catData) {
+            const levels = {};
+            Object.entries(catData || {}).forEach(([slug, val]) => {
+                if (val && typeof val === 'object' && val.subjects) levels[slug] = val;
+            });
+            return levels;
+        }
+
+        function upsertManifestEntry(manifestData, category, levelSlug, levelLabel, subjectSlug, subjectLabel, entry) {
             if (!manifestData[category]) manifestData[category] = {};
-            if (!manifestData[category][subjectSlug]) {
-                manifestData[category][subjectSlug] = { label: subjectLabel, quizzes: [] };
+            const catData = manifestData[category];
+
+            // No level chosen: if this subject already exists as a legacy flat entry (published
+            // before levels existed), keep updating it in place there instead of forking a new
+            // copy under the "General" pseudo-level bucket.
+            if (!levelSlug && catData[subjectSlug] && catData[subjectSlug].quizzes && !catData[subjectSlug].subjects) {
+                catData[subjectSlug].label = subjectLabel;
+                const list = catData[subjectSlug].quizzes;
+                const idx = list.findIndex(q => q.file === entry.file);
+                if (idx >= 0) list[idx] = entry; else list.push(entry);
+                return manifestData;
             }
-            manifestData[category][subjectSlug].label = subjectLabel; // keep label fresh if renamed
-            const list = manifestData[category][subjectSlug].quizzes;
+
+            const levelKey = levelSlug || 'general';
+            if (!catData[levelKey] || !catData[levelKey].subjects) {
+                catData[levelKey] = { label: levelLabel || 'General', subjects: {} };
+            }
+            catData[levelKey].label = levelLabel || 'General';
+            const subjects = catData[levelKey].subjects;
+            if (!subjects[subjectSlug]) subjects[subjectSlug] = { label: subjectLabel, quizzes: [] };
+            subjects[subjectSlug].label = subjectLabel; // keep label fresh if renamed
+            const list = subjects[subjectSlug].quizzes;
             const idx = list.findIndex(q => q.file === entry.file);
             if (idx >= 0) list[idx] = entry; else list.push(entry);
             return manifestData;
         }
 
-        function humanizeSubjectSlug(slug) {
+        function humanizeSlug(slug) {
             return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
         }
 
@@ -225,10 +274,19 @@
                 const { data } = await getManifest();
                 const lines = [];
                 ['icma', 'ca', 'acca'].forEach(cat => {
-                    const subjects = data[cat] || {};
-                    Object.entries(subjects).forEach(([slug, subj]) => {
-                        const quizNames = (subj.quizzes || []).map(q => `${q.type === 'full-bank' ? '📚' : '📄'} ${q.title} (${q.count})`).join(', ');
-                        if (quizNames) lines.push(`<div><span class="text-slate-300 font-semibold">${cat.toUpperCase()} / ${subj.label || humanizeSubjectSlug(slug)}:</span> ${quizNames}</div>`);
+                    const levels = getLevelsForCategory(data[cat]);
+                    Object.entries(levels).forEach(([levelSlug, level]) => {
+                        Object.entries(level.subjects || {}).forEach(([slug, subj]) => {
+                            const quizNames = (subj.quizzes || []).map(q => `${q.type === 'full-bank' ? '📚' : '📄'} ${q.title} (${q.count})`).join(', ');
+                            if (quizNames) lines.push(`<div><span class="text-slate-300 font-semibold">${cat.toUpperCase()} / ${level.label || humanizeSlug(levelSlug)} / ${subj.label || humanizeSlug(slug)}:</span> ${quizNames}</div>`);
+                        });
+                    });
+                    // Legacy (pre-level) entries — still shown so nothing looks lost, flagged for context.
+                    Object.entries(data[cat] || {}).forEach(([slug, val]) => {
+                        if (val && val.quizzes && !val.subjects) {
+                            const quizNames = (val.quizzes || []).map(q => `${q.type === 'full-bank' ? '📚' : '📄'} ${q.title} (${q.count})`).join(', ');
+                            if (quizNames) lines.push(`<div><span class="text-amber-400 font-semibold">${cat.toUpperCase()} / (no level) / ${val.label || humanizeSlug(slug)}:</span> ${quizNames}</div>`);
+                        }
                     });
                 });
                 el.innerHTML = lines.length ? lines.join('') : '<span class="italic">manifest.json is empty — nothing published yet.</span>';
@@ -238,38 +296,100 @@
         }
         // === END MANIFEST HELPERS ======================================================
 
-        function slugifySubject(subject) {
-            const slug = subject.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        function slugifyText(text) {
+            const slug = (text || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             return slug || 'general';
         }
 
-        // Existing subject subfolders per category, sourced from manifest.json, so the
-        // datalist can suggest names already in use (avoids "Gen AI" vs "Generative AI"
-        // becoming two separate subjects by typo).
-        let knownSubjectsByCategory = { icma: [], ca: [], acca: [] };
+        // Existing levels/subjects sourced from manifest.json, so the dropdowns suggest
+        // names already in use (avoids "Gen AI" vs "Generative AI" becoming two separate
+        // subjects by typo).
+        let knownLevelsByCategory = { icma: [], ca: [], acca: [] };
+        let knownSubjectsByLevel = {}; // keyed "cat|levelLabel" -> [subject labels]
+        let lastManifestData = { icma: {}, ca: {}, acca: {} };
 
-        async function refreshSubjectSuggestions() {
+        async function refreshLevelSuggestions() {
             const cat = document.getElementById("categorySelect").value || "icma";
-            const select = document.getElementById("subjectSelect");
+            const select = document.getElementById("levelSelect");
             const previousValue = select.value;
 
             try {
                 const { data } = await getManifest();
-                knownSubjectsByCategory[cat] = Object.entries(data[cat] || {})
-                    .filter(([slug]) => slug !== 'general')
-                    .map(([, s]) => s.label)
-                    .filter(Boolean)
-                    .sort((a, b) => a.localeCompare(b));
+                lastManifestData = data;
+                const fromManifest = Object.values(getLevelsForCategory(data[cat])).map(l => l.label).filter(Boolean);
+                const merged = new Set([...(PREDEFINED_LEVELS[cat] || []), ...fromManifest]);
+                knownLevelsByCategory[cat] = Array.from(merged).sort((a, b) => a.localeCompare(b));
             } catch (e) {
-                console.log(`Could not fetch existing subjects for ${cat}:`, e);
+                console.log(`Could not fetch existing levels for ${cat}:`, e);
+                knownLevelsByCategory[cat] = [...(PREDEFINED_LEVELS[cat] || [])];
             }
 
+            select.innerHTML = `<option value="">— No Level —</option>` +
+                knownLevelsByCategory[cat].map(l => `<option value="${l.replace(/"/g, '&quot;')}">${l.replace(/</g, '&lt;')}</option>`).join('') +
+                `<option value="__new__">➕ Add New Level...</option>`;
+
+            const stillValid = Array.from(select.options).some(o => o.value === previousValue);
+            select.value = stillValid ? previousValue : '';
+            handleLevelSelectChange();
+        }
+
+        function handleLevelSelectChange() {
+            const select = document.getElementById("levelSelect");
+            const newInput = document.getElementById("newLevelInput");
+            if (select.value === '__new__') {
+                newInput.classList.remove('hidden');
+                newInput.focus();
+            } else {
+                newInput.classList.add('hidden');
+            }
+            refreshSubjectSuggestions();
+        }
+
+        function getChosenLevel() {
+            const select = document.getElementById("levelSelect");
+            if (select.value === '__new__') return document.getElementById("newLevelInput").value.trim();
+            return select.value;
+        }
+
+        // When no level is chosen, offer subjects from BOTH the legacy flat entries (quizzes
+        // published before levels existed, like your existing Gen AI / Organizational
+        // Management) AND anything already filed under the "General" pseudo-level — so
+        // re-uploading another Gen AI chapter with no level still lands in the SAME place
+        // instead of silently forking into a second "Gen AI" folder.
+        function getLegacyFlatSubjects(catData) {
+            const out = {};
+            Object.entries(catData || {}).forEach(([slug, val]) => {
+                if (val && val.quizzes && !val.subjects) out[slug] = val;
+            });
+            return out;
+        }
+
+        function refreshSubjectSuggestions() {
+            const cat = document.getElementById("categorySelect").value || "icma";
+            const levelLabel = getChosenLevel();
+            const select = document.getElementById("subjectSelect");
+            const previousValue = select.value;
+
+            const catData = lastManifestData[cat] || {};
+            let subjects = [];
+
+            if (levelLabel) {
+                const levels = getLevelsForCategory(catData);
+                const levelSlug = slugifyText(levelLabel);
+                const level = levels[levelSlug];
+                subjects = level ? Object.values(level.subjects || {}).map(s => s.label).filter(Boolean) : [];
+            } else {
+                const legacy = Object.values(getLegacyFlatSubjects(catData)).map(s => s.label).filter(Boolean);
+                const generalLevel = getLevelsForCategory(catData)['general'];
+                const general = generalLevel ? Object.values(generalLevel.subjects || {}).map(s => s.label).filter(Boolean) : [];
+                subjects = Array.from(new Set([...legacy, ...general]));
+            }
+            subjects.sort((a, b) => a.localeCompare(b));
+
             select.innerHTML = `<option value="">— General (no subject) —</option>` +
-                knownSubjectsByCategory[cat].map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s.replace(/</g, '&lt;')}</option>`).join('') +
+                subjects.map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s.replace(/</g, '&lt;')}</option>`).join('') +
                 `<option value="__new__">➕ Add New Subject...</option>`;
 
-            // Keep the current selection if it's still a valid option (e.g. after a category change
-            // that happens to share a subject name), otherwise fall back to General.
             const stillValid = Array.from(select.options).some(o => o.value === previousValue);
             select.value = stillValid ? previousValue : '';
             handleSubjectSelectChange();
@@ -295,7 +415,7 @@
             return select.value;
         }
 
-        refreshSubjectSuggestions();
+        refreshLevelSuggestions();
         loadManifestPreview();
 
         function setQuizType(type) {
@@ -526,11 +646,18 @@
 
             try {
                 const category = document.getElementById("categorySelect").value;
+
+                const levelLabel = getChosenLevel();
+                if (document.getElementById("levelSelect").value === '__new__' && !levelLabel) {
+                    throw new Error("Type a name for the new level, or switch back to No Level.");
+                }
+                const levelSlug = levelLabel ? slugifyText(levelLabel) : '';
+
                 const subjectRaw = getChosenSubject();
                 if (document.getElementById("subjectSelect").value === '__new__' && !subjectRaw) {
                     throw new Error("Type a name for the new subject, or switch back to General.");
                 }
-                const subjectSlug = slugifySubject(subjectRaw); // 'general' when blank
+                const subjectSlug = slugifyText(subjectRaw); // 'general' when blank
                 const subjectLabel = subjectRaw || 'General';
                 const displayTitle = (document.getElementById("displayTitleInput").value.trim()) || parsedQuizData.title;
 
@@ -540,10 +667,16 @@
 
                 const cleanName = parsedQuizData.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
                 const fileName = `${cleanName}_quiz.json`;
-                // Every quiz now lives under its subject folder, including "General" — this
-                // keeps ONE consistent path shape instead of two, which is what the manifest
-                // (and index.html's raw-URL builder) both assume.
-                const filePath = `quizzes/${category}/${subjectSlug}/${fileName}`;
+
+                // If this subject already exists as a legacy flat (pre-level) entry, its quiz
+                // files live at quizzes/<cat>/<subject>/... with no level segment — keep writing
+                // there so it doesn't fork into a second copy under a level folder.
+                const catData = lastManifestData[category] || {};
+                const isLegacyFlatSubject = !levelSlug && catData[subjectSlug] && catData[subjectSlug].quizzes && !catData[subjectSlug].subjects;
+
+                const filePath = levelSlug
+                    ? `quizzes/${category}/${levelSlug}/${subjectSlug}/${fileName}`
+                    : `quizzes/${category}/${subjectSlug}/${fileName}`;
                 const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(parsedQuizData, null, 2))));
                 const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
 
@@ -571,7 +704,7 @@
 
                 // Step 2: update manifest.json so index.html's sidebar picks this up in one read
                 const { data: manifestData, sha: manifestSha } = await getManifest();
-                upsertManifestEntry(manifestData, category, subjectSlug, subjectLabel, {
+                upsertManifestEntry(manifestData, category, levelSlug, levelLabel, subjectSlug, subjectLabel, {
                     file: fileName,
                     title: displayTitle,
                     count: parsedQuizData.questions.length,
@@ -579,14 +712,19 @@
                     updatedAt: new Date().toISOString()
                 });
                 await putManifest(manifestData, manifestSha);
+                lastManifestData = manifestData;
 
                 setPublishStatus(`🚀 Published "${displayTitle}" to ${filePath} and updated manifest.json`, false);
+                document.getElementById("newLevelInput").value = '';
                 document.getElementById("newSubjectInput").value = '';
-                knownSubjectsByCategory[category] = [];
-                await refreshSubjectSuggestions();
-                // Re-select the subject we just published to, so the next chapter for the
-                // same subject doesn't require picking it again.
+
+                // Re-select the level/subject we just published to, so the next chapter for the
+                // same subject doesn't require picking them again.
+                await refreshLevelSuggestions();
+                document.getElementById("levelSelect").value = levelLabel || '';
+                refreshSubjectSuggestions();
                 document.getElementById("subjectSelect").value = subjectLabel === 'General' ? '' : subjectLabel;
+
                 loadManifestPreview();
             } catch (error) {
                 console.error(error);
