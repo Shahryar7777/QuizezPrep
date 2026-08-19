@@ -46,9 +46,12 @@
 
         <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">Subject / Topic (optional):</label>
-            <input type="text" id="subjectInput" list="subjectDatalist" placeholder="e.g. Generative AI &amp; Business Productivity" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
-            <datalist id="subjectDatalist"></datalist>
-            <p class="text-xs text-slate-500 mt-1">Groups this quiz with others of the same subject in the app's sidebar (e.g. all chapters of one subject, plus its full question bank). Reuse an existing name to add to it. Leave blank to publish ungrouped ("General").</p>
+            <select id="subjectSelect" onchange="handleSubjectSelectChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+                <option value="">— General (no subject) —</option>
+                <option value="__new__">➕ Add New Subject...</option>
+            </select>
+            <input type="text" id="newSubjectInput" placeholder="e.g. Generative AI &amp; Business Productivity" class="hidden mt-2 w-full bg-slate-950 border border-indigo-700 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+            <p class="text-xs text-slate-500 mt-1">Pick an existing subject to add this quiz to the same folder as its other chapters (and full question bank), or add a new one. Leave on "General" to publish ungrouped.</p>
         </div>
 
         <div class="border-2 border-dashed border-slate-800 rounded-xl p-8 text-center flex flex-col items-center justify-center bg-slate-950/50">
@@ -247,17 +250,51 @@
 
         async function refreshSubjectSuggestions() {
             const cat = document.getElementById("categorySelect").value || "icma";
+            const select = document.getElementById("subjectSelect");
+            const previousValue = select.value;
+
             try {
                 const { data } = await getManifest();
-                knownSubjectsByCategory[cat] = Object.values(data[cat] || {}).map(s => s.label).filter(Boolean);
+                knownSubjectsByCategory[cat] = Object.entries(data[cat] || {})
+                    .filter(([slug]) => slug !== 'general')
+                    .map(([, s]) => s.label)
+                    .filter(Boolean)
+                    .sort((a, b) => a.localeCompare(b));
             } catch (e) {
                 console.log(`Could not fetch existing subjects for ${cat}:`, e);
             }
-            const datalist = document.getElementById("subjectDatalist");
-            datalist.innerHTML = knownSubjectsByCategory[cat]
-                .map(s => `<option value="${s.replace(/"/g, '&quot;')}"></option>`)
-                .join('');
+
+            select.innerHTML = `<option value="">— General (no subject) —</option>` +
+                knownSubjectsByCategory[cat].map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s.replace(/</g, '&lt;')}</option>`).join('') +
+                `<option value="__new__">➕ Add New Subject...</option>`;
+
+            // Keep the current selection if it's still a valid option (e.g. after a category change
+            // that happens to share a subject name), otherwise fall back to General.
+            const stillValid = Array.from(select.options).some(o => o.value === previousValue);
+            select.value = stillValid ? previousValue : '';
+            handleSubjectSelectChange();
         }
+
+        function handleSubjectSelectChange() {
+            const select = document.getElementById("subjectSelect");
+            const newInput = document.getElementById("newSubjectInput");
+            if (select.value === '__new__') {
+                newInput.classList.remove('hidden');
+                newInput.focus();
+            } else {
+                newInput.classList.add('hidden');
+            }
+        }
+
+        // Resolves whatever the user picked/typed into a single subject name — '' for General.
+        function getChosenSubject() {
+            const select = document.getElementById("subjectSelect");
+            if (select.value === '__new__') {
+                return document.getElementById("newSubjectInput").value.trim();
+            }
+            return select.value;
+        }
+
         refreshSubjectSuggestions();
         loadManifestPreview();
 
@@ -489,7 +526,10 @@
 
             try {
                 const category = document.getElementById("categorySelect").value;
-                const subjectRaw = document.getElementById("subjectInput").value.trim();
+                const subjectRaw = getChosenSubject();
+                if (document.getElementById("subjectSelect").value === '__new__' && !subjectRaw) {
+                    throw new Error("Type a name for the new subject, or switch back to General.");
+                }
                 const subjectSlug = slugifySubject(subjectRaw); // 'general' when blank
                 const subjectLabel = subjectRaw || 'General';
                 const displayTitle = (document.getElementById("displayTitleInput").value.trim()) || parsedQuizData.title;
@@ -541,8 +581,12 @@
                 await putManifest(manifestData, manifestSha);
 
                 setPublishStatus(`🚀 Published "${displayTitle}" to ${filePath} and updated manifest.json`, false);
+                document.getElementById("newSubjectInput").value = '';
                 knownSubjectsByCategory[category] = [];
-                refreshSubjectSuggestions();
+                await refreshSubjectSuggestions();
+                // Re-select the subject we just published to, so the next chapter for the
+                // same subject doesn't require picking it again.
+                document.getElementById("subjectSelect").value = subjectLabel === 'General' ? '' : subjectLabel;
                 loadManifestPreview();
             } catch (error) {
                 console.error(error);
