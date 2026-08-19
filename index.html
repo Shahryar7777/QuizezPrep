@@ -169,19 +169,30 @@
         <!-- CATEGORY SELECTION -->
         <div class="space-y-1.5 text-left max-w-xs mx-auto">
           <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Select Category / Qualification:</label>
-          <select id="setup-category-select" onchange="refreshSubjectDatalist()" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none cursor-pointer">
+          <select id="setup-category-select" onchange="refreshLevelSelect()" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none cursor-pointer">
             <option value="icma">🏛️ ICMA</option>
             <option value="ca">🎓 CA</option>
             <option value="acca">💼 ACCA</option>
           </select>
         </div>
 
+        <!-- LEVEL SELECTION -->
+        <div class="space-y-1.5 text-left max-w-xs mx-auto">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Level / Stage:</label>
+          <select id="setup-level-select" onchange="handleSetupLevelChange()" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none cursor-pointer">
+            <option value="">— No Level —</option>
+          </select>
+          <input type="text" id="setup-new-level-input" placeholder="e.g. Operational Level 1" class="hidden mt-1 w-full p-2.5 bg-white dark:bg-slate-900 border border-indigo-400 dark:border-indigo-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none">
+        </div>
+
         <!-- SUBJECT SELECTION -->
         <div class="space-y-1.5 text-left max-w-xs mx-auto">
           <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Subject / Topic:</label>
-          <input type="text" id="setup-subject-input" list="setup-subject-datalist" placeholder="e.g. Generative AI & Business Productivity" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none">
-          <datalist id="setup-subject-datalist"></datalist>
-          <p class="text-[10px] text-slate-400 dark:text-slate-500">Groups this quiz under a subject in the sidebar (e.g. all 6 Gen AI chapters + the full bank together). Reuse an existing name to add to it, or type a new one. Leave blank for "General".</p>
+          <select id="setup-subject-select" onchange="handleSetupSubjectChange()" class="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none cursor-pointer">
+            <option value="">— General (no subject) —</option>
+          </select>
+          <input type="text" id="setup-new-subject-input" placeholder="e.g. Generative AI & Business Productivity" class="hidden mt-1 w-full p-2.5 bg-white dark:bg-slate-900 border border-indigo-400 dark:border-indigo-700 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-100 outline-none">
+          <p class="text-[10px] text-slate-400 dark:text-slate-500">Pick a level, then a subject within it. Choose "Add New..." to create one — reuse an existing name to add another chapter to it.</p>
         </div>
 
         <!-- MODE SELECTION IN SETUP -->
@@ -434,6 +445,7 @@
     let activeQuizKey = "";
     let activeCategory = "icma";
     let activeSubject = "General";
+    let activeLevel = "";
     let currentPage = 1;
     const questionsPerPage = 10;
     let selectedAnswers = {};
@@ -454,28 +466,63 @@
     const REPO_BRANCH = "main";
     const MANIFEST_PATH = "quizzes/manifest.json";
 
+    // Suggested level names per category — just a starting point for the dropdown; any
+    // level actually saved to manifest.json (including custom ones) shows up too.
+    const PREDEFINED_LEVELS = {
+      icma: ["Operational Level 1", "Operational Level 2", "Management Level", "Strategic Level"],
+      ca: ["PRC", "CAF", "CFAP"],
+      acca: ["Applied Knowledge", "Applied Skills", "Strategic Professional"]
+    };
+
     // === CATALOG (manifest-driven) ===============================================
-    // Shape of remoteManifest[cat]: { <subjectSlug>: { label, quizzes: [{file,title,count,type}] } }
+    // Shape of remoteManifest[cat]: { <levelSlug>: { label, subjects: { <subjectSlug>: { label, quizzes: [{file,title,count,type}] } } } }
     // 'type' is 'chapter' or 'full-bank'. This whole object comes from ONE fetch of
     // manifest.json instead of recursively walking GitHub API folders (which is what
     // silently broke before: the recursive walk hits GitHub's 60/hr anonymous API rate
     // limit fast during normal testing, fails quietly, and only shows a tiny gray
     // "Sync incomplete" label in the sidebar). Reading manifest.json via
     // raw.githubusercontent.com is a single request and isn't subject to that limit.
+    //
+    // Backward compatibility: entries published before levels existed look like
+    // { <subjectSlug>: { label, quizzes: [...] } } directly under the category (no
+    // "subjects" wrapper). Those are detected and folded into a synthetic "Unclassified"
+    // level at render time so nothing already published disappears.
     let remoteManifest = { icma: {}, ca: {}, acca: {} };
+    const UNCLASSIFIED_LEVEL_SLUG = '_unclassified';
 
-    function slugifySubjectClient(subject) {
-      const slug = (subject || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    function slugifyClient(text) {
+      const slug = (text || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
       return slug || 'general';
     }
-    function humanizeSubjectSlug(slug) {
+    function humanizeSlug(slug) {
       return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
     }
     function manifestRawUrl() {
       return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/${MANIFEST_PATH}?t=${Date.now()}`;
     }
-    function quizRawUrl(cat, subjectSlug, file) {
-      return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/quizzes/${cat}/${subjectSlug}/${file}?t=${Date.now()}`;
+    function quizRawUrl(cat, levelSlug, subjectSlug, file) {
+      // Two cases never get a folder segment of their own: 'general' (admin published with no
+      // level chosen, wrapped in the manifest under a "General" pseudo-level) and the synthetic
+      // '_unclassified' key (quizzes published before levels existed at all) — both map to files
+      // that always lived directly at quizzes/<cat>/<subject>/... on disk, with no level folder.
+      const levelPart = (levelSlug && levelSlug !== 'general' && levelSlug !== UNCLASSIFIED_LEVEL_SLUG) ? `${levelSlug}/` : '';
+      return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/quizzes/${cat}/${levelPart}${subjectSlug}/${file}?t=${Date.now()}`;
+    }
+
+    // Normalizes remoteManifest[cat] into { <levelSlug>: { label, subjects: {...} } },
+    // wrapping any legacy (pre-level) subject entries under "Unclassified".
+    function getNormalizedLevels(cat) {
+      const remoteCat = remoteManifest[cat] || {};
+      const levels = {};
+      Object.entries(remoteCat).forEach(([key, val]) => {
+        if (val && typeof val === 'object' && val.subjects) {
+          levels[key] = { label: val.label || humanizeSlug(key), subjects: val.subjects };
+        } else if (val && typeof val === 'object' && val.quizzes) {
+          if (!levels[UNCLASSIFIED_LEVEL_SLUG]) levels[UNCLASSIFIED_LEVEL_SLUG] = { label: 'Unclassified', subjects: {} };
+          levels[UNCLASSIFIED_LEVEL_SLUG].subjects[key] = val;
+        }
+      });
+      return levels;
     }
 
     async function fetchGitHubRepositoryQuizzes() {
@@ -507,80 +554,153 @@
     }
 
     function findRemoteMeta(cat, key) {
-      const remoteCat = remoteManifest[cat] || {};
-      for (const [slug, subj] of Object.entries(remoteCat)) {
-        const match = (subj.quizzes || []).find(q => q.file.replace(/\.json$/i, '') === key);
-        if (match) {
-          return {
-            url: quizRawUrl(cat, slug, match.file),
-            subject: subj.label || humanizeSubjectSlug(slug),
-            title: match.title || key,
-            count: match.count,
-            type: match.type || 'chapter'
-          };
+      const levels = getNormalizedLevels(cat);
+      for (const [levelSlug, level] of Object.entries(levels)) {
+        for (const [subjSlug, subj] of Object.entries(level.subjects || {})) {
+          const match = (subj.quizzes || []).find(q => q.file.replace(/\.json$/i, '') === key);
+          if (match) {
+            return {
+              url: quizRawUrl(cat, levelSlug, subjSlug, match.file),
+              level: level.label || humanizeSlug(levelSlug),
+              subject: subj.label || humanizeSlug(subjSlug),
+              title: match.title || key,
+              count: match.count,
+              type: match.type || 'chapter'
+            };
+          }
         }
       }
       return null;
     }
 
-    function getKnownSubjectLabels(cat) {
-      const labels = new Set(['General']);
-      const remoteCat = remoteManifest[cat] || {};
-      Object.values(remoteCat).forEach(s => labels.add(s.label || 'General'));
+    function getKnownLevelLabels(cat) {
+      const labels = new Set();
+      (PREDEFINED_LEVELS[cat] || []).forEach(l => labels.add(l));
+      const levels = getNormalizedLevels(cat);
+      Object.entries(levels).forEach(([slug, level]) => { if (slug !== UNCLASSIFIED_LEVEL_SLUG) labels.add(level.label); });
       const storageKey = `savedQuizzes_${cat}`;
       const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      Object.values(saved).forEach(q => labels.add(q.subject || 'General'));
-      return Array.from(labels).sort((a, b) => {
-        if (a === 'General') return 1;
-        if (b === 'General') return -1;
-        return a.localeCompare(b);
+      Object.values(saved).forEach(q => { if (q.level) labels.add(q.level); });
+      return Array.from(labels).sort((a, b) => a.localeCompare(b));
+    }
+
+    function getKnownSubjectLabels(cat, levelLabel) {
+      const labels = new Set();
+      const levels = getNormalizedLevels(cat);
+      const levelSlug = levelLabel ? slugifyClient(levelLabel) : UNCLASSIFIED_LEVEL_SLUG;
+      const level = levels[levelSlug] || (!levelLabel ? levels[UNCLASSIFIED_LEVEL_SLUG] : null);
+      if (level) Object.values(level.subjects || {}).forEach(s => labels.add(s.label));
+      const storageKey = `savedQuizzes_${cat}`;
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      Object.values(saved).forEach(q => {
+        if ((q.level || '') === (levelLabel || '') && q.subject && q.subject !== 'General') labels.add(q.subject);
       });
+      return Array.from(labels).sort((a, b) => a.localeCompare(b));
     }
 
-    function refreshSubjectDatalist() {
-      const categorySelect = document.getElementById('setup-category-select');
-      const datalist = document.getElementById('setup-subject-datalist');
-      if (!categorySelect || !datalist) return;
-      const subjects = getKnownSubjectLabels(categorySelect.value || 'icma').filter(s => s !== 'General');
-      datalist.innerHTML = subjects.map(s => `<option value="${s.replace(/"/g, '&quot;')}"></option>`).join('');
+    // --- Level/Subject dropdowns on the post-upload setup card ---
+    function refreshLevelSelect() {
+      const cat = document.getElementById('setup-category-select').value || 'icma';
+      const select = document.getElementById('setup-level-select');
+      const previousValue = select.value;
+      const levels = getKnownLevelLabels(cat);
+
+      select.innerHTML = `<option value="">— No Level —</option>` +
+        levels.map(l => `<option value="${l.replace(/"/g, '&quot;')}">${l.replace(/</g, '&lt;')}</option>`).join('') +
+        `<option value="__new__">➕ Add New Level...</option>`;
+
+      const stillValid = Array.from(select.options).some(o => o.value === previousValue);
+      select.value = stillValid ? previousValue : '';
+      handleSetupLevelChange();
     }
 
-    // Builds the collapsible Subject -> Chapters/Full-Bank tree for one category,
-    // merging what's published on GitHub (remoteManifest) with whatever's cached or
-    // was uploaded straight from a PDF and only exists in this browser (localStorage).
+    function handleSetupLevelChange() {
+      const select = document.getElementById('setup-level-select');
+      const newInput = document.getElementById('setup-new-level-input');
+      newInput.classList.toggle('hidden', select.value !== '__new__');
+      refreshSubjectSelect();
+    }
+
+    function getChosenLevel() {
+      const select = document.getElementById('setup-level-select');
+      if (select.value === '__new__') return document.getElementById('setup-new-level-input').value.trim();
+      return select.value;
+    }
+
+    function refreshSubjectSelect() {
+      const cat = document.getElementById('setup-category-select').value || 'icma';
+      const levelLabel = getChosenLevel();
+      const select = document.getElementById('setup-subject-select');
+      const previousValue = select.value;
+      const subjects = getKnownSubjectLabels(cat, levelLabel);
+
+      select.innerHTML = `<option value="">— General (no subject) —</option>` +
+        subjects.map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s.replace(/</g, '&lt;')}</option>`).join('') +
+        `<option value="__new__">➕ Add New Subject...</option>`;
+
+      const stillValid = Array.from(select.options).some(o => o.value === previousValue);
+      select.value = stillValid ? previousValue : '';
+      handleSetupSubjectChange();
+    }
+
+    function handleSetupSubjectChange() {
+      const select = document.getElementById('setup-subject-select');
+      const newInput = document.getElementById('setup-new-subject-input');
+      newInput.classList.toggle('hidden', select.value !== '__new__');
+    }
+
+    function getChosenSubject() {
+      const select = document.getElementById('setup-subject-select');
+      if (select.value === '__new__') return document.getElementById('setup-new-subject-input').value.trim();
+      return select.value;
+    }
+
+    // Builds the collapsible Level -> Subject -> Chapters/Full-Bank tree for one category,
+    // merging what's published on GitHub (remoteManifest) with whatever's cached or was
+    // uploaded straight from a PDF and only exists in this browser (localStorage).
     function renderCategoryTree(cat) {
       const container = document.getElementById(`${cat}-tree`);
       if (!container) return;
 
       const storageKey = `savedQuizzes_${cat}`;
       const localSaved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      const remoteCat = remoteManifest[cat] || {};
+      const levels = getNormalizedLevels(cat); // { levelSlug: { label, subjects: { subjSlug: {label, quizzes:[...]} } } }
 
-      const subjects = {};
-
-      Object.entries(remoteCat).forEach(([slug, subj]) => {
-        subjects[slug] = { label: subj.label || humanizeSubjectSlug(slug), quizzes: [] };
-        (subj.quizzes || []).forEach(q => {
-          const key = q.file.replace(/\.json$/i, '');
-          subjects[slug].quizzes.push({
-            key,
-            title: q.title || key,
-            count: (q.count !== undefined && q.count !== null) ? q.count : '?',
-            type: q.type || 'chapter',
-            cachedLocally: false,
-            fromRemote: true // published via admin.html — safe to delete the local cache, GitHub still has it
+      // Deep-copy remote quizzes into a uniform working shape.
+      const tree = {};
+      Object.entries(levels).forEach(([levelSlug, level]) => {
+        tree[levelSlug] = { label: level.label, subjects: {} };
+        Object.entries(level.subjects || {}).forEach(([subjSlug, subj]) => {
+          tree[levelSlug].subjects[subjSlug] = { label: subj.label || humanizeSlug(subjSlug), quizzes: [] };
+          (subj.quizzes || []).forEach(q => {
+            const key = q.file.replace(/\.json$/i, '');
+            tree[levelSlug].subjects[subjSlug].quizzes.push({
+              key,
+              title: q.title || key,
+              count: (q.count !== undefined && q.count !== null) ? q.count : '?',
+              type: q.type || 'chapter',
+              cachedLocally: false,
+              fromRemote: true // published via admin.html — safe to delete the local cache, GitHub still has it
+            });
           });
         });
       });
 
+      // Fold in local-only quizzes (uploaded straight from a PDF here, or already cached
+      // copies of a remote one). Local quizzes carry their own level/subject labels.
       Object.entries(localSaved).forEach(([key, q]) => {
-        const slug = slugifySubjectClient(q.subject || 'General');
-        if (!subjects[slug]) subjects[slug] = { label: q.subject || 'General', quizzes: [] };
-        const existing = subjects[slug].quizzes.find(item => item.key === key);
+        const levelLabel = q.level || '';
+        const levelSlug = levelLabel ? slugifyClient(levelLabel) : UNCLASSIFIED_LEVEL_SLUG;
+        const subjSlug = slugifyClient(q.subject || 'General');
+
+        if (!tree[levelSlug]) tree[levelSlug] = { label: levelLabel || 'Unclassified', subjects: {} };
+        if (!tree[levelSlug].subjects[subjSlug]) tree[levelSlug].subjects[subjSlug] = { label: q.subject || 'General', quizzes: [] };
+
+        const existing = tree[levelSlug].subjects[subjSlug].quizzes.find(item => item.key === key);
         if (existing) {
           existing.cachedLocally = true;
         } else {
-          subjects[slug].quizzes.push({
+          tree[levelSlug].subjects[subjSlug].quizzes.push({
             key,
             title: key,
             count: (q.originalQuizData || []).length || '?',
@@ -591,58 +711,69 @@
         }
       });
 
-      const slugs = Object.keys(subjects).sort((a, b) => {
-        if (a === 'general') return 1;
-        if (b === 'general') return -1;
-        return subjects[a].label.localeCompare(subjects[b].label);
+      const levelSlugs = Object.keys(tree).sort((a, b) => {
+        if (a === UNCLASSIFIED_LEVEL_SLUG) return 1;
+        if (b === UNCLASSIFIED_LEVEL_SLUG) return -1;
+        return tree[a].label.localeCompare(tree[b].label);
       });
 
-      if (slugs.length === 0) {
+      if (levelSlugs.length === 0) {
         container.innerHTML = `<p class="text-[11px] text-slate-500 italic px-1 py-2">No quizzes yet — upload a PDF or publish one from the admin page.</p>`;
         return;
       }
 
-      container.innerHTML = slugs.map(slug => {
-        const subj = subjects[slug];
-        const rows = subj.quizzes
-          .slice()
-          .sort((a, b) => {
-            if (a.type !== b.type) return a.type === 'full-bank' ? 1 : -1;
-            return a.title.localeCompare(b.title);
-          })
-          .map(q => {
-            const isActive = (activeCategory === cat && activeQuizKey === q.key);
-            const typeBadge = q.type === 'full-bank' ? '📚' : '📄';
-            const sourceBadge = q.cachedLocally ? '' : '🌐 ';
-            const safeKey = q.key.replace(/'/g, "\\'");
-            const safeSlug = slug.replace(/'/g, "\\'");
-            // The delete button itself signals whether this is safe (backed up on GitHub,
-            // deleting just clears the local cache) or permanent (never published, this
-            // browser is the only copy) — instead of both looking identical.
-            let deleteBtn = '';
-            if (q.cachedLocally && q.fromRemote) {
-              deleteBtn = `<button onclick="deleteLocalQuiz('${cat}', '${safeKey}', true)" title="Clear local cache (safe — still on GitHub)" class="text-slate-400 hover:text-slate-300 text-[11px] px-1 cursor-pointer flex-shrink-0">🗑️</button>`;
-            } else if (q.cachedLocally && !q.fromRemote) {
-              deleteBtn = `<button onclick="deleteLocalQuiz('${cat}', '${safeKey}', false)" title="Delete permanently — never published to GitHub" class="text-rose-400 hover:text-rose-300 text-[11px] px-1 cursor-pointer flex-shrink-0">⚠️🗑️</button>`;
-            }
-            return `
-              <div class="flex items-center gap-1">
-                <button onclick="loadQuiz('${cat}', '${safeKey}', false)"
-                  class="flex-1 min-w-0 text-left px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition cursor-pointer flex items-center justify-between gap-2 ${isActive ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-300 hover:bg-slate-700'}">
-                  <span class="truncate">${typeBadge} ${sourceBadge}${q.title}</span>
-                  <span class="text-[10px] opacity-70 flex-shrink-0">${q.count}</span>
-                </button>
-                ${deleteBtn}
-              </div>`;
-          }).join('');
+      container.innerHTML = levelSlugs.map(levelSlug => {
+        const level = tree[levelSlug];
+        const subjSlugs = Object.keys(level.subjects).sort((a, b) => level.subjects[a].label.localeCompare(level.subjects[b].label));
+        const subjectCount = subjSlugs.length;
+
+        const subjectBlocks = subjSlugs.map(subjSlug => {
+          const subj = level.subjects[subjSlug];
+          const rows = subj.quizzes
+            .slice()
+            .sort((a, b) => {
+              if (a.type !== b.type) return a.type === 'full-bank' ? 1 : -1;
+              return a.title.localeCompare(b.title);
+            })
+            .map(q => {
+              const isActive = (activeCategory === cat && activeQuizKey === q.key);
+              const typeBadge = q.type === 'full-bank' ? '📚' : '📄';
+              const sourceBadge = q.cachedLocally ? '' : '🌐 ';
+              const safeKey = q.key.replace(/'/g, "\\'");
+              let deleteBtn = '';
+              if (q.cachedLocally && q.fromRemote) {
+                deleteBtn = `<button onclick="deleteLocalQuiz('${cat}', '${safeKey}', true)" title="Clear local cache (safe — still on GitHub)" class="text-slate-400 hover:text-slate-300 text-[11px] px-1 cursor-pointer flex-shrink-0">🗑️</button>`;
+              } else if (q.cachedLocally && !q.fromRemote) {
+                deleteBtn = `<button onclick="deleteLocalQuiz('${cat}', '${safeKey}', false)" title="Delete permanently — never published to GitHub" class="text-rose-400 hover:text-rose-300 text-[11px] px-1 cursor-pointer flex-shrink-0">⚠️🗑️</button>`;
+              }
+              return `
+                <div class="flex items-center gap-1">
+                  <button onclick="loadQuiz('${cat}', '${safeKey}', false)"
+                    class="flex-1 min-w-0 text-left px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition cursor-pointer flex items-center justify-between gap-2 ${isActive ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-300 hover:bg-slate-700'}">
+                    <span class="truncate">${typeBadge} ${sourceBadge}${q.title}</span>
+                    <span class="text-[10px] opacity-70 flex-shrink-0">${q.count}</span>
+                  </button>
+                  ${deleteBtn}
+                </div>`;
+            }).join('');
+
+          return `
+            <details class="group rounded-lg" ${subjSlugs.length <= 2 ? 'open' : ''}>
+              <summary class="cursor-pointer list-none text-[11px] font-bold text-slate-300 flex items-center justify-between px-2 py-1 rounded-lg bg-slate-900/50 hover:bg-slate-900">
+                <span class="truncate">📂 ${subj.label}</span>
+                <span class="text-[10px] text-slate-500 flex-shrink-0 ml-2">${subj.quizzes.length}</span>
+              </summary>
+              <div class="mt-1 space-y-1 pl-1.5">${rows || '<p class="text-[10px] text-slate-500 italic px-2 py-1">Empty</p>'}</div>
+            </details>`;
+        }).join('');
 
         return `
-          <details class="group rounded-lg" ${slugs.length <= 2 ? 'open' : ''}>
-            <summary class="cursor-pointer list-none text-[11px] font-bold text-slate-300 flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-900/60 hover:bg-slate-900">
-              <span class="truncate">📂 ${subj.label}</span>
-              <span class="text-[10px] text-slate-500 flex-shrink-0 ml-2">${subj.quizzes.length}</span>
+          <details class="group rounded-lg" ${levelSlugs.length <= 2 ? 'open' : ''}>
+            <summary class="cursor-pointer list-none text-[11px] font-bold text-indigo-300 flex items-center justify-between px-2 py-1.5 rounded-lg bg-indigo-950/40 hover:bg-indigo-950/70 border border-indigo-900/60">
+              <span class="truncate">📁 ${level.label}</span>
+              <span class="text-[10px] text-slate-500 flex-shrink-0 ml-2">${subjectCount}</span>
             </summary>
-            <div class="mt-1 space-y-1 pl-1.5">${rows || '<p class="text-[10px] text-slate-500 italic px-2 py-1">Empty</p>'}</div>
+            <div class="mt-1 space-y-1 pl-2">${subjectBlocks}</div>
           </details>`;
       }).join('');
     }
@@ -684,7 +815,7 @@
         activeQuizKey = key;
         const quizObj = saved[key];
         activeSubject = quizObj.subject || 'General';
-
+        activeLevel = quizObj.level || '';
         originalQuizData = [...quizObj.originalQuizData];
         selectedAnswers = quizObj.selectedAnswers || {};
         activeMode = quizObj.activeMode || 'practice';
@@ -750,6 +881,7 @@
           quizData = [...originalQuizData];
           activeQuizKey = key;
           activeSubject = remoteMeta.subject || 'General';
+          activeLevel = remoteMeta.level || '';
           selectedAnswers = {};
           score = 0;
           currentPage = 1;
@@ -989,6 +1121,7 @@
       isPracticingWrong = false;
       isFreshUpload = false;
       activeSubject = "General";
+      activeLevel = "";
       stopTimer();
 
       document.getElementById("quiz-container").innerHTML = `
@@ -1029,9 +1162,13 @@
       document.getElementById("setup-mcq-count").innerText = `${count} MCQs Loaded`;
       document.getElementById("quiz-setup-card").classList.remove("hidden");
 
-      const subjectInput = document.getElementById("setup-subject-input");
-      if (subjectInput) subjectInput.value = (activeSubject && activeSubject !== 'General') ? activeSubject : '';
-      refreshSubjectDatalist();
+      refreshLevelSelect(); // also refreshes the subject select beneath it
+      const levelSelect = document.getElementById("setup-level-select");
+      if (levelSelect && activeLevel) levelSelect.value = activeLevel;
+      handleSetupLevelChange();
+      const subjectSelect = document.getElementById("setup-subject-select");
+      if (subjectSelect && activeSubject && activeSubject !== 'General') subjectSelect.value = activeSubject;
+      handleSetupSubjectChange();
 
       document.getElementById("text-preview-section").classList.remove("hidden");
       document.getElementById("quiz-container").innerHTML = "";
@@ -1046,8 +1183,16 @@
     function startQuiz() {
       const categorySelect = document.getElementById("setup-category-select");
       const chosenCategory = categorySelect.value || "icma";
-      const subjectInput = document.getElementById("setup-subject-input");
-      const chosenSubject = (subjectInput && subjectInput.value.trim()) || "General";
+      const chosenLevel = getChosenLevel();
+      if (document.getElementById("setup-level-select").value === '__new__' && !chosenLevel) {
+        alert("Type a name for the new level, or switch back to No Level.");
+        return;
+      }
+      const chosenSubject = getChosenSubject() || "General";
+      if (document.getElementById("setup-subject-select").value === '__new__' && !getChosenSubject()) {
+        alert("Type a name for the new subject, or switch back to General.");
+        return;
+      }
 
       if (activeMode === 'timer') {
         timerDurationMinutes = parseInt(document.getElementById('setup-timer-minutes').value || 10);
@@ -1062,6 +1207,7 @@
             `A quiz named "${activeQuizKey}" already exists in your ${chosenCategory.toUpperCase()} library. Starting now will overwrite it and any saved progress on it. Continue?`,
             function () {
               activeCategory = chosenCategory;
+              activeLevel = chosenLevel;
               activeSubject = chosenSubject;
               isFreshUpload = false;
               finalizeStartQuiz();
@@ -1072,6 +1218,7 @@
       }
 
       activeCategory = chosenCategory;
+      activeLevel = chosenLevel;
       activeSubject = chosenSubject;
       isFreshUpload = false;
       finalizeStartQuiz();
@@ -1249,6 +1396,7 @@
         timerEndTimestamp: timerEndTimestamp,
         isPracticingWrong: isPracticingWrong,
         category: activeCategory,
+        level: activeLevel || '',
         subject: activeSubject || 'General'
       };
       localStorage.setItem(storageKey, JSON.stringify(saved));
