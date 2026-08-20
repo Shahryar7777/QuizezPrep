@@ -529,7 +529,15 @@
         // --- Parser, ported from index.html's parseMCQsLocally. Options are NOT shuffled
         // here (that happens right before publish, gated by the "shuffle before publish"
         // checkbox, so the preview above always shows raw, easy-to-verify A/B/C/D order). ---
-        function parseMCQsLocally(text) {
+        //
+        // Answer-key matching is scoped PER CHAPTER: many multi-chapter PDFs restart
+        // question numbering at 1 in every chapter and give each chapter its own separate
+        // "ANSWER KEY" block. Building one answer-key lookup across the whole document means
+        // every chapter's "Question 9" (etc.) collides on the same entry, and whichever
+        // chapter's key is scanned LAST silently overwrites every other chapter's correct
+        // answers. Splitting on "CHAPTER n" first and rebuilding the lookup fresh inside each
+        // chunk keeps each chapter's numbering matched only against its own key.
+        function extractMCQsFromChunk(text, chapterNum) {
             const parsedQuiz = [];
 
             const globalAnswerKey = {};
@@ -582,13 +590,33 @@
                     parsedQuiz.push({
                         masterIdx: origIdx,
                         questionNumber: qNum,
-                        question: `Q${qNum}. ${qText}`,
+                        // Chapter number prefixed in when present, so "Q9" from Chapter 1 and
+                        // "Q9" from Chapter 7 read as distinct questions, not both just "Q9."
+                        question: chapterNum ? `Ch${chapterNum} Q${qNum}. ${qText}` : `Q${qNum}. ${qText}`,
                         options: rawOptions,
                         correctAnswer: correctIdx,
                         explanation: expText
                     });
                 }
             });
+
+            return parsedQuiz;
+        }
+
+        function parseMCQsLocally(text) {
+            const chapterChunks = text.split(/(?=CHAPTER\s+\d+\s*\n)/gi).filter(c => c.trim().length > 0);
+            let parsedQuiz = [];
+            if (chapterChunks.length > 1) {
+                chapterChunks.forEach(chunk => {
+                    const chapterMatch = chunk.match(/CHAPTER\s+(\d+)/i);
+                    const chapterNum = chapterMatch ? chapterMatch[1] : null;
+                    parsedQuiz = parsedQuiz.concat(extractMCQsFromChunk(chunk, chapterNum));
+                });
+            } else {
+                // No "CHAPTER n" markers found — single-chapter or differently formatted PDF,
+                // parse the whole thing as one chunk exactly as before.
+                parsedQuiz = extractMCQsFromChunk(text, null);
+            }
 
             parsedQuiz.forEach((q, i) => q.masterIdx = i);
             return parsedQuiz;
