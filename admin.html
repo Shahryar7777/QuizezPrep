@@ -604,11 +604,17 @@
         }
 
         function parseMCQsLocally(text) {
-            const chapterChunks = text.split(/(?=CHAPTER\s+\d+\s*\n)/gi).filter(c => c.trim().length > 0);
+            // Split on true chapter-start headers only: the browser's PDF text extraction
+            // joins everything on a page with plain spaces (no real line breaks), and the
+            // bare, all-caps "CHAPTER 1" heading has no colon after it — unlike the mixed-
+            // case running header ("Chapter 1: ...") that repeats on every page of that
+            // chapter. Matching case-SENSITIVELY on the bare uppercase form (no newline
+            // requirement, since none exists in this text) hits only the real chapter starts.
+            const chapterChunks = text.split(/(?=\bCHAPTER\s+\d+\b)/g).filter(c => c.trim().length > 0);
             let parsedQuiz = [];
             if (chapterChunks.length > 1) {
                 chapterChunks.forEach(chunk => {
-                    const chapterMatch = chunk.match(/CHAPTER\s+(\d+)/i);
+                    const chapterMatch = chunk.match(/\bCHAPTER\s+(\d+)\b/);
                     const chapterNum = chapterMatch ? chapterMatch[1] : null;
                     parsedQuiz = parsedQuiz.concat(extractMCQsFromChunk(chunk, chapterNum));
                 });
