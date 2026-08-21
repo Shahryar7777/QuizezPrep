@@ -59,6 +59,23 @@
           ]
         }
       }
+    },
+    "management-level-1": {
+      "label": "Management Level 1",
+      "subjects": {
+        "organizational-management": {
+          "label": "Organizational Management",
+          "quizzes": [
+            {
+              "file": "om_all_chpters_mcqs_quiz.json",
+              "title": "OM All chpters Mcqs",
+              "count": 744,
+              "type": "full-bank",
+              "updatedAt": "2026-08-21T07:35:41.029Z"
+            }
+          ]
+        }
+      }
     }
   },
   "ca": {},
