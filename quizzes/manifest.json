@@ -36,6 +36,13 @@
               "count": 744,
               "type": "full-bank",
               "updatedAt": "2026-08-21T07:19:32.928Z"
+            },
+            {
+              "file": "om_all_chpters_mcqs_quiz.json",
+              "title": "OM All chpters Mcqs",
+              "count": 744,
+              "type": "chapter",
+              "updatedAt": "2026-08-21T07:31:29.439Z"
             }
           ]
         },
