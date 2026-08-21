@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Prevent the browser (and any intermediate cache) from ever serving a stale copy of
+         this page. This has repeatedly caused published fixes to silently not apply until a
+         manual hard refresh — this makes that whole class of problem go away permanently. -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Admin Quiz Publisher - QuizezPrep</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -31,6 +37,7 @@
             URL can open it, and the token is stored in plain localStorage. Use a fine-grained PAT
             scoped only to this repo (Contents: Read &amp; write), and revoke it if you ever suspect exposure.
         </p>
+        <p class="text-[10px] text-slate-600 mt-2">Build 2026-08-20-c · if this date looks old after a redeploy, hard-refresh (Ctrl+Shift+R) before publishing.</p>
     </header>
 
     <!-- Workspace -->
