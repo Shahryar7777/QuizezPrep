@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Prevent the browser (and any intermediate cache) from ever serving a stale copy of
+       this page. This has repeatedly caused published fixes to silently not apply until a
+       manual hard refresh — this makes that whole class of problem go away permanently. -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Exam Quiz Master - Shahryar Sheikh</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -106,6 +112,7 @@
       <p class="font-bold text-slate-300">⚡ AI Exam Study Suite Pro</p>
       <p>© 2026 Shahryar Sheikh.</p>
       <p>All Rights Reserved.</p>
+      <p class="text-slate-700 mt-1">Build 2026-08-20-c</p>
     </div>
   </aside>
 
